@@ -3,7 +3,7 @@
 import { Parcel } from '@parcel/core';
 import { dirname, resolve } from 'path';
 import { fileURLToPath } from 'url';
-import { parse } from 'node-html-parser';
+import jsdom from 'jsdom';
 import { readFileSync, writeFileSync } from 'fs';
 import Processor from '@asciidoctor/core';
 import RevealJsPlugin from '@asciidoctor/reveal.js';
@@ -17,21 +17,12 @@ const BUILD_AREA_PATH = resolve(REPOSITORY_ROOT_PATH, 'build-area');
 const DIST_FOLDER_PATH = resolve(REPOSITORY_ROOT_PATH, 'dist');
 const NODE_MODULES_PATH = resolve(REPOSITORY_ROOT_PATH, 'node_modules');
 const PRISM_CSS_PATH = resolve(NODE_MODULES_PATH, 'prismjs', 'themes', 'prism-tomorrow.css');
-const PRISM_LINE_NUMBERS__CSS_PATH = resolve(NODE_MODULES_PATH, 'prismjs', 'plugins', 'line-numbers', 'prism-line-numbers.css');
+// const PRISM_LINE_NUMBERS__CSS_PATH = resolve(NODE_MODULES_PATH, 'prismjs', 'plugins', 'line-numbers', 'prism-line-numbers.css');
 
 const BUILT_DECK_JS_FILE_PATH = resolve(BUILD_AREA_PATH, 'deck.js');
 const BUILT_DECK_CSS_FILE_PATH = resolve(BUILD_AREA_PATH, 'deck.css');
 const OUTPUT_FILE_PATH = resolve(DIST_FOLDER_PATH, 'deck.html');
 
-const PRISM_CONFIGURATION = {
-  blockTextElements: {
-    script: true,
-    noscript: true,
-    style: true,
-    // pre: true,
-    code: true,
-  },
-};
 const PARCEL_CONFIGURATION = {
   entries: [ DECK_JS_FILE_PATH ],
   mode: 'production',
@@ -60,83 +51,88 @@ async function main () {
 
   const input = readFileSync(inputPath, 'utf8');
   const inputHtml = processor.convert(input, { standalone: true, backend: 'revealjs' });
-  const baseAst = parse(inputHtml, PRISM_CONFIGURATION);
-  const cleanAst = removeAllImports(baseAst);
+  const baseDom = new jsdom.JSDOM(inputHtml);
+  const cleanDom = removeAllImports(baseDom);
 
   console.log('Bundling input deck file');
   await new Parcel(PARCEL_CONFIGURATION).run();
 
-  const languages = findLanguages(cleanAst);
-  const preparedAst = languages.length
-    ? await highlightCode(cleanAst, languages)
-    : cleanAst;
+  const languages = findLanguages(cleanDom);
+  const preparedDom = languages.length
+    ? await highlightCode(cleanDom, languages)
+    : cleanDom;
 
   const style = readFileSync(BUILT_DECK_CSS_FILE_PATH, 'utf8');
   const script = readFileSync(BUILT_DECK_JS_FILE_PATH, 'utf8')
     .replaceAll('<script>', '<"+"script>')
     .replaceAll('</script>', '</"+"script>');
 
-  const finalAst = addStyleAndScript(preparedAst, style, script);
-  writeFileSync(OUTPUT_FILE_PATH, finalAst.toString(), 'utf8');
+  const finalDom = addStyleAndScript(preparedDom, style, script);
+  writeFileSync(OUTPUT_FILE_PATH, finalDom.serialize(), 'utf8');
 }
 
-function removeAllImports (ast) {
-  const headNode = ast.querySelector('head');
+function removeAllImports (dom) {
+  const headNode = query(dom, 'head');
   [ ...headNode.querySelectorAll('link[rel=stylesheet]') ]
     .forEach((styleSheetNode) => headNode.removeChild(styleSheetNode));
   [ ...headNode.querySelectorAll('style') ]
     .forEach((styleNode) => headNode.removeChild(styleNode));
 
-  const bodyNode = ast.querySelector('body');
+  const bodyNode = query(dom, 'body');
   [ ...bodyNode.querySelectorAll('script') ]
     .forEach((scriptNode) => bodyNode.removeChild(scriptNode));
 
-  return ast;
+  return dom;
 }
 
-function findLanguages (ast) {
-  return [ ...ast.querySelectorAll('pre code[data-lang]') ]
+function findLanguages (dom) {
+  return queryAll(dom, 'pre code[data-lang]')
     .map((codeNode) => codeNode.getAttribute('data-lang'))
     .sort();
 }
 
-async function highlightCode (ast, languages) {
+async function highlightCode (dom, languages) {
   console.info(`Loading languages: [ ${languages.join(', ')} ]`);
   loadLanguages(languages);
-  const preparedAst = prepareHighlighting(ast);
+  const preparedDom = prepareHighlighting(dom);
 
-  // preparedAst.addEventListener = () => {};
-  // global.window = preparedAst;
-  // global.document = preparedAst;
-  // await import('prismjs/plugins/line-numbers/prism-line-numbers.js');
+  // global.window = dom.window; // NOTE: required for Prism plugins, emulates a browser environment
+  // global.document = dom.window.document; // NOTE: required for Prism plugins, emulates a browser environment
+  // global.getComputedStyle = window.getComputedStyle; // Line-numbers plugin uses it as if in a browser => window instead of global
+  // await import('prismjs/plugins/line-numbers/prism-line-numbers.js'); // FIXME: for some reason, the line number don't show up
+  // await import('prismjs/plugins/keep-markup/prism-keep-markup.js'); // FIXME: needs manual Asciidoctor parsing, or it escapes markup in code blocks
 
-  Prism.highlightAllUnder(preparedAst); // NOTE: MUTATES AST!
-  return preparedAst;
+  Prism.highlightAllUnder(preparedDom.window.document); // NOTE: MUTATES AST!
+  return preparedDom;
 }
 
-function prepareHighlighting (ast) {
-  [ ...ast.querySelectorAll('*') ] // Required for normalize white space
-    .forEach((element) => {
-  //     element.nodeName = element.rawTagName;
-  //     element.parentElement = element.parentNode;
-      element.className = [ ...element.classList.values() ].join(' ') || '';
-    });
+function prepareHighlighting (dom) {
+  // queryAll(dom, 'code')
+  //   .forEach((element) => element.children.length = element?.childNodes?.length); // FIXME: Keep markup plugin expects that
 
   const prismCss = readFileSync(PRISM_CSS_PATH);
-  const headNode = ast.querySelector('head');
+  // const lineNumbersCss = readFileSync(PRISM_LINE_NUMBERS__CSS_PATH); // FIXME: re-add and make optional depending on whether it's used
+  const headNode = query(dom, 'head');
   headNode.insertAdjacentHTML('beforeend', `<style id="CSS_PRISM">${prismCss}</style>`);
-
-  return ast;
+  return dom;
 }
 
-function addStyleAndScript (ast, style, script) {
-  const head = ast.querySelector('head');
+function addStyleAndScript (dom, style, script) {
+  const head = query(dom, 'head');
   head.insertAdjacentHTML('beforeend', `\n<style id="CSS_REVEAL">${style}</style>\n`);
 
-  const body = ast.querySelector('body');
+  const body = query(dom, 'body');
   body.insertAdjacentHTML('beforeend', `\n<script id="JS_REVEAL" type="module">\n${script};\n</script>\n`);
 
-  return ast;
+  return dom;
+}
+
+function query (dom, selector) {
+  return dom.window.document.querySelector(selector);
+}
+
+function queryAll (dom, selector) {
+  return [ ...dom.window.document.querySelectorAll(selector) ];
 }
 
 function getModuleFolder (importMeta) {
