@@ -1,0 +1,30 @@
+= Title
+
+What happens then? :thinking:
+
+== Big section 1
+
+* Kikoo
+* Kaka
+* Koko
+
+== Big section 2
+
+[source,mermaid]
+----
+flowchart LR
+    toto[[This is some text]]
+    toto --> tata
+----
+
+=== Small section
+
+Smallish
+
+[source,json]
+----
+{
+  "titi": "toto",
+  "tata": null
+}
+----
