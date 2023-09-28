@@ -4,7 +4,7 @@ import { Parcel } from '@parcel/core';
 import { dirname, resolve } from 'path';
 import { fileURLToPath } from 'url';
 import jsdom from 'jsdom';
-import { readFileSync, writeFileSync } from 'fs';
+import { existsSync, readFileSync, writeFileSync } from 'fs';
 import Processor from '@asciidoctor/core';
 import RevealJsPlugin from '@asciidoctor/reveal.js';
 import loadLanguages from 'prismjs/components/index.js';
@@ -46,28 +46,27 @@ const PARCEL_CONFIGURATION = {
 async function main () {
   const [ , , inputPath ] = process.argv;
 
+  if (!existsSync(BUILT_DECK_JS_FILE_PATH) || !existsSync(BUILT_DECK_CSS_FILE_PATH)) {
+    // TODO: Rethink this.
+    //       * Either the version of Reveal is fixed and these files can be pre-compiled
+    //       * Or it should depend on the child project and the resolution of Node packages must evolve
+    console.log('Bundling input deck file');
+    await new Parcel(PARCEL_CONFIGURATION).run();
+  }
+
   const processor = new Processor();
   RevealJsPlugin.register();
 
   const input = readFileSync(inputPath, 'utf8');
   const inputHtml = processor.convert(input, { standalone: true, backend: 'revealjs' });
   const baseDom = new jsdom.JSDOM(inputHtml);
-  const cleanDom = removeAllImports(baseDom);
 
-  console.log('Bundling input deck file');
-  await new Parcel(PARCEL_CONFIGURATION).run();
+  const finalDom = await [
+    removeAllImports,
+    highlightCode,
+    addStyleAndScript,
+  ].reduce((promise, operation) => promise.then(async (seed) => operation(seed)), Promise.resolve(baseDom));
 
-  const languages = findLanguages(cleanDom);
-  const preparedDom = languages.length
-    ? await highlightCode(cleanDom, languages)
-    : cleanDom;
-
-  const style = readFileSync(BUILT_DECK_CSS_FILE_PATH, 'utf8');
-  const script = readFileSync(BUILT_DECK_JS_FILE_PATH, 'utf8')
-    .replaceAll('<script>', '<"+"script>')
-    .replaceAll('</script>', '</"+"script>');
-
-  const finalDom = addStyleAndScript(preparedDom, style, script);
   writeFileSync(OUTPUT_FILE_PATH, finalDom.serialize(), 'utf8');
 }
 
@@ -85,13 +84,13 @@ function removeAllImports (dom) {
   return dom;
 }
 
-function findLanguages (dom) {
-  return queryAll(dom, 'pre code[data-lang]')
+async function highlightCode (dom) {
+  const languages = queryAll(dom, 'pre code[data-lang]')
     .map((codeNode) => codeNode.getAttribute('data-lang'))
     .sort();
-}
 
-async function highlightCode (dom, languages) {
+  if (!languages.length) { return dom; }
+
   console.info(`Loading languages: [ ${languages.join(', ')} ]`);
   loadLanguages(languages);
   const preparedDom = prepareHighlighting(dom);
@@ -117,10 +116,14 @@ function prepareHighlighting (dom) {
   return dom;
 }
 
-function addStyleAndScript (dom, style, script) {
+function addStyleAndScript (dom) {
+  const style = readFileSync(BUILT_DECK_CSS_FILE_PATH, 'utf8');
   const head = query(dom, 'head');
   head.insertAdjacentHTML('beforeend', `\n<style id="CSS_REVEAL">${style}</style>\n`);
 
+  const script = readFileSync(BUILT_DECK_JS_FILE_PATH, 'utf8')
+    .replaceAll('<script>', '<"+"script>')
+    .replaceAll('</script>', '</"+"script>');
   const body = query(dom, 'body');
   body.insertAdjacentHTML('beforeend', `\n<script id="JS_REVEAL" type="module">\n${script};\n</script>\n`);
 
