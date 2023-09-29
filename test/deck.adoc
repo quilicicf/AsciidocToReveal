@@ -1,12 +1,16 @@
-= Title
+:imagesdir: assets
 
-What happens then? :thinking:
+= image:asciidoc-logo.svg[Asciidoc logo,role=thumb] Titlelidoo
 
-== Big section 1
+image::reveal-logo.png[Reveal.js logo,100,100]
 
-* Kikoo
-* Kaka
-* Koko
+A tale of how I converted asciidocs to single-page HTML presentations.
+
+== What I had with me
+
+* A goal
+* Lots of time
+* No second thoughts
 
 == Big section 2
 
