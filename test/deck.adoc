@@ -14,7 +14,7 @@ A tale of how I converted asciidocs to single-page HTML presentations.
 
 == Big section 2
 
-[source,mermaid]
+[source,mermaid,role=line-numbers]
 ----
 flowchart LR
     toto[[This is some text]]
