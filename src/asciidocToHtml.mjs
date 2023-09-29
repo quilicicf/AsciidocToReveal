@@ -1,10 +1,11 @@
 import jsdom from 'jsdom';
 import Processor from '@asciidoctor/core';
 import RevealJsPlugin from '@asciidoctor/reveal.js';
-import { $, $$, changeElementTag, createNewElement, removeFromParent } from './domUtils.mjs';
 import { basename, dirname, extname, join, resolve } from 'path';
 import { readFileSync, writeFileSync } from 'fs';
+
 import readAsBase64 from './readAsBase64.mjs';
+import { $, $$, changeElementTag, createNewElement, removeFromParent } from './domUtils.mjs';
 
 const BASE_HTML = `
   <!DOCTYPE html>

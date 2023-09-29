@@ -6,6 +6,8 @@ import { fileURLToPath } from 'url';
 import { existsSync, readFileSync, writeFileSync } from 'fs';
 import loadLanguages from 'prismjs/components/index.js';
 import Prism from 'prismjs';
+import minifyHtml from '@minify-html/node';
+
 import { asciidocToHtml } from './src/asciidocToHtml.mjs';
 import { $, $$ } from './src/domUtils.mjs';
 
@@ -22,6 +24,12 @@ const BUILT_DECK_JS_FILE_PATH = resolve(BUILD_AREA_PATH, 'deck.js');
 const BUILT_DECK_CSS_FILE_PATH = resolve(BUILD_AREA_PATH, 'deck.css');
 const OUTPUT_FILE_PATH = resolve(DIST_FOLDER_PATH, 'deck.html');
 
+const MINIFIER_CONFIGURATION = {
+  keep_spaces_between_attributes: false,
+  keep_comments: false,
+  minify_js: true,
+  minify_css: true,
+};
 const PARCEL_CONFIGURATION = {
   entries: [ DECK_JS_FILE_PATH ],
   mode: 'production',
@@ -59,7 +67,12 @@ async function main () {
     addStyleAndScript,
   ].reduce((promise, operation) => promise.then(async (seed) => operation(seed)), Promise.resolve(baseDom));
 
-  writeFileSync(OUTPUT_FILE_PATH, finalDom.serialize(), 'utf8');
+  const unMinified = finalDom.serialize();
+  const minified = minifyHtml.minify(
+    Buffer.from(unMinified),
+    MINIFIER_CONFIGURATION,
+  ).toString('utf8');
+  writeFileSync(OUTPUT_FILE_PATH, minified, 'utf8');
 }
 
 async function highlightCode (dom) {
