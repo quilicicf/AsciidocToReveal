@@ -2,7 +2,9 @@
   "name": "@quilicicf/asciidoc-2-reveal",
   "version": "1.0.0",
   "description": "Highly opinionated Reveal.js presentation compiler",
-  "scripts": {},
+  "scripts": {
+    "start": "node scripts/watch.mjs"
+  },
   "keywords": [],
   "author": "quilicicf <quilicicf@gmail.com> (https://github.com/quilicicf)",
   "license": "Apache-2.0",
@@ -14,5 +16,8 @@
     "parcel": "2.9.3",
     "prismjs": "1.29.0",
     "reveal.js": "4.5.0"
+  },
+  "devDependencies": {
+    "chokidar": "3.5.3"
   }
 }
