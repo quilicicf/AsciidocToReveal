@@ -13,3 +13,13 @@ export function createNewElement (dom, tag, classes = [], attributes = {}) {
     .forEach(([ key, value ]) => element.setAttribute(key, value));
   return element;
 }
+
+export function changeElementTag (dom, element, newTag) {
+  const newElement = dom.window.document.createElement(newTag);
+  newElement.innerHTML = element.innerHTML;
+  element.parentNode.replaceChild(newElement, element);
+}
+
+export function removeFromParent(element) {
+  element.parentNode.removeChild(element);
+}

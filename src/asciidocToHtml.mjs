@@ -1,7 +1,7 @@
 import jsdom from 'jsdom';
 import Processor from '@asciidoctor/core';
 import RevealJsPlugin from '@asciidoctor/reveal.js';
-import { $, $$, createNewElement } from './domUtils.mjs';
+import { $, $$, changeElementTag, createNewElement, removeFromParent } from './domUtils.mjs';
 import { basename, dirname, extname, join, resolve } from 'path';
 import { readFileSync, writeFileSync } from 'fs';
 import readAsBase64 from './readAsBase64.mjs';
@@ -41,6 +41,7 @@ export function asciidocToHtml (inputPath) {
 
   return [
     insertTitleSection,
+    insertAllSections,
     inlineImages,
   ].reduce((seed, operation) => operation(document, seed, inputFolder), new jsdom.JSDOM(BASE_HTML));
 }
@@ -59,6 +60,37 @@ function insertTitleSection (document, dom) {
   const preambleDoc = document.blocks[ 0 ];
   $(dom, '#deck-title')
     .insertAdjacentHTML('beforeend', preambleDoc.convert());
+
+  return dom;
+}
+
+function insertAllSections (document, dom) {
+  const [ , ...nonTitleSectionDocs ] = document.blocks;
+  nonTitleSectionDocs.forEach((sectionDoc) => {
+    const sectionHtml = sectionDoc.convert();
+    const slidesNode = $(dom, '.slides');
+    slidesNode
+      .insertAdjacentHTML('beforeend', sectionHtml);
+    if (sectionHtml.includes('sect2')) { // Has subsections
+      const topLevelSectionAsDiv = $(dom, 'div.sect1');
+      const subSectionsAsDivs = $$(dom, 'div.sect2');
+
+      // Cleanup
+      slidesNode.removeChild(topLevelSectionAsDiv);
+      subSectionsAsDivs.forEach((subSectionAsDiv) => removeFromParent(subSectionAsDiv));
+
+      // Create wrapping section
+      const wrappingSection = createNewElement(dom, 'section');
+      slidesNode.appendChild(wrappingSection);
+
+      // Re-add sections
+      wrappingSection.appendChild(topLevelSectionAsDiv);
+      wrappingSection.appendChild(...subSectionsAsDivs);
+    }
+
+    $$(dom, 'div.sect1,div.sect2')
+      .forEach((sectionAsDiv) => changeElementTag(dom, sectionAsDiv, 'section'));
+  });
 
   return dom;
 }
@@ -112,7 +144,7 @@ function inlineImages (document, dom, inputFolder) {
   }
 
   const css = Object.values(images)
-    .reduce((seed, image) => `${seed} .${image.cssClass} { display: inline-block; background-size: cover; Pobackground-image: url('${image.dataUri}'); }`, '');
+    .reduce((seed, image) => `${seed} .${image.cssClass} { display: inline-block; background-size: cover; background-image: url('${image.dataUri}'); }`, '');
 
   $$(dom, '.image,.imageblock')
     .forEach((parentNode) => {
