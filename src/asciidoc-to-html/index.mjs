@@ -4,7 +4,8 @@ import RevealJsPlugin from '@asciidoctor/reveal.js';
 import { basename, dirname, extname, join, resolve } from 'path';
 import { writeFileSync } from 'fs';
 
-import { $, $$, changeElementTag, createNewElement, readFileToDataUri, removeFromParent } from './domUtils.mjs';
+import { $, $$, changeElementTag, createNewElement, readFileToDataUri, removeFromParent } from '../domUtils.mjs';
+import processBlocksRecursively from './processBlocksRecursively.mjs';
 
 const BASE_HTML = `
   <!DOCTYPE html>
@@ -35,7 +36,7 @@ const IMAGES_CSS = `
   }
 `;
 
-export function asciidocToHtml (inputPath) {
+export function index (inputPath) {
   const inputFolder = dirname(inputPath);
   const processor = new Processor();
   RevealJsPlugin.register();
@@ -43,13 +44,18 @@ export function asciidocToHtml (inputPath) {
   const html = processor.convertFile(inputPath, { standalone: true, backend: 'html', to_file: false });
   writeFileSync('/tmp/deck.html', html, 'utf8');
 
+  const baseDom = new jsdom.JSDOM(BASE_HTML);
   return [
     insertTitleSection,
     insertOtherSections,
-    inlineImages,
-  ].reduce((seed, operation) => operation(document, seed, inputFolder), new jsdom.JSDOM(BASE_HTML));
+    embedImages,
+    fixupCodeBlocks,
+  ].reduce((seed, operation) => operation(document, seed, inputFolder), baseDom);
 }
 
+/**
+ * Takes the header of the asciidoc file and creates a title section for it.
+ */
 function insertTitleSection (document, dom) {
   const titleDoc = document.getDocumentTitle();
   $(dom, 'h1')
@@ -68,6 +74,13 @@ function insertTitleSection (document, dom) {
   return dom;
 }
 
+/**
+ * Finds all the sections (other than title, see above) and creates section tags for them in the HTML.
+ * Note: the asciidoc and HTML format don't have the same topology!
+ *       In Asciidoc, the sections are appended one after another.
+ *       In HTML, a section tag must contain the h2-level section and all children h3-level sections.
+ *       This requires re-working the structure of the page.
+ */
 function insertOtherSections (document, dom) {
   const [ , ...nonTitleSectionDocs ] = document.blocks;
   nonTitleSectionDocs.forEach((sectionDoc) => {
@@ -99,7 +112,14 @@ function insertOtherSections (document, dom) {
   return dom;
 }
 
-function inlineImages (document, dom, inputFolder) {
+/**
+ * Finds all the images in the original asciidoc file and embeds them in a CSS stylesheet.
+ * Each file is assigned a unique CSS class based on its name and each use of the file is replaced
+ * with an HTML element applying the image with the CSS associated with the class.
+ *
+ * This allows embedding all images in the HTML file without repeating images multiple times.
+ */
+function embedImages (document, dom, inputFolder) {
   const images = document.getImages()
     .reduce(
       (seed, image) => {
@@ -147,6 +167,25 @@ function inlineImages (document, dom, inputFolder) {
 
   $(dom, 'head')
     .insertAdjacentHTML('beforeend', `<style id="CSS_IMAGES">${IMAGES_CSS}${css}</style>`);
+
+  return dom;
+}
+
+/**
+ * Asciidoctor wrongfully escapes HTML characters in the code blocks.
+ * This breaks the keep markup PrismJS plugin which allows showing code fragment per fragment.
+ * This method read the real code from the original asciidoc file and fixes the code blocks in the HTML.
+ */
+function fixupCodeBlocks (document, dom) {
+  const state = { codeBlockIndex: 0 };
+  processBlocksRecursively(
+    document,
+    (block) => {
+      if (block.content_model !== 'verbatim') { return; }
+      const correspondingHtmlCodeBlock = $$(dom, 'code')[ state.codeBlockIndex++ ];
+      correspondingHtmlCodeBlock.innerHTML = block.lines.join('\n');
+    },
+  );
 
   return dom;
 }

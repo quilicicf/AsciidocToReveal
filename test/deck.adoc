@@ -14,11 +14,11 @@ A tale of how I converted asciidocs to single-page HTML presentations.
 
 == Big section 2
 
-[source,mermaid,role=line-numbers]
+[source,mermaid,role="line-numbers keep-markup"]
 ----
 flowchart LR
-    toto[[This is some text]]
-    toto --> tata
+    <span class="fragment">toto[[This is some text]]</span>
+    <span class="fragment">toto --> tata</span>
 ----
 
 === Small section

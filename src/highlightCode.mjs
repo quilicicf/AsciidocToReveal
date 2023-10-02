@@ -14,6 +14,11 @@ const PRISM_PLUGINS = {
     additionalCss: `pre.highlight.line-numbers code { overflow: unset; }`,
     pluginPath: 'prismjs/plugins/line-numbers/prism-line-numbers.js',
   },
+  'keep-markup': {
+    cssPath: undefined,
+    additionalCss: '',
+    pluginPath: 'prismjs/plugins/keep-markup/prism-keep-markup.js',
+  },
 };
 
 export async function highlightCode (dom) {
@@ -40,14 +45,11 @@ async function prepareHighlighting (dom, pluginsToActivate) {
   global.document = dom.window.document; // NOTE: required for Prism plugins, emulates a browser environment
   global.getComputedStyle = window.getComputedStyle; // Line-numbers plugin uses it as if in a browser => window instead of global
 
-  // $$(dom, 'code')
-  //   .forEach((element) => element.children.length = element?.childNodes?.length); // FIXME: Keep markup plugin expects that
-
   const pluginsCss = await pluginsToActivate
     .reduce(
       (promise, plugin) => promise.then(async (seed) => {
         await import(plugin.pluginPath);
-        const pluginCss = readFileSync(plugin.cssPath, 'utf8');
+        const pluginCss = plugin.cssPath ? readFileSync(plugin.cssPath, 'utf8') : '';
         return `${seed}${pluginCss}${plugin.additionalCss}`;
       }),
       Promise.resolve(''),

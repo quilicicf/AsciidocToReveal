@@ -5,7 +5,7 @@ import { resolve } from 'path';
 import { existsSync, readFileSync, writeFileSync } from 'fs';
 import minifyHtml from '@minify-html/node';
 
-import { asciidocToHtml } from './asciidocToHtml.mjs';
+import { index } from './asciidoc-to-html/index.mjs';
 import { $ } from './domUtils.mjs';
 import { highlightCode } from './highlightCode.mjs';
 import { BUILD_AREA_PATH, DIST_FOLDER_PATH, LIB_FOLDER, REPOSITORY_ROOT_PATH } from './folders.mjs';
@@ -50,7 +50,7 @@ export async function asciidocToReveal (inputPath) {
     await new Parcel(PARCEL_CONFIGURATION).run();
   }
 
-  const baseDom = asciidocToHtml(inputPath);
+  const baseDom = index(inputPath);
   const finalDom = await [
     highlightCode,
     addRevealJs,
