@@ -19,8 +19,9 @@ A tale of how I converted asciidocs to single-page HTML presentations.
 * Layouts [COMING SOON]
 * Light/dark themes [COMING SOON]
 * Code highlight
-* Mermaid graphs [COMING SOON]
+* Mermaid graphs
 * Custom JS/CSS [COMING SOON]
+* Parameterization [COMING SOON]
 * My favorite boilerplate
 
 == Simpler than HTML
@@ -28,7 +29,48 @@ A tale of how I converted asciidocs to single-page HTML presentations.
 * Needed a markup language
 * Asciidoc > Markdown
 
-== Code highlight features
+== Self-sufficient HTML
+
+* Embed all dependencies (once)
+* Including binary files!
+* Solution: data-URIs!
+
+[source,html]
+--
+<head>
+  <title>My presentation</title>
+  <style>
+    .img-reveal-logo {
+      display: inline-block;
+      background-size: cover;
+      background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQIAAA...');
+    }
+  </style>
+</head>
+<body>
+  <span class="img-reveal-logo" style="width: 20px; height: 20px;"></span>
+</body>
+--
+
+== Smallest possible HTML
+
+* Static HTML
+* Minimal CSS & JS
+* Minification
+
+== Emojis
+
+`[COMING SOON]`
+
+== Layouts
+
+`[COMING SOON]`
+
+== Light/dark themes
+
+`[COMING SOON]`
+
+== Code highlight
 
 * Beautiful code
 * Show line numbers
@@ -85,7 +127,26 @@ flowchart LR
     animationCode:::output --> animatedSvgCode
 ----
 
+== Custom JS/CSS
+
+`[COMING SOON]`
+
+== Parameterization
+
+`[COMING SOON]`
+
+== My favorite boilerplate
+
+* Default styles & colors
+* Deck-per-deck accent colors
+* Reveal configuration via query parameters
+
 == Failed attempts
 
 * Bundle a Reveal.js deck
 * Create Parcel transformer
+* Use the official Asciidoc-Reveal plugin
+
+== Q&A
+
+So, did ya like it?

@@ -181,7 +181,14 @@ function fixupCodeBlocks (document, dom) {
   processBlocksRecursively(
     document,
     (block) => {
-      if (block.content_model !== 'verbatim') { return; }
+      const isSourceCode = block.content_model === 'verbatim';
+      const hasHtmlEncodedEntities = [ 'html', 'xhtml', 'xml' ].includes(block.getAttribute('language'));
+      if (!isSourceCode) {
+        return;
+      } else if (hasHtmlEncodedEntities) {
+        state.codeBlockIndex++; // Otherwise... oopsie!
+        return;
+      }
       const correspondingHtmlCodeBlock = $$(dom, 'code')[ state.codeBlockIndex++ ];
       correspondingHtmlCodeBlock.innerHTML = block.getSource();
     },
