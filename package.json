@@ -11,6 +11,7 @@
   "dependencies": {
     "@asciidoctor/core": "2.2.6",
     "@asciidoctor/reveal.js": "5.0.1",
+    "@mermaid-js/mermaid-cli": "10.4.0",
     "@minify-html/node": "0.11.1",
     "jsdom": "22.1.0",
     "parcel": "2.9.3",

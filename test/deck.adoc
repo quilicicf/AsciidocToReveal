@@ -1,8 +1,6 @@
 :imagesdir: assets
 
-= image:asciidoc-logo.svg[Asciidoc logo,role=thumb] Titlelidoo
-
-image::reveal-logo.png[Reveal.js logo,100,100]
+= image:asciidoc-logo.svg[Asciidoc logo,role=thumb] => image:reveal-logo.png[Reveal.js logo,role=thumb]
 
 A tale of how I converted asciidocs to single-page HTML presentations.
 
@@ -12,7 +10,31 @@ A tale of how I converted asciidocs to single-page HTML presentations.
 * Lots of time
 * No second thoughts
 
-== Big section 2
+== Features I wanted
+
+* Simpler than HTML
+* Self-sufficient HTML
+* Smallest possible HTML
+* Emojis [COMING SOON]
+* Layouts [COMING SOON]
+* Light/dark themes [COMING SOON]
+* Code highlight
+* Mermaid graphs [COMING SOON]
+* Custom JS/CSS [COMING SOON]
+* My favorite boilerplate
+
+== Simpler than HTML
+
+* Needed a markup language
+* Asciidoc > Markdown
+
+== Code highlight features
+
+* Beautiful code
+* Show line numbers
+* Display code bit-by-bit
+
+=== Code highlight - example
 
 [source,mermaid,role="line-numbers keep-markup"]
 ----
@@ -21,14 +43,49 @@ flowchart LR
     <span class="fragment">toto --> tata</span>
 ----
 
-=== Small section
+== Mermaid graphs
 
-Smallish
+* Write mermaid code, get graph
+* Support dark/light themes [COMING SOON]
+* Display bit-by-bit [COMING SOON]
 
-[source,json]
+=== Mermaid graphs - example
+
+[source,mermaid]
 ----
-{
-  "titi": "toto",
-  "tata": null
-}
+flowchart LR
+    subgraph AsciidocToReveal
+        subgraph Mermaid
+            mermaidCode[Mermaid code]
+            svgCode[SVG code]
+        end
+        animationCode[JSON description of how to animate graph]
+        animatedSvgCode[Animated graph]
+    end
+
+    mermaidCode:::input --> svgCode
+    svgCode --> animatedSvgCode
+    animationCode:::output --> animatedSvgCode
 ----
+
+[source,mermaid,role="graph graph-id-flowchart"]
+----
+flowchart LR
+    subgraph AsciidocToReveal
+        subgraph Mermaid
+            mermaidCode[Mermaid code]
+            svgCode[SVG code]
+        end
+        animationCode[JSON description of how to animate graph]
+        animatedSvgCode[Animated graph]
+    end
+
+    mermaidCode:::input --> svgCode
+    svgCode --> animatedSvgCode
+    animationCode:::output --> animatedSvgCode
+----
+
+== Failed attempts
+
+* Bundle a Reveal.js deck
+* Create Parcel transformer

@@ -36,7 +36,7 @@ const IMAGES_CSS = `
   }
 `;
 
-export function index (inputPath) {
+export function asciidocToHtml (inputPath) {
   const inputFolder = dirname(inputPath);
   const processor = new Processor();
   RevealJsPlugin.register();
@@ -183,7 +183,7 @@ function fixupCodeBlocks (document, dom) {
     (block) => {
       if (block.content_model !== 'verbatim') { return; }
       const correspondingHtmlCodeBlock = $$(dom, 'code')[ state.codeBlockIndex++ ];
-      correspondingHtmlCodeBlock.innerHTML = block.lines.join('\n');
+      correspondingHtmlCodeBlock.innerHTML = block.getSource();
     },
   );
 
