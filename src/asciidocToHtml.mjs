@@ -2,10 +2,9 @@ import jsdom from 'jsdom';
 import Processor from '@asciidoctor/core';
 import RevealJsPlugin from '@asciidoctor/reveal.js';
 import { basename, dirname, extname, join, resolve } from 'path';
-import { readFileSync, writeFileSync } from 'fs';
+import { writeFileSync } from 'fs';
 
-import readAsBase64 from './readAsBase64.mjs';
-import { $, $$, changeElementTag, createNewElement, removeFromParent } from './domUtils.mjs';
+import { $, $$, changeElementTag, createNewElement, readFileToDataUri, removeFromParent } from './domUtils.mjs';
 
 const BASE_HTML = `
   <!DOCTYPE html>
@@ -29,7 +28,11 @@ const BASE_HTML = `
 `;
 
 const IMAGES_CSS = `
-  .image.thumb span[class^=img-] { width: 1em; height: 1em; vertical-align: text-bottom; }
+  .image.thumb span[class^=img-] { 
+    width: 1em; 
+    height: 1em; 
+    vertical-align: text-bottom; 
+  }
 `;
 
 export function asciidocToHtml (inputPath) {
@@ -42,7 +45,7 @@ export function asciidocToHtml (inputPath) {
 
   return [
     insertTitleSection,
-    insertAllSections,
+    insertOtherSections,
     inlineImages,
   ].reduce((seed, operation) => operation(document, seed, inputFolder), new jsdom.JSDOM(BASE_HTML));
 }
@@ -65,7 +68,7 @@ function insertTitleSection (document, dom) {
   return dom;
 }
 
-function insertAllSections (document, dom) {
+function insertOtherSections (document, dom) {
   const [ , ...nonTitleSectionDocs ] = document.blocks;
   nonTitleSectionDocs.forEach((sectionDoc) => {
     const sectionHtml = sectionDoc.convert();
@@ -96,25 +99,6 @@ function insertAllSections (document, dom) {
   return dom;
 }
 
-function toDataUri (type, path) {
-  switch (type) {
-    case 'svg':
-      const imageText = readFileSync(path, 'utf8')
-        .replaceAll(/width="[^"]+"/g, '')
-        .replaceAll(/height="[^"]+"/g, '')
-        .replaceAll('?', '%3F')
-        .replaceAll('#', '%23')
-        .replaceAll('\n', '')
-        .replaceAll(/\s+/g, ' ');
-      return `data:image/svg+xml,${imageText}`;
-    case 'png':
-      const imageBase64 = readAsBase64(path);
-      return `data:image/${type};base64,${imageBase64}`;
-    default:
-      throw Error(`Unsupported image type: ${type}`);
-  }
-}
-
 function inlineImages (document, dom, inputFolder) {
   const images = document.getImages()
     .reduce(
@@ -126,7 +110,7 @@ function inlineImages (document, dom, inputFolder) {
         const cssClass = `img-${id}`;
         const imageRelativePath = join(image.getImagesDirectory(), name);
         const imageAbsolutePath = resolve(inputFolder, imageRelativePath);
-        const dataUri = toDataUri(type, imageAbsolutePath);
+        const dataUri = readFileToDataUri(type, imageAbsolutePath);
         return {
           ...seed,
           [ name ]: { id, cssClass, name, type, dataUri },
