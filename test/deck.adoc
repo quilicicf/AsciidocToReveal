@@ -4,11 +4,12 @@
 
 A tale of how I converted asciidocs to single-page HTML presentations.
 
-== What I had with me
+== Why?
 
-* A goal
-* Lots of time
-* No second thoughts
+* Power-point™ + emoji:penguin[] = emoji:sob[]
+* Power-point™ is *heavy*
+* Power-point™ is no standard
+* I emoji:heart[] text
 
 == Features I wanted
 
