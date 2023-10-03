@@ -16,15 +16,15 @@ A tale of how I converted asciidocs to single-page HTML presentations.
 * Simpler than HTML
 * Self-sufficient HTML
 * Smallest possible HTML
-* Speaker notes [COMING SOON]
-* Emojis emoji:heart_eyes[]emoji:heart_eyes[1.2,em]emoji:heart_eyes[]
+* Speaker notes
+* Layouts
 * Code highlight
 * Mermaid graphs
 * My favorite boilerplate
+* Emojis emoji:heart_eyes[]emoji:heart_eyes[1.2,em]emoji:heart_eyes[]
 * Watcher to update deck [COMING SOON]
 * Custom JS/CSS [COMING SOON]
 * Parameterization [COMING SOON]
-* Layouts [COMING SOON]
 * Light/dark themes [COMING SOON]
 
 == Simpler than HTML
@@ -81,7 +81,33 @@ There are some notes on this slide!
 
 == Layouts
 
-`[COMING SOON]`
+1. Columns
+
+=== Columns
+
+[.layout-columns]
+====
+[.column-4x]
+=====
+* Twelve-parts column system
+* Used with asciidoc blocks
+=====
+
+[source,asciidoc,role="column-8x"]
+----
+[.layout-columns]
+=====
+[.column-4x]
+======
+Left block, 4 spans
+======
+[.column-8x]
+======
+Right block, 8 spans
+======
+=====
+----
+====
 
 == Light/dark themes
 
@@ -110,6 +136,10 @@ flowchart LR
 
 === Mermaid graphs - example
 
+[.layout-columns]
+====
+[.column-8x]
+=====
 [source,mermaid]
 ----
 flowchart LR
@@ -126,7 +156,24 @@ flowchart LR
     svgCode --> animatedSvgCode
     animationCode:::output --> animatedSvgCode
 ----
+[source,json5]
+----
+[
+  {
+    "selector": "#AsciidocToReveal",
+    "classes": [ "fragment" ],
+    "attributes": { "data-fragment-index": 0 }
+  },
+  { "selector": "[id^=flowchart-mermaidCode-]", "classes": [ "fragment" ], "attributes": { "data-fragment-index": 1 } },
+  { "selector": "#L-mermaidCode-svgCode-0", "classes": [ "fragment" ], "attributes": { "data-fragment-index": 2 } },
+  { "selector": "[id^=flowchart-svgCode-]", "classes": [ "fragment" ], "attributes": { "data-fragment-index": 2 } }
+  // etc...
+]
+----
+=====
 
+[.column-4x]
+=====
 [source,mermaid,role="graph graph-id-flowchart"]
 ----
 flowchart LR
@@ -162,6 +209,8 @@ flowchart LR
   { "selector": "[id^=flowchart-animatedSvgCode-]", "classes": [ "fragment" ], "attributes": { "data-fragment-index": 4 } }
 ]
 ----
+=====
+====
 
 == Custom JS/CSS
 

@@ -3,8 +3,8 @@ import Prism from 'prismjs';
 import { readFileSync } from 'fs';
 import { resolve } from 'path';
 
-import { $, $$ } from './domUtils.mjs';
-import { NODE_MODULES_PATH } from './folders.mjs';
+import { $, $$ } from '../domUtils.mjs';
+import { NODE_MODULES_PATH } from '../folders.mjs';
 
 const PRISM_CSS_PATH = resolve(NODE_MODULES_PATH, 'prismjs', 'themes', 'prism-tomorrow.css');
 

@@ -7,9 +7,10 @@ import minifyHtml from '@minify-html/node';
 
 import { asciidocToHtml } from './asciidoc-to-html/index.mjs';
 import { $ } from './domUtils.mjs';
-import { highlightCode } from './highlightCode.mjs';
+import { highlightCode } from './code/highlightCode.mjs';
 import { BUILD_AREA_PATH, DIST_FOLDER_PATH, LIB_FOLDER, REPOSITORY_ROOT_PATH } from './folders.mjs';
-import { buildGraphs } from './graphs/build-graphs.mjs';
+import { buildGraphs } from './graphs/buildGraphs.mjs';
+import applyLayouts from './layouts/applyLayouts.mjs';
 
 const DECK_JS_FILE_PATH = resolve(LIB_FOLDER, 'deck.mjs');
 const BUILT_DECK_JS_FILE_PATH = resolve(BUILD_AREA_PATH, 'deck.js');
@@ -55,6 +56,7 @@ export async function asciidocToReveal (inputPath) {
   const finalDom = await [
     buildGraphs,
     highlightCode,
+    applyLayouts,
     addRevealJs,
   ].reduce((promise, operation) => promise.then(async (seed) => operation(seed)), Promise.resolve(baseDom));
 

@@ -87,7 +87,6 @@ function animateGraph (graphId, graphNode, animationNode) {
   JSON.parse(animationCode).forEach((animation) => animateNode(graphId, graphNode, animation));
 
   removeFromParent(animationNode);
-  console.log();
 }
 
 function animateNode (graphId, graphNode, animation) {
