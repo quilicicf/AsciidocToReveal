@@ -3,8 +3,8 @@ import { resolve } from 'path';
 import { run } from '@mermaid-js/mermaid-cli';
 import { existsSync, readFileSync, writeFileSync } from 'fs';
 
-import { BUILD_AREA_PATH } from './folders.mjs';
-import { $$ } from './domUtils.mjs';
+import { BUILD_AREA_PATH } from '../folders.mjs';
+import { $, $$, removeFromParent } from '../domUtils.mjs';
 
 const MERMAID_CONFIGURATION = {
   quiet: true,
@@ -47,7 +47,13 @@ async function processGraph (dom, graphContainerNode, graphIndex) {
     .find((clazz) => clazz.startsWith('graph-id-')) || `graph-id-${graphIndex}`;
 
   const graphCode = graphNode.innerHTML.replaceAll('&gt;', '>'); // Auto-replaced by JSDom when injected in the code block!
-  graphNode.outerHTML = await mermaidToSvg(graphId, graphCode);
+  graphContainerNode.innerHTML = await mermaidToSvg(graphId, graphCode);
+  const newGraphNode = graphContainerNode.childNodes[ 0 ];
+
+  const animationNode = $(dom, `.graph-animation.${graphId}`);
+  if (animationNode) {
+    animateGraph(graphId, newGraphNode, animationNode);
+  }
 
   return dom;
 }
@@ -72,4 +78,26 @@ async function mermaidToSvg (graphId, graphCode) {
   }
 
   return readFileSync(outputFilePath, 'utf8');
+}
+
+function animateGraph (graphId, graphNode, animationNode) {
+  const animationCodeNode = animationNode.querySelector('code');
+  const animationCode = animationCodeNode.innerHTML;
+
+  JSON.parse(animationCode).forEach((animation) => animateNode(graphId, graphNode, animation));
+
+  removeFromParent(animationNode);
+  console.log();
+}
+
+function animateNode (graphId, graphNode, animation) {
+  const elementToAnimate = graphNode.querySelector(animation.selector);
+  if (!elementToAnimate) {
+    console.warn(`Could not animate element ${animation.selector} in graph ${graphId}, not found.`);
+    return;
+  }
+
+  elementToAnimate.classList.add(...animation.classes);
+  Object.entries(animation.attributes)
+    .forEach(([ key, value ]) => elementToAnimate.setAttribute(key, value));
 }

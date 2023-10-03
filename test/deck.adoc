@@ -104,9 +104,9 @@ flowchart LR
 
 == Mermaid graphs
 
-* Write mermaid code, get graph
+* Mermaid code => SVG graph
+* Display bit-by-bit
 * Support dark/light themes [COMING SOON]
-* Display bit-by-bit [COMING SOON]
 
 === Mermaid graphs - example
 
@@ -142,6 +142,25 @@ flowchart LR
     mermaidCode:::input --> svgCode
     svgCode --> animatedSvgCode
     animationCode:::output --> animatedSvgCode
+----
+
+[source,json,role="graph-animation graph-id-flowchart"]
+----
+[
+  { "selector": "#AsciidocToReveal", "classes": [ "fragment" ], "attributes": { "data-fragment-index": 0 } },
+  { "selector": "#Mermaid", "classes": [ "fragment" ], "attributes": { "data-fragment-index": 0 } },
+
+  { "selector": "[id^=flowchart-mermaidCode-]", "classes": [ "fragment" ], "attributes": { "data-fragment-index": 1 } },
+
+  { "selector": "#L-mermaidCode-svgCode-0", "classes": [ "fragment" ], "attributes": { "data-fragment-index": 2 } },
+  { "selector": "[id^=flowchart-svgCode-]", "classes": [ "fragment" ], "attributes": { "data-fragment-index": 2 } },
+
+  { "selector": "[id^=flowchart-animationCode-]", "classes": [ "fragment" ], "attributes": { "data-fragment-index": 3 } },
+
+  { "selector": "#L-svgCode-animatedSvgCode-0", "classes": [ "fragment" ], "attributes": { "data-fragment-index": 4 } },
+  { "selector": "#L-animationCode-animatedSvgCode-0", "classes": [ "fragment" ], "attributes": { "data-fragment-index": 4 } },
+  { "selector": "[id^=flowchart-animatedSvgCode-]", "classes": [ "fragment" ], "attributes": { "data-fragment-index": 4 } }
+]
 ----
 
 == Custom JS/CSS

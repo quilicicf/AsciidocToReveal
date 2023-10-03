@@ -9,7 +9,7 @@ import { asciidocToHtml } from './asciidoc-to-html/index.mjs';
 import { $ } from './domUtils.mjs';
 import { highlightCode } from './highlightCode.mjs';
 import { BUILD_AREA_PATH, DIST_FOLDER_PATH, LIB_FOLDER, REPOSITORY_ROOT_PATH } from './folders.mjs';
-import { buildGraphs } from './build-graphs.mjs';
+import { buildGraphs } from './graphs/build-graphs.mjs';
 
 const DECK_JS_FILE_PATH = resolve(LIB_FOLDER, 'deck.mjs');
 const BUILT_DECK_JS_FILE_PATH = resolve(BUILD_AREA_PATH, 'deck.js');
