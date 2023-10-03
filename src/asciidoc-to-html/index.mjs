@@ -175,7 +175,10 @@ function embedImages (document, dom, inputFolder) {
  * This method read the real code from the original asciidoc file and fixes the code blocks in the HTML.
  */
 function fixupCodeBlocks (document, dom) {
-  const state = { codeBlockIndex: 0 };
+  const state = {
+    codeBlockIndex: 0,
+    multilineCodeBlocks: $$(dom, 'pre code'),
+  };
   processBlocksRecursively(
     document,
     (block) => {
@@ -187,7 +190,7 @@ function fixupCodeBlocks (document, dom) {
         state.codeBlockIndex++; // Otherwise... oopsie!
         return;
       }
-      const correspondingHtmlCodeBlock = $$(dom, 'code')[ state.codeBlockIndex++ ];
+      const correspondingHtmlCodeBlock = state.multilineCodeBlocks[ state.codeBlockIndex++ ];
       correspondingHtmlCodeBlock.innerHTML = block.getSource();
     },
   );
