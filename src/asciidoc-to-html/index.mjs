@@ -1,6 +1,5 @@
 import jsdom from 'jsdom';
 import Processor from '@asciidoctor/core';
-import RevealJsPlugin from '@asciidoctor/reveal.js';
 import { basename, dirname, extname, join, resolve } from 'path';
 import { writeFileSync } from 'fs';
 
@@ -39,7 +38,6 @@ const IMAGES_CSS = `
 export function asciidocToHtml (inputPath) {
   const inputFolder = dirname(inputPath);
   const processor = new Processor();
-  RevealJsPlugin.register();
   const document = processor.loadFile(inputPath, { catalog_assets: true });
   const html = processor.convertFile(inputPath, { standalone: true, backend: 'html', to_file: false });
   writeFileSync('/tmp/deck.html', html, 'utf8');
