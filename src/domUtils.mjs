@@ -28,17 +28,25 @@ export function removeFromParent (element) {
   element.parentNode.removeChild(element);
 }
 
+export function replaceInParent (element, newElement) {
+  element.parentNode.replaceChild(newElement, element);
+}
+
+function toSvgDataUri (content) {
+  const imageText = content
+    .replaceAll(/width="[^"]+"/g, '')
+    .replaceAll(/height="[^"]+"/g, '')
+    .replaceAll('?', '%3F')
+    .replaceAll('#', '%23')
+    .replaceAll('\n', '')
+    .replaceAll(/\s+/g, ' ');
+  return `data:image/svg+xml,${imageText}`;
+}
+
 export function readFileToDataUri (type, filePath) {
   switch (type) {
     case 'svg':
-      const imageText = readFileSync(filePath, 'utf8')
-        .replaceAll(/width="[^"]+"/g, '')
-        .replaceAll(/height="[^"]+"/g, '')
-        .replaceAll('?', '%3F')
-        .replaceAll('#', '%23')
-        .replaceAll('\n', '')
-        .replaceAll(/\s+/g, ' ');
-      return `data:image/svg+xml,${imageText}`;
+      return toSvgDataUri(readFileSync(filePath, 'utf8'));
     case 'png':
       const imageBase64 = readAsBase64(filePath);
       return `data:image/${type};base64,${imageBase64}`;

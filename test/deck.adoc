@@ -15,7 +15,8 @@ A tale of how I converted asciidocs to single-page HTML presentations.
 * Simpler than HTML
 * Self-sufficient HTML
 * Smallest possible HTML
-* Emojis [COMING SOON]
+* Support speaker notes [COMING SOON]
+* Emojis emoji:heart_eyes[]emoji:heart_eyes[1.2,em]emoji:heart_eyes[]
 * Layouts [COMING SOON]
 * Light/dark themes [COMING SOON]
 * Code highlight
@@ -23,6 +24,7 @@ A tale of how I converted asciidocs to single-page HTML presentations.
 * Custom JS/CSS [COMING SOON]
 * Parameterization [COMING SOON]
 * My favorite boilerplate
+* Watcher to update deck [COMING SOON]
 
 == Simpler than HTML
 
@@ -58,9 +60,15 @@ A tale of how I converted asciidocs to single-page HTML presentations.
 * Minimal CSS & JS
 * Minification
 
-== Emojis
+== Support speaker notes
 
 `[COMING SOON]`
+
+== Emojis
+
+* Asciidoctor extension
+* SVGs fetched on the net
+* Embedded like images
 
 == Layouts
 

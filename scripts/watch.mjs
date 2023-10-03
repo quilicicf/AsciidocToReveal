@@ -15,7 +15,7 @@ const chokidarOptions = {
 };
 
 async function main () {
-  const srcFilesGlob = join('src', '*');
+  const srcFilesGlob = join('src', '**', '*');
   const libFilesGlob = join('lib', '*');
   const deckFilePath = join('test', 'deck.adoc');
 

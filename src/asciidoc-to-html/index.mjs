@@ -1,9 +1,9 @@
 import jsdom from 'jsdom';
 import Processor from '@asciidoctor/core';
 import { basename, dirname, extname, join, resolve } from 'path';
-import { writeFileSync } from 'fs';
 
-import { $, $$, changeElementTag, createNewElement, readFileToDataUri, removeFromParent } from '../domUtils.mjs';
+import { register } from './emojis/asciidoctor-emojis.mjs';
+import { $, $$, changeElementTag, createNewElement, readFileToDataUri, removeFromParent, replaceInParent } from '../domUtils.mjs';
 import processBlocksRecursively from './processBlocksRecursively.mjs';
 
 const BASE_HTML = `
@@ -38,17 +38,19 @@ const IMAGES_CSS = `
 export function asciidocToHtml (inputPath) {
   const inputFolder = dirname(inputPath);
   const processor = new Processor();
+  const emojisRegister = register(processor.Extensions);
   const document = processor.loadFile(inputPath, { catalog_assets: true });
-  const html = processor.convertFile(inputPath, { standalone: true, backend: 'html', to_file: false });
-  writeFileSync('/tmp/deck.html', html, 'utf8');
-
   const baseDom = new jsdom.JSDOM(BASE_HTML);
   return [
     insertTitleSection,
     insertOtherSections,
     embedImages,
+    embedEmojis,
     fixupCodeBlocks,
-  ].reduce((seed, operation) => operation(document, seed, inputFolder), baseDom);
+  ].reduce(
+    (promise, operation) => promise.then(async (seed) => operation(document, seed, { inputFolder, emojisRegister })),
+    Promise.resolve(baseDom),
+  );
 }
 
 /**
@@ -115,9 +117,9 @@ function insertOtherSections (document, dom) {
  * Each file is assigned a unique CSS class based on its name and each use of the file is replaced
  * with an HTML element applying the image with the CSS associated with the class.
  *
- * This allows embedding all images in the HTML file without repeating images multiple times.
+ * This allows embedding all images in the HTML file without repeating them multiple times.
  */
-function embedImages (document, dom, inputFolder) {
+function embedImages (document, dom, { inputFolder }) {
   const images = document.getImages()
     .reduce(
       (seed, image) => {
@@ -165,6 +167,54 @@ function embedImages (document, dom, inputFolder) {
 
   $(dom, 'head')
     .insertAdjacentHTML('beforeend', `<style id="CSS_IMAGES">${IMAGES_CSS}${css}</style>`);
+
+  return dom;
+}
+
+function createEmojiCss (emoji) {
+  return [
+    `.${emoji.cssClass}`,
+    /**/ `{`,
+    /*  */ `margin: 0 !important;`,
+    /*  */ `display: inline-block;`,
+    /*  */ `vertical-align: middle;`,
+    /*  */ `background-size: cover;`,
+    /*  */ `background-image: url('${emoji.dataUri}');`,
+    /**/ `}`,
+  ].join(' ');
+}
+
+/**
+ * Finds all the emojis in the original asciidoc file and embeds them in a CSS stylesheet.
+ * Each emoji is assigned a unique CSS class based on its name and each use of the file is replaced
+ * with an HTML element applying the emoji with the CSS associated with the class.
+ *
+ * This allows embedding all emojis in the HTML file without repeating them multiple times.
+ */
+async function embedEmojis (document, dom, { emojisRegister }) {
+  const emojisAsArray = await Promise.all(
+    Object.entries(emojisRegister)
+      .map(async ([ name, metadata ]) => {
+        await metadata.fetcher; // Possibly still calling the server to get the SVG
+        return { name, cssClass: metadata.cssClass, dataUri: readFileToDataUri('svg', metadata.filePath) };
+      }),
+  );
+  const emojis = emojisAsArray.reduce((seed, emoji) => ({ ...seed, [ emoji.name ]: emoji }), {});
+
+  const css = emojisAsArray
+    .reduce((seed, emoji) => `${seed} ${createEmojiCss(emoji)}`, '');
+  $(dom, 'head')
+    .insertAdjacentHTML('beforeend', `<style id="CSS_EMOJIS">${css}</style>`);
+
+  $$(dom, '.emoji')
+    .forEach((parentNode) => {
+      const imgNode = parentNode.querySelector('img');
+      const emojiName = imgNode.alt;
+      const cssClass = emojis[ emojiName ].cssClass;
+      const style = `width: ${imgNode.getAttribute('width')}; height: ${imgNode.getAttribute('height')}`;
+      const newImgNode = createNewElement(dom, 'span', [ cssClass ], { style, role: 'image' });
+      replaceInParent(imgNode, newImgNode);
+    });
 
   return dom;
 }
