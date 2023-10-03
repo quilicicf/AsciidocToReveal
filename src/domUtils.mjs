@@ -21,6 +21,8 @@ export function createNewElement (dom, tag, classes = [], attributes = {}) {
 export function changeElementTag (dom, element, newTag) {
   const newElement = dom.window.document.createElement(newTag);
   newElement.innerHTML = element.innerHTML;
+  [ ...element.classList.values() ]
+    .forEach((className) => newElement.classList.add(className));
   element.parentNode.replaceChild(newElement, element);
 }
 

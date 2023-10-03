@@ -47,6 +47,7 @@ export function asciidocToHtml (inputPath) {
     embedImages,
     embedEmojis,
     fixupCodeBlocks,
+    extractSpeakerNotes,
   ].reduce(
     (promise, operation) => promise.then(async (seed) => operation(document, seed, { inputFolder, emojisRegister })),
     Promise.resolve(baseDom),
@@ -245,5 +246,11 @@ function fixupCodeBlocks (document, dom) {
     },
   );
 
+  return dom;
+}
+
+function extractSpeakerNotes (document, dom) {
+  $$(dom, '.notes')
+    .forEach((notesNode) => changeElementTag(dom, notesNode, 'aside'));
   return dom;
 }

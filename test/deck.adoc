@@ -15,16 +15,16 @@ A tale of how I converted asciidocs to single-page HTML presentations.
 * Simpler than HTML
 * Self-sufficient HTML
 * Smallest possible HTML
-* Support speaker notes [COMING SOON]
+* Speaker notes [COMING SOON]
 * Emojis emoji:heart_eyes[]emoji:heart_eyes[1.2,em]emoji:heart_eyes[]
-* Layouts [COMING SOON]
-* Light/dark themes [COMING SOON]
 * Code highlight
 * Mermaid graphs
-* Custom JS/CSS [COMING SOON]
-* Parameterization [COMING SOON]
 * My favorite boilerplate
 * Watcher to update deck [COMING SOON]
+* Custom JS/CSS [COMING SOON]
+* Parameterization [COMING SOON]
+* Layouts [COMING SOON]
+* Light/dark themes [COMING SOON]
 
 == Simpler than HTML
 
@@ -60,9 +60,17 @@ A tale of how I converted asciidocs to single-page HTML presentations.
 * Minimal CSS & JS
 * Minification
 
-== Support speaker notes
+== Speaker notes
 
-`[COMING SOON]`
+There are some notes on this slide!
+
+[.notes]
+====
+* Aaaaaand
+* They
+* Are
+* Here
+====
 
 == Emojis
 
