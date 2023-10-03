@@ -9,13 +9,13 @@
   "author": "quilicicf <quilicicf@gmail.com> (https://github.com/quilicicf)",
   "license": "Apache-2.0",
   "dependencies": {
-    "@asciidoctor/core": "2.2.6",
+    "@asciidoctor/core": "3.0.2",
     "@mermaid-js/mermaid-cli": "10.4.0",
     "@minify-html/node": "0.11.1",
     "jsdom": "22.1.0",
     "parcel": "2.9.3",
     "prismjs": "1.29.0",
-    "reveal.js": "4.5.0"
+    "reveal.js": "4.6.1"
   },
   "devDependencies": {
     "chokidar": "3.5.3"
