@@ -2,9 +2,12 @@ import loadLanguages from 'prismjs/components/index.js';
 import Prism from 'prismjs';
 import { readFileSync } from 'fs';
 import { resolve } from 'path';
+import { stoyle } from 'stoyle';
 
 import { $, $$ } from '../domUtils.mjs';
 import { NODE_MODULES_PATH } from '../folders.mjs';
+import { logInfo } from '../log.mjs';
+import theme from '../theme.mjs';
 
 const PRISM_CSS_PATH = resolve(NODE_MODULES_PATH, 'prismjs', 'themes', 'prism-tomorrow.css');
 
@@ -32,7 +35,7 @@ export async function highlightCode (dom) {
 
   if (!languages.length) { return dom; }
 
-  console.info(`Highlighting languages: [ ${languages.join(', ')} ]`);
+  logInfo(stoyle`Highlighting languages: [ ${languages.join(', ')} ]`({ nodes: [ theme.strong ] }));
   loadLanguages(languages);
 
   const pluginsToActivate = Object.entries(PRISM_PLUGINS)

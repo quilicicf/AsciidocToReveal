@@ -1,10 +1,13 @@
 import jsdom from 'jsdom';
+import { stoyle } from 'stoyle';
 import Processor from '@asciidoctor/core';
 import { basename, dirname, extname, join, resolve } from 'path';
 
 import { register } from './emojis/asciidoctor-emojis.mjs';
 import { $, $$, changeElementTag, createNewElement, readFileToDataUri, removeFromParent, replaceInParent } from '../domUtils.mjs';
 import processBlocksRecursively from './processBlocksRecursively.mjs';
+import theme from '../theme.mjs';
+import { logWarn } from '../log.mjs';
 
 const BASE_HTML = `
   <!DOCTYPE html>
@@ -147,7 +150,7 @@ function embedImages (document, dom, { inputFolder }) {
   if (badImageTypes.length) {
     const bad = badImageTypes.join(', ');
     const good = preferredImageTypes.join(', ');
-    console.warn(`Your deck contains inefficient image types [ ${bad} ], consider using [ ${good} ] instead`);
+    logWarn(stoyle`Your deck contains inefficient image types [ ${bad} ], consider using [ ${good} ] instead`({ nodes: [ theme.error, theme.success ] }));
   }
 
   const css = Object.values(images)

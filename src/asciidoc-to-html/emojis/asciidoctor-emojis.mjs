@@ -1,9 +1,12 @@
 import { get } from 'https';
+import { resolve } from 'path';
+import { existsSync, writeFileSync } from 'fs';
+import { stoyle } from 'stoyle';
 
 import twemojiMap from './twemojis.mjs';
-import { resolve } from 'path';
 import { BUILD_AREA_PATH } from '../../folders.mjs';
-import { existsSync, writeFileSync } from 'fs';
+import theme from '../../theme.mjs';
+import { logWarn } from '../../log.mjs';
 
 const UNITS = [ 'px', 'em' ];
 const EMOJIS = {};
@@ -65,7 +68,7 @@ function emojiInlineMacro () {
         },
       });
     }
-    console.warn(`Skipping emoji inline macro. ${emojiName} not found`);
+    logWarn(stoyle`Skipping emoji inline macro, ${emojiName} not found`({ nodes: [ theme.strong ] }));
     return self.createInline(parent, 'quoted', `[emoji ${emojiName} not found]`, attributes);
   });
 }

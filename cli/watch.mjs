@@ -1,8 +1,11 @@
 import { existsSync } from 'fs';
 import { watch } from 'chokidar';
+import { stoyle } from 'stoyle';
 
 import { asciidocToReveal } from '../src/asciidocToReveal.mjs';
 import { REPOSITORY_ROOT_PATH } from '../src/folders.mjs';
+import { logInfo } from '../src/log.mjs';
+import theme from '../src/theme.mjs';
 
 export const command = 'watch';
 export const aliases = [ 'w' ];
@@ -46,10 +49,11 @@ export async function handler (args) {
     ignoreInitial: true,
   };
 
-  console.log(`Watcher started on ${inputFile}`);
+  logInfo(stoyle`Watcher started on ${inputFile}`({ nodes: [ theme.strong ] }));
   watch([ inputFile ], chokidarOptions)
     .on('all', (event, path) => {
-      console.log(`=====================================================================\nFile ${path} received event ${event}`);
+      logInfo('=====================================================================');
+      logInfo(stoyle`File ${path} received event ${event}`({ nodes: [ theme.strong, theme.strong ] }));
       state.queue = state.queue.then(() => asciidocToReveal(inputFile, outputFile));
     });
 }

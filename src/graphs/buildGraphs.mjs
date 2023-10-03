@@ -2,9 +2,12 @@ import { createHash } from 'crypto';
 import { resolve } from 'path';
 import { run } from '@mermaid-js/mermaid-cli';
 import { existsSync, readFileSync, writeFileSync } from 'fs';
+import { stoyle } from 'stoyle';
 
 import { BUILD_AREA_PATH } from '../folders.mjs';
 import { $, $$, removeFromParent } from '../domUtils.mjs';
+import { logWarn } from '../log.mjs';
+import theme from '../theme.mjs';
 
 const MERMAID_CONFIGURATION = {
   quiet: true,
@@ -92,7 +95,7 @@ function animateGraph (graphId, graphNode, animationNode) {
 function animateNode (graphId, graphNode, animation) {
   const elementToAnimate = graphNode.querySelector(animation.selector);
   if (!elementToAnimate) {
-    console.warn(`Could not animate element ${animation.selector} in graph ${graphId}, not found.`);
+    logWarn(stoyle`Could not animate element ${animation.selector} in graph ${graphId}, not found.`({ nodes: [ theme.strong, theme.strong ] }));
     return;
   }
 

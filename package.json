@@ -20,6 +20,7 @@
     "parcel": "2.9.3",
     "prismjs": "1.29.0",
     "reveal.js": "4.6.1",
+    "stoyle": "1.0.0",
     "yargs": "17.7.2"
   },
   "devDependencies": {

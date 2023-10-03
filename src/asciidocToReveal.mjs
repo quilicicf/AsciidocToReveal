@@ -11,6 +11,7 @@ import { highlightCode } from './code/highlightCode.mjs';
 import { BUILD_AREA_PATH, DIST_FOLDER_PATH, LIB_FOLDER, REPOSITORY_ROOT_PATH } from './folders.mjs';
 import { buildGraphs } from './graphs/buildGraphs.mjs';
 import applyLayouts from './layouts/applyLayouts.mjs';
+import { logInfo } from './log.mjs';
 
 const DECK_JS_FILE_PATH = resolve(LIB_FOLDER, 'deck.mjs');
 const BUILT_DECK_JS_FILE_PATH = resolve(BUILD_AREA_PATH, 'deck.js');
@@ -48,7 +49,7 @@ export async function asciidocToReveal (inputPath, outputPath = OUTPUT_FILE_PATH
     // TODO: Rethink this.
     //       * Either the version of Reveal is fixed and these files can be pre-compiled
     //       * Or it should depend on the child project and the resolution of Node packages must evolve
-    console.log('Bundling input deck file');
+    logInfo('Bundling input deck file');
     await new Parcel(PARCEL_CONFIGURATION).run();
   }
 
