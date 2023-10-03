@@ -43,7 +43,7 @@ const PARCEL_CONFIGURATION = {
   ],
 };
 
-export async function asciidocToReveal (inputPath) {
+export async function asciidocToReveal (inputPath, outputPath = OUTPUT_FILE_PATH) {
   if (!existsSync(BUILT_DECK_JS_FILE_PATH) || !existsSync(BUILT_DECK_CSS_FILE_PATH)) {
     // TODO: Rethink this.
     //       * Either the version of Reveal is fixed and these files can be pre-compiled
@@ -65,7 +65,7 @@ export async function asciidocToReveal (inputPath) {
     Buffer.from(unMinified),
     MINIFIER_CONFIGURATION,
   ).toString('utf8');
-  writeFileSync(OUTPUT_FILE_PATH, minified, 'utf8');
+  writeFileSync(outputPath, minified, 'utf8');
 }
 
 function addRevealJs (dom) {

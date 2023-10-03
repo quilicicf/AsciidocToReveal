@@ -145,8 +145,9 @@ function embedImages (document, dom, { inputFolder }) {
     .map(({ type }) => type)
     .filter((type) => !preferredImageTypes.includes(type));
   if (badImageTypes.length) {
-    console.warn(`Your presentation contains images of inefficient types: [ ${badImageTypes} ]`);
-    console.warn(`Please consider only using more performant types: [ ${preferredImageTypes} ]`);
+    const bad = badImageTypes.join(', ');
+    const good = preferredImageTypes.join(', ');
+    console.warn(`Your deck contains inefficient image types [ ${bad} ], consider using [ ${good} ] instead`);
   }
 
   const css = Object.values(images)

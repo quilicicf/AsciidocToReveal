@@ -22,7 +22,7 @@ A tale of how I converted asciidocs to single-page HTML presentations.
 * Mermaid graphs
 * My favorite boilerplate
 * Emojis emoji:heart_eyes[]emoji:heart_eyes[1.2,em]emoji:heart_eyes[]
-* Watcher to update deck [COMING SOON]
+* CLI tool
 * Custom JS/CSS [COMING SOON]
 * Parameterization [COMING SOON]
 * Light/dark themes [COMING SOON]
@@ -73,12 +73,6 @@ There are some notes on this slide!
 * Here
 ====
 
-== Emojis
-
-* Asciidoctor extension
-* SVGs fetched on the net
-* Embedded like images
-
 == Layouts
 
 1. Columns
@@ -108,10 +102,6 @@ Right block, 8 spans
 =====
 ----
 ====
-
-== Light/dark themes
-
-`[COMING SOON]`
 
 == Code highlight
 
@@ -156,6 +146,7 @@ flowchart LR
     svgCode --> animatedSvgCode
     animationCode:::output --> animatedSvgCode
 ----
+
 [source,json5]
 ----
 [
@@ -212,6 +203,35 @@ flowchart LR
 =====
 ====
 
+== My favorite boilerplate
+
+* Default styles & colors
+* Deck-per-deck accent colors
+* Reveal configuration via query parameters
+
+== Emojis
+
+* Asciidoctor extension
+* SVGs fetched on the net
+* Embedded like images
+
+== CLI tool
+
+[source]
+--
+Usage: a2r <command> [options]
+
+Commands:
+  a2r build  Build an HTML presentation from an asciidoc presentation  [aliases: b]
+  a2r watch  Watch a file containing an asciidoc presentation and convert it to an HTML presentation  [aliases: w]
+
+Options:
+  --help     Show help  [boolean]
+  --version  Show version number  [boolean]
+
+For more information, read the manual at https://github.com/quilicicf/AsciidocToReveal
+--
+
 == Custom JS/CSS
 
 `[COMING SOON]`
@@ -220,11 +240,9 @@ flowchart LR
 
 `[COMING SOON]`
 
-== My favorite boilerplate
+== Light/dark themes
 
-* Default styles & colors
-* Deck-per-deck accent colors
-* Reveal configuration via query parameters
+`[COMING SOON]`
 
 == Failed attempts
 

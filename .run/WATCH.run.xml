@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="WATCH" type="NodeJSConfigurationType" path-to-js-file="scripts/watch.mjs" working-dir="$PROJECT_DIR$">
+  <configuration default="false" name="WATCH" type="NodeJSConfigurationType" application-parameters="watch --input-file test/deck.adoc --output-file dist/deck.html" path-to-js-file="cli/a2r.mjs" working-dir="$PROJECT_DIR$">
     <method v="2" />
   </configuration>
 </component>

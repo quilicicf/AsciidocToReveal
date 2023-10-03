@@ -2,8 +2,12 @@
   "name": "@quilicicf/asciidoc-2-reveal",
   "version": "1.0.0",
   "description": "Highly opinionated Reveal.js presentation compiler",
+  "bin": {
+    "a2r": "cli/a2r.mjs"
+  },
   "scripts": {
-    "start": "node scripts/watch.mjs"
+    "build": "node cli/a2r.mjs build --input-file test/deck.adoc --output-file dist/deck.html",
+    "start": "node cli/a2r.mjs watch --input-file test/deck.adoc --output-file dist/deck.html"
   },
   "keywords": [],
   "author": "quilicicf <quilicicf@gmail.com> (https://github.com/quilicicf)",
@@ -15,7 +19,8 @@
     "jsdom": "22.1.0",
     "parcel": "2.9.3",
     "prismjs": "1.29.0",
-    "reveal.js": "4.6.1"
+    "reveal.js": "4.6.1",
+    "yargs": "17.7.2"
   },
   "devDependencies": {
     "chokidar": "3.5.3"

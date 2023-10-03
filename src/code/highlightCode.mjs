@@ -22,13 +22,17 @@ const PRISM_PLUGINS = {
 };
 
 export async function highlightCode (dom) {
-  const languages = $$(dom, 'pre code[data-lang]')
-    .map((codeNode) => codeNode.getAttribute('data-lang'))
-    .sort();
+  const languages = [
+    ...new Set(
+      $$(dom, 'pre code[data-lang]')
+        .map((codeNode) => codeNode.getAttribute('data-lang'))
+        .sort(),
+    ),
+  ];
 
   if (!languages.length) { return dom; }
 
-  console.info(`Loading languages: [ ${languages.join(', ')} ]`);
+  console.info(`Highlighting languages: [ ${languages.join(', ')} ]`);
   loadLanguages(languages);
 
   const pluginsToActivate = Object.entries(PRISM_PLUGINS)
