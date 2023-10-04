@@ -11,6 +11,15 @@ import { logWarn } from '../../log.mjs';
 const UNITS = [ 'px', 'em' ];
 const EMOJIS = {};
 
+export default function register (registry) {
+  if (typeof registry.register === 'function') {
+    registry.register(function setInlineMacro () { this.inlineMacro(emojiInlineMacro); });
+  } else if (typeof registry.block === 'function') {
+    registry.inlineMacro(emojiInlineMacro);
+  }
+  return EMOJIS;
+}
+
 async function fetchAndWriteEmoji (emojiName, emojiUnicode, emojiFilePath) {
   const emojiContent = await fetchEmoji(emojiName, emojiUnicode);
   writeFileSync(emojiFilePath, emojiContent.toString(), 'utf8');
@@ -83,13 +92,4 @@ function checkUnitOrThrow (unit) {
   if (!unit) { return undefined; }
   if (!UNITS.includes(unit)) { throw Error(`Expected a valid unit from [ ${UNITS} ], got: ${unit}`); }
   return unit;
-}
-
-export function register (registry) {
-  if (typeof registry.register === 'function') {
-    registry.register(function setInlineMacro () { this.inlineMacro(emojiInlineMacro); });
-  } else if (typeof registry.block === 'function') {
-    registry.inlineMacro(emojiInlineMacro);
-  }
-  return EMOJIS;
 }

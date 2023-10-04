@@ -1,13 +1,15 @@
-import { Parcel } from '@parcel/core';
-import { resolve } from 'path';
-import { existsSync, readFileSync, writeFileSync } from 'fs';
 import minifyHtml from '@minify-html/node';
+import { Parcel } from '@parcel/core';
+import { existsSync, readFileSync, writeFileSync } from 'fs';
+import { resolve } from 'path';
+import deckToHtml from './asciidoc/deckToHtml.mjs';
 
-import { asciidocToHtml } from './asciidoc/asciidocToHtml.mjs';
+import parseDeck from './asciidoc/parseDeck.mjs';
+import highlightCode from './code/highlightCode.mjs';
 import { insertInlineScript, insertInlineStyle } from './domUtils.mjs';
-import { highlightCode } from './code/highlightCode.mjs';
 import { BUILD_AREA_PATH, DIST_FOLDER_PATH, LIB_FOLDER, REPOSITORY_ROOT_PATH } from './folders.mjs';
-import { buildGraphs } from './graphs/buildGraphs.mjs';
+import buildGraphs from './graphs/buildGraphs.mjs';
+import insertCustomFiles from './insertCustomFiles.mjs';
 import applyLayouts from './layouts/applyLayouts.mjs';
 import { logInfo } from './log.mjs';
 
@@ -51,13 +53,15 @@ export async function asciidocToReveal (inputPath, outputPath = OUTPUT_FILE_PATH
     await new Parcel(PARCEL_CONFIGURATION).run();
   }
 
-  const baseDom = asciidocToHtml(inputPath);
+  const deck = parseDeck(inputPath);
+  const baseDom = deckToHtml(deck);
   const finalDom = await [
     buildGraphs,
     highlightCode,
     applyLayouts,
+    insertCustomFiles,
     addRevealJs,
-  ].reduce((promise, operation) => promise.then(async (seed) => operation(seed)), Promise.resolve(baseDom));
+  ].reduce((promise, operation) => promise.then(async (dom) => operation(dom, deck)), Promise.resolve(baseDom));
 
   const unMinified = finalDom.serialize();
   const minified = minifyHtml.minify(

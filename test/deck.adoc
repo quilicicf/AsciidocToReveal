@@ -1,6 +1,7 @@
 :imagesdir: assets
 :a2r-js: assets/deck.mjs
 :a2r-css: assets/deck.css
+:a2r-fragment-lists: true
 
 = image:asciidoc-logo.svg[Asciidoc logo,role=thumb] => image:reveal-logo.png[Reveal.js logo,role=thumb]
 
@@ -27,8 +28,8 @@ https://github.com/quilicicf/AsciidocToReveal[The code]
 * My favorite boilerplate
 * Emojis emoji:heart_eyes[]emoji:heart_eyes[1.2,em]emoji:heart_eyes[]
 * CLI tool
+* Parameterization
 * Custom JS/CSS
-* Parameterization [COMING SOON]
 * Light/dark themes [COMING SOON]
 
 == Simpler than HTML
@@ -42,7 +43,7 @@ https://github.com/quilicicf/AsciidocToReveal[The code]
 * Including binary files!
 * Solution: data-URIs!
 
-[source,html]
+[source,html,role=fragment]
 --
 <head>
   <title>My presentation</title>
@@ -237,6 +238,13 @@ Options:
 For more information, read the manual at https://github.com/quilicicf/AsciidocToReveal
 --
 
+== Parameterization
+
+* Parameters prefixed with `a2r`
+* Parsed into configuration once
+* Used where needed
+* Documented `[COMING SOON]`
+
 == Custom JS/CSS
 
 [.layout-columns]
@@ -246,9 +254,10 @@ For more information, read the manual at https://github.com/quilicicf/AsciidocTo
 * Custom JS with variable `a2r-js`
 * Custom CSS with variable `a2r-css`
 =====
+
 [.column-6x]
 =====
-[source,asciidoc]
+[source,asciidoc,role=fragment]
 ----
 :a2r-js: assets/deck.mjs
 :a2r-css: assets/deck.css
@@ -259,10 +268,6 @@ And here we go!
 ----
 =====
 ====
-
-== Parameterization
-
-`[COMING SOON]`
 
 == Light/dark themes
 

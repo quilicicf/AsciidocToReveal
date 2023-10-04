@@ -24,6 +24,7 @@
     "@minify-html/node": "0.11.1",
     "jsdom": "22.1.0",
     "parcel": "2.9.3",
+    "prism-themes": "1.9.0",
     "prismjs": "1.29.0",
     "reveal.js": "4.6.1",
     "stoyle": "1.0.0",

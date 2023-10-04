@@ -29,7 +29,7 @@ const MERMAID_CONFIGURATION = {
   },
 };
 
-export async function buildGraphs (dom) {
+export default async function buildGraphs (dom) {
   const graphContainers = $$(dom, '.graph');
   if (!graphContainers.length) { return dom; }
 

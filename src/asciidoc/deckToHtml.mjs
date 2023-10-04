@@ -1,24 +1,11 @@
 import jsdom from 'jsdom';
+import { basename, extname, join, resolve } from 'path';
 import { stoyle } from 'stoyle';
-import Processor from '@asciidoctor/core';
-import { basename, dirname, extname, join, resolve } from 'path';
 
-import { register } from './emojis/asciidoctor-emojis.mjs';
-import {
-  $,
-  $$,
-  changeElementTag,
-  createNewElement,
-  insertInlineScript,
-  insertInlineStyle,
-  readFileToDataUri,
-  removeFromParent,
-  replaceInParent,
-} from '../domUtils.mjs';
-import processBlocksRecursively from './processBlocksRecursively.mjs';
+import { $, $$, changeElementTag, createNewElement, insertInlineStyle, readFileToDataUri, removeFromParent, replaceInParent } from '../domUtils.mjs';
+import { logWarn } from '../log.mjs';
 import theme from '../theme.mjs';
-import { logInfo, logWarn } from '../log.mjs';
-import { existsSync, readFileSync } from 'fs';
+import processBlocksRecursively from './processBlocksRecursively.mjs';
 
 const BASE_HTML = `
   <!DOCTYPE html>
@@ -49,11 +36,7 @@ const IMAGES_CSS = `
   }
 `;
 
-export function asciidocToHtml (inputPath) {
-  const inputFolder = dirname(inputPath);
-  const processor = new Processor();
-  const emojisRegister = register(processor.Extensions);
-  const document = processor.loadFile(inputPath, { catalog_assets: true });
+export default function deckToHtml (deck) {
   const baseDom = new jsdom.JSDOM(BASE_HTML);
   return [
     insertTitleSection,
@@ -62,9 +45,9 @@ export function asciidocToHtml (inputPath) {
     embedEmojis,
     fixupCodeBlocks,
     extractSpeakerNotes,
-    insertCustomFiles,
+    fragmentLists,
   ].reduce(
-    (promise, operation) => promise.then(async (seed) => operation(document, seed, { inputFolder, emojisRegister })),
+    (promise, operation) => promise.then(async (dom) => operation(dom, deck)),
     Promise.resolve(baseDom),
   );
 }
@@ -72,8 +55,8 @@ export function asciidocToHtml (inputPath) {
 /**
  * Takes the header of the asciidoc file and creates a title section for it.
  */
-function insertTitleSection (document, dom) {
-  const titleDoc = document.getDocumentTitle();
+function insertTitleSection (dom, { ast }) {
+  const titleDoc = ast.getDocumentTitle();
   $(dom, 'h1')
     .insertAdjacentHTML('beforeend', titleDoc);
 
@@ -83,7 +66,7 @@ function insertTitleSection (document, dom) {
   $(dom, 'head title')
     .insertAdjacentText('beforeend', titleText);
 
-  const preambleDoc = document.blocks[ 0 ];
+  const preambleDoc = ast.blocks[ 0 ];
   $(dom, '#deck-title')
     .insertAdjacentHTML('beforeend', preambleDoc.convert());
 
@@ -97,8 +80,8 @@ function insertTitleSection (document, dom) {
  *       In HTML, a section tag must contain the h2-level section and all children h3-level sections.
  *       This requires re-working the structure of the page.
  */
-function insertOtherSections (document, dom) {
-  const [ , ...nonTitleSectionDocs ] = document.blocks;
+function insertOtherSections (dom, { ast }) {
+  const [ , ...nonTitleSectionDocs ] = ast.blocks;
   nonTitleSectionDocs.forEach((sectionDoc) => {
     const sectionHtml = sectionDoc.convert();
     const slidesNode = $(dom, '.slides');
@@ -135,8 +118,8 @@ function insertOtherSections (document, dom) {
  *
  * This allows embedding all images in the HTML file without repeating them multiple times.
  */
-function embedImages (document, dom, { inputFolder }) {
-  const images = document.getImages()
+function embedImages (dom, { ast, inputFolder }) {
+  const images = ast.getImages()
     .reduce(
       (seed, image) => {
         const name = image.getTarget();
@@ -207,7 +190,7 @@ function createEmojiCss (emoji) {
  *
  * This allows embedding all emojis in the HTML file without repeating them multiple times.
  */
-async function embedEmojis (document, dom, { emojisRegister }) {
+async function embedEmojis (dom, { emojisRegister }) {
   const emojisAsArray = await Promise.all(
     Object.entries(emojisRegister)
       .map(async ([ name, metadata ]) => {
@@ -239,13 +222,13 @@ async function embedEmojis (document, dom, { emojisRegister }) {
  * This breaks the keep markup PrismJS plugin which allows showing code fragment per fragment.
  * This method read the real code from the original asciidoc file and fixes the code blocks in the HTML.
  */
-function fixupCodeBlocks (document, dom) {
+function fixupCodeBlocks (dom, { ast }) {
   const state = {
     codeBlockIndex: 0,
     multilineCodeBlocks: $$(dom, 'pre code'),
   };
   processBlocksRecursively(
-    document,
+    ast,
     (block) => {
       const isSourceCode = block.content_model === 'verbatim';
       const hasHtmlEncodedEntities = [ 'html', 'xhtml', 'xml' ].includes(block.getAttribute('language'));
@@ -263,43 +246,30 @@ function fixupCodeBlocks (document, dom) {
   return dom;
 }
 
-function extractSpeakerNotes (document, dom) {
+function extractSpeakerNotes (dom) {
   $$(dom, '.notes')
     .forEach((notesNode) => changeElementTag(dom, notesNode, 'aside'));
   return dom;
 }
 
-function insertCustomFiles (document, dom, { inputFolder }) {
-  const customCssVariable = document.getAttribute('a2r-css');
-  const messageBits = [];
-  if (customCssVariable) {
-    messageBits.push(stoyle`custom CSS ${customCssVariable}`({ nodes: [ theme.strong ] }));
-    const customCssPath = resolve(inputFolder, customCssVariable);
+function fragmentLists (dom, { configuration }) {
+  if (!configuration.shouldFragmentLists) {
+    return dom;
+  }
 
-    if (existsSync(customCssPath)) {
-      const customCss = readFileSync(customCssPath, 'utf8');
-      insertInlineStyle(dom, 'CUSTOM', customCss);
+  const isInNotes = (node) => {
+    if (node.tagName === 'SECTION') {
+      return false;
+    } else if (node.tagName === 'ASIDE' && node.classList.contains('notes')) {
+      return true;
     } else {
-      logWarn(stoyle`Could not add custom CSS ${customCssVariable}, not found`({ nodes: [ theme.strong ] }));
+      return isInNotes(node.parentNode);
     }
-  }
+  };
 
-  const customJsVariable = document.getAttribute('a2r-js');
-  if (customJsVariable) {
-    messageBits.push(stoyle`custom JS ${customJsVariable}`({ nodes: [ theme.strong ] }));
-    const customJsPath = resolve(inputFolder, customJsVariable);
-
-    if (existsSync(customJsPath)) {
-      const customJs = readFileSync(customJsPath, 'utf8');
-      insertInlineScript(dom, 'CUSTOM', customJs);
-    } else {
-      logWarn(stoyle`Could not add custom JS ${customJsVariable}, not found`({ nodes: [ theme.strong ] }));
-    }
-  }
-
-  if (messageBits.length) {
-    logInfo(`Injecting ${messageBits.join(' & ')}`);
-  }
+  $$(dom, 'ul li')
+    .filter((listItemNode) => !isInNotes(listItemNode))
+    .forEach((listItemNode) => listItemNode.classList.add('fragment'));
 
   return dom;
 }

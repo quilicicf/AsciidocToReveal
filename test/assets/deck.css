@@ -9,3 +9,7 @@ body {
   --r-selection-color: var(--r-background-color) !important;
   --r-selection-background-color: var(--color-primary-light) !important;
 }
+
+.reveal pre code {
+  max-height: unset;
+}
