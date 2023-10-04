@@ -1,4 +1,4 @@
-import { $ } from '../domUtils.mjs';
+import { $, insertInlineStyle } from '../domUtils.mjs';
 
 const LAYOUTS = {
   'layout-columns': `
@@ -30,8 +30,7 @@ export default function applyLayouts (dom) {
     .reduce((seed, [ , cssContent ]) => `${seed}${cssContent}`, '');
 
   if (!cssToInject) { return dom; }
-  
-  $(dom, 'head')
-    .insertAdjacentHTML('beforeend', `<style id="CSS_LAYOUTS">${cssToInject}</style>`);
+  insertInlineStyle(dom, 'LAYOUTS', cssToInject);
+
   return dom;
 }

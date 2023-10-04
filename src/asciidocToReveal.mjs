@@ -1,12 +1,10 @@
-#!/usr/bin/env node
-
 import { Parcel } from '@parcel/core';
 import { resolve } from 'path';
 import { existsSync, readFileSync, writeFileSync } from 'fs';
 import minifyHtml from '@minify-html/node';
 
-import { asciidocToHtml } from './asciidoc-to-html/index.mjs';
-import { $ } from './domUtils.mjs';
+import { asciidocToHtml } from './asciidoc/asciidocToHtml.mjs';
+import { insertInlineScript, insertInlineStyle } from './domUtils.mjs';
 import { highlightCode } from './code/highlightCode.mjs';
 import { BUILD_AREA_PATH, DIST_FOLDER_PATH, LIB_FOLDER, REPOSITORY_ROOT_PATH } from './folders.mjs';
 import { buildGraphs } from './graphs/buildGraphs.mjs';
@@ -71,14 +69,12 @@ export async function asciidocToReveal (inputPath, outputPath = OUTPUT_FILE_PATH
 
 function addRevealJs (dom) {
   const style = readFileSync(BUILT_DECK_CSS_FILE_PATH, 'utf8');
-  const head = $(dom, 'head');
-  head.insertAdjacentHTML('beforeend', `\n<style id="CSS_REVEAL">${style}</style>\n`);
+  insertInlineStyle(dom, 'REVEAL', style, 'afterbegin');
 
   const script = readFileSync(BUILT_DECK_JS_FILE_PATH, 'utf8')
     .replaceAll('<script>', '<"+"script>')
     .replaceAll('</script>', '</"+"script>');
-  const body = $(dom, 'body');
-  body.insertAdjacentHTML('beforeend', `\n<script id="JS_REVEAL" type="module">\n${script};\n</script>\n`);
+  insertInlineScript(dom, 'REVEAL', script, 'afterbegin');
 
   return dom;
 }

@@ -56,3 +56,13 @@ export function readFileToDataUri (type, filePath) {
       throw Error(`Unsupported image type: ${type}`);
   }
 }
+
+export function insertInlineStyle (dom, styleId, styleContent, stylePosition = 'beforeend') {
+  $(dom, 'head')
+    .insertAdjacentHTML(stylePosition, `<style id="CSS_${styleId}">${styleContent}</style>`);
+}
+
+export function insertInlineScript (dom, scriptId, scriptContent, scriptPosition = 'beforeend') {
+  $(dom, 'body')
+    .insertAdjacentHTML(scriptPosition, `<script id="JS_${scriptId}" type="module">${scriptContent}</script>`);
+}

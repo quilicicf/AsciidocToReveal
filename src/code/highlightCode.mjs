@@ -4,7 +4,7 @@ import { readFileSync } from 'fs';
 import { resolve } from 'path';
 import { stoyle } from 'stoyle';
 
-import { $, $$ } from '../domUtils.mjs';
+import { $$, insertInlineStyle } from '../domUtils.mjs';
 import { NODE_MODULES_PATH } from '../folders.mjs';
 import { logInfo } from '../log.mjs';
 import theme from '../theme.mjs';
@@ -63,7 +63,6 @@ async function prepareHighlighting (dom, pluginsToActivate) {
     );
 
   const prismCss = readFileSync(PRISM_CSS_PATH);
-  const headNode = $(dom, 'head');
-  headNode.insertAdjacentHTML('beforeend', `<style id="CSS_PRISM">${prismCss}${pluginsCss}</style>`);
+  insertInlineStyle(dom, 'PRISM', `${prismCss}${pluginsCss}`);
   return dom;
 }

@@ -9,7 +9,13 @@
     "build": "node cli/a2r.mjs build --input-file test/deck.adoc --output-file dist/deck.html",
     "start": "node cli/a2r.mjs watch --input-file test/deck.adoc --output-file dist/deck.html"
   },
-  "keywords": [],
+  "keywords": [
+    "asciidoc",
+    "reveal.js",
+    "transformer",
+    "html",
+    "presentation"
+  ],
   "author": "quilicicf <quilicicf@gmail.com> (https://github.com/quilicicf)",
   "license": "Apache-2.0",
   "dependencies": {

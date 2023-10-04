@@ -1,8 +1,12 @@
 :imagesdir: assets
+:a2r-js: assets/deck.mjs
+:a2r-css: assets/deck.css
 
 = image:asciidoc-logo.svg[Asciidoc logo,role=thumb] => image:reveal-logo.png[Reveal.js logo,role=thumb]
 
 A tale of how I converted asciidocs to single-page HTML presentations.
+
+https://github.com/quilicicf/AsciidocToReveal[The code]
 
 == Why?
 
@@ -23,7 +27,7 @@ A tale of how I converted asciidocs to single-page HTML presentations.
 * My favorite boilerplate
 * Emojis emoji:heart_eyes[]emoji:heart_eyes[1.2,em]emoji:heart_eyes[]
 * CLI tool
-* Custom JS/CSS [COMING SOON]
+* Custom JS/CSS
 * Parameterization [COMING SOON]
 * Light/dark themes [COMING SOON]
 
@@ -235,7 +239,26 @@ For more information, read the manual at https://github.com/quilicicf/AsciidocTo
 
 == Custom JS/CSS
 
-`[COMING SOON]`
+[.layout-columns]
+====
+[.column-6x]
+=====
+* Custom JS with variable `a2r-js`
+* Custom CSS with variable `a2r-css`
+=====
+[.column-6x]
+=====
+[source,asciidoc]
+----
+:a2r-js: assets/deck.mjs
+:a2r-css: assets/deck.css
+
+= Deck title
+
+And here we go!
+----
+=====
+====
 
 == Parameterization
 

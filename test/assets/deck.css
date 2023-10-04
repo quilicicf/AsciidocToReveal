@@ -1,0 +1,11 @@
+body {
+  --color-primary: #f2e142;
+  --color-primary-dark: #ac9c0b;
+  --color-primary-light: #f7ed8e;
+
+  --r-link-color: var(--color-primary) !important;
+  --r-link-color-hover: var(--color-primary-dark) !important;
+  --r-link-color-dark: var(--color-primary-dark) !important;
+  --r-selection-color: var(--r-background-color) !important;
+  --r-selection-background-color: var(--color-primary-light) !important;
+}

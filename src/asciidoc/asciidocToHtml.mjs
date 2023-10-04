@@ -4,10 +4,21 @@ import Processor from '@asciidoctor/core';
 import { basename, dirname, extname, join, resolve } from 'path';
 
 import { register } from './emojis/asciidoctor-emojis.mjs';
-import { $, $$, changeElementTag, createNewElement, readFileToDataUri, removeFromParent, replaceInParent } from '../domUtils.mjs';
+import {
+  $,
+  $$,
+  changeElementTag,
+  createNewElement,
+  insertInlineScript,
+  insertInlineStyle,
+  readFileToDataUri,
+  removeFromParent,
+  replaceInParent,
+} from '../domUtils.mjs';
 import processBlocksRecursively from './processBlocksRecursively.mjs';
 import theme from '../theme.mjs';
-import { logWarn } from '../log.mjs';
+import { logInfo, logWarn } from '../log.mjs';
+import { existsSync, readFileSync } from 'fs';
 
 const BASE_HTML = `
   <!DOCTYPE html>
@@ -51,6 +62,7 @@ export function asciidocToHtml (inputPath) {
     embedEmojis,
     fixupCodeBlocks,
     extractSpeakerNotes,
+    insertCustomFiles,
   ].reduce(
     (promise, operation) => promise.then(async (seed) => operation(document, seed, { inputFolder, emojisRegister })),
     Promise.resolve(baseDom),
@@ -170,8 +182,7 @@ function embedImages (document, dom, { inputFolder }) {
       parentNode.appendChild(newElement);
     });
 
-  $(dom, 'head')
-    .insertAdjacentHTML('beforeend', `<style id="CSS_IMAGES">${IMAGES_CSS}${css}</style>`);
+  insertInlineStyle(dom, 'IMAGES', `${IMAGES_CSS}${css}`);
 
   return dom;
 }
@@ -208,8 +219,7 @@ async function embedEmojis (document, dom, { emojisRegister }) {
 
   const css = emojisAsArray
     .reduce((seed, emoji) => `${seed} ${createEmojiCss(emoji)}`, '');
-  $(dom, 'head')
-    .insertAdjacentHTML('beforeend', `<style id="CSS_EMOJIS">${css}</style>`);
+  insertInlineStyle(dom, 'EMOJIS', css);
 
   $$(dom, '.emoji')
     .forEach((parentNode) => {
@@ -256,5 +266,40 @@ function fixupCodeBlocks (document, dom) {
 function extractSpeakerNotes (document, dom) {
   $$(dom, '.notes')
     .forEach((notesNode) => changeElementTag(dom, notesNode, 'aside'));
+  return dom;
+}
+
+function insertCustomFiles (document, dom, { inputFolder }) {
+  const customCssVariable = document.getAttribute('a2r-css');
+  const messageBits = [];
+  if (customCssVariable) {
+    messageBits.push(stoyle`custom CSS ${customCssVariable}`({ nodes: [ theme.strong ] }));
+    const customCssPath = resolve(inputFolder, customCssVariable);
+
+    if (existsSync(customCssPath)) {
+      const customCss = readFileSync(customCssPath, 'utf8');
+      insertInlineStyle(dom, 'CUSTOM', customCss);
+    } else {
+      logWarn(stoyle`Could not add custom CSS ${customCssVariable}, not found`({ nodes: [ theme.strong ] }));
+    }
+  }
+
+  const customJsVariable = document.getAttribute('a2r-js');
+  if (customJsVariable) {
+    messageBits.push(stoyle`custom JS ${customJsVariable}`({ nodes: [ theme.strong ] }));
+    const customJsPath = resolve(inputFolder, customJsVariable);
+
+    if (existsSync(customJsPath)) {
+      const customJs = readFileSync(customJsPath, 'utf8');
+      insertInlineScript(dom, 'CUSTOM', customJs);
+    } else {
+      logWarn(stoyle`Could not add custom JS ${customJsVariable}, not found`({ nodes: [ theme.strong ] }));
+    }
+  }
+
+  if (messageBits.length) {
+    logInfo(`Injecting ${messageBits.join(' & ')}`);
+  }
+
   return dom;
 }
