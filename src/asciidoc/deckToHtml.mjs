@@ -1,3 +1,4 @@
+import { readFileSync } from 'fs';
 import jsdom from 'jsdom';
 import { basename, extname, join, resolve } from 'path';
 import { stoyle } from 'stoyle';
@@ -39,6 +40,7 @@ const IMAGES_CSS = `
 export default function deckToHtml (deck) {
   const baseDom = new jsdom.JSDOM(BASE_HTML);
   return [
+    insertFavicon,
     insertTitleSection,
     insertOtherSections,
     embedImages,
@@ -52,17 +54,28 @@ export default function deckToHtml (deck) {
   );
 }
 
+function insertFavicon (dom, { inputFolder, configuration }) {
+  const { favicon } = configuration;
+  if (favicon) {
+    const imageAbsolutePath = resolve(inputFolder, favicon);
+    const imageContent = readFileSync(imageAbsolutePath, 'utf8');
+    const dataUri = `data:image/svg+xml,${encodeURIComponent(imageContent)}`;
+    $(dom, 'head')
+      .insertAdjacentHTML('afterbegin', `<link rel="icon" href="${dataUri}"/>`);
+  }
+
+  return dom;
+}
+
 /**
  * Takes the header of the asciidoc file and creates a title section for it.
  */
-function insertTitleSection (dom, { ast }) {
+function insertTitleSection (dom, { ast, configuration }) {
   const titleDoc = ast.getDocumentTitle();
   $(dom, 'h1')
     .insertAdjacentHTML('beforeend', titleDoc);
 
-  const titleText = $(dom, 'h1')
-    .textContent
-    .trim();
+  const titleText = configuration.pageTitle || $(dom, 'h1').textContent.trim();
   $(dom, 'head title')
     .insertAdjacentText('beforeend', titleText);
 

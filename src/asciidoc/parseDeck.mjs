@@ -20,12 +20,16 @@ export default function parseDeck (inputPath) {
 function parseConfiguration (ast) {
   const customCss = ast.getAttribute('a2r-css');
   const customJs = ast.getAttribute('a2r-js');
+  const favicon = ast.getAttribute('a2r-favicon');
+  const pageTitle = ast.getAttribute('a2r-page-title');
   const highlightTheme = ast.getAttribute('a2r-highlight-theme');
   const shouldFragmentLists = ast.getAttribute('a2r-fragment-lists') === 'true';
 
   return {
     customJs,
     customCss,
+    favicon,
+    pageTitle,
     highlightTheme,
     shouldFragmentLists,
   };

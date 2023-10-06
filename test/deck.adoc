@@ -1,6 +1,8 @@
 :imagesdir: assets
 :a2r-js: assets/deck.mjs
 :a2r-css: assets/deck.css
+:a2r-page-title: Asciidoc 2 Reveal.js
+:a2r-favicon: assets/favicon.svg
 :a2r-fragment-lists: true
 
 = image:asciidoc-logo.svg[Asciidoc logo,role=thumb] => image:reveal-logo.png[Reveal.js logo,role=thumb]
