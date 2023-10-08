@@ -1,0 +1,48 @@
+// Default mixins and settings -----------------
+@import "reveal.js/css/theme/template/mixins";
+@import "reveal.js/css/theme/template/settings";
+// ---------------------------------------------
+
+// Variables export ----------------------------
+// EXPORT_PART //
+// ---------------------------------------------
+
+// Change text colors against dark slide backgrounds
+@include light-bg-text-color(#00140d);
+// ---------------------------------------------
+
+// Theme template ------------------------------
+@import "reveal.js/css/theme/template/theme";
+// ---------------------------------------------
+
+// Custom styles -------------------------------
+.reveal p {
+  font-weight: 300;
+  text-shadow: 1px 1px var(--r-background-color);
+}
+
+section.has-light-background {
+  p, h1, h2, h3, h4 {
+    text-shadow: none;
+  }
+}
+
+.reveal h1,
+.reveal h2,
+.reveal h3,
+.reveal h4,
+.reveal h5,
+.reveal h6 {
+  font-weight: 700;
+}
+
+.reveal p code {
+  padding: 0 .1em;
+  color: var(--color-primary);
+  background-color: var(--a2r-color-code-background);
+  display: inline-block;
+  border: 1px solid var(--color-primary);
+  border-radius: 7px;
+}
+
+// ---------------------------------------------

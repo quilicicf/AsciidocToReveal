@@ -4,6 +4,7 @@
 :a2r-page-title: Asciidoc 2 Reveal.js
 :a2r-favicon: assets/favicon.svg
 :a2r-fragment-lists: true
+:a2r-theme-name: dark-and-light-manual
 
 = image:asciidoc-logo.svg[Asciidoc logo,role=thumb] => image:reveal-logo.png[Reveal.js logo,role=thumb]
 
@@ -17,6 +18,12 @@ https://github.com/quilicicf/AsciidocToReveal[The code]
 * Power-point™ is *heavy*
 * Power-point™ is no standard
 * I emoji:heart[] text
+
+== Failed attempts
+
+* Bundle a Reveal.js deck
+* Create Parcel transformer
+* Use the official Asciidoc-Reveal plugin
 
 == Features I wanted
 
@@ -32,7 +39,8 @@ https://github.com/quilicicf/AsciidocToReveal[The code]
 * CLI tool
 * Parameterization
 * Custom JS/CSS
-* Light/dark themes [COMING SOON]
+* Light/dark themes
+* Custom fonts `[COMING SOON]`
 
 == Simpler than HTML
 
@@ -225,6 +233,9 @@ flowchart LR
 
 == CLI tool
 
+* Commands `build` & `watch`
+* Configuration `[COMING SOON]`
+
 [source]
 --
 Usage: a2r <command> [options]
@@ -246,6 +257,7 @@ For more information, read the manual at https://github.com/quilicicf/AsciidocTo
 * Parsed into configuration once
 * Used where needed
 * Documented `[COMING SOON]`
+* Validated `[COMING SOON]`
 
 == Custom JS/CSS
 
@@ -273,13 +285,15 @@ And here we go!
 
 == Light/dark themes
 
-`[COMING SOON]`
+* Built-in themes
+* Using Reveal.js framework
+* Light/dark/choice
+* Configurable accent color
+* No fonts!
 
 == Failed attempts
 
-* Bundle a Reveal.js deck
-* Create Parcel transformer
-* Use the official Asciidoc-Reveal plugin
+`[COMING SOON]`
 
 == Q&A
 

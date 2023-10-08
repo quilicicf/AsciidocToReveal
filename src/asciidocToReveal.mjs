@@ -2,8 +2,9 @@ import minifyHtml from '@minify-html/node';
 import { Parcel } from '@parcel/core';
 import { existsSync, readFileSync, writeFileSync } from 'fs';
 import { resolve } from 'path';
-import deckToHtml from './asciidoc/deckToHtml.mjs';
 
+import applyTheme from './applyTheme.mjs';
+import deckToHtml from './asciidoc/deckToHtml.mjs';
 import parseDeck from './asciidoc/parseDeck.mjs';
 import highlightCode from './code/highlightCode.mjs';
 import { insertInlineScript, insertInlineStyle } from './domUtils.mjs';
@@ -24,7 +25,7 @@ const MINIFIER_CONFIGURATION = {
   minify_js: true,
   minify_css: true,
 };
-const PARCEL_CONFIGURATION = {
+const PARCEL_JS_CONFIGURATION = {
   entries: [ DECK_JS_FILE_PATH ],
   mode: 'production',
   defaultConfig: '@parcel/config-default',
@@ -50,7 +51,7 @@ export async function asciidocToReveal (inputPath, outputPath = OUTPUT_FILE_PATH
     //       * Either the version of Reveal is fixed and these files can be pre-compiled
     //       * Or it should depend on the child project and the resolution of Node packages must evolve
     logInfo('Bundling input deck file');
-    await new Parcel(PARCEL_CONFIGURATION).run();
+    await new Parcel(PARCEL_JS_CONFIGURATION).run();
   }
 
   const deck = parseDeck(inputPath);
@@ -59,6 +60,7 @@ export async function asciidocToReveal (inputPath, outputPath = OUTPUT_FILE_PATH
     buildGraphs,
     highlightCode,
     applyLayouts,
+    applyTheme,
     insertCustomFiles,
     addRevealJs,
   ].reduce((promise, operation) => promise.then(async (dom) => operation(dom, deck)), Promise.resolve(baseDom));
