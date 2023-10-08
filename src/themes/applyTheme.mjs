@@ -3,9 +3,9 @@ import { existsSync, readFileSync, writeFileSync } from 'fs';
 import { resolve } from 'path';
 import { compileString } from 'sass';
 
-import { $, insertInlineScript, insertInlineStyle } from './domUtils.mjs';
-import { BUILD_AREA_PATH, LIB_FOLDER, NODE_MODULES_PATH } from './folders.mjs';
-import { logInfo } from './log.mjs';
+import { $, insertInlineScript, insertInlineStyle } from '../domUtils.mjs';
+import { BUILD_AREA_PATH, LIB_FOLDER, NODE_MODULES_PATH } from '../folders.mjs';
+import { logInfo } from '../log.mjs';
 
 const BASE_SCSS_PATH = resolve(LIB_FOLDER, 'theme', 'base.scss');
 
@@ -16,8 +16,7 @@ const CHROMAS = {
   vibrant: 0.300,
 };
 
-export default function applyTheme (dom, deck) {
-  const { configuration } = deck;
+export default function applyTheme (dom, { configuration }) {
   const { themeName, themeHue, themeChromaLevel } = configuration;
 
   const builtThemeFilePath = resolve(BUILD_AREA_PATH, `${themeName}-${themeHue}-${themeChromaLevel}.css`);

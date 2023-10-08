@@ -3,14 +3,14 @@ import { Parcel } from '@parcel/core';
 import { existsSync, readFileSync, writeFileSync } from 'fs';
 import { resolve } from 'path';
 
-import applyTheme from './applyTheme.mjs';
+import applyTheme from './themes/applyTheme.mjs';
 import deckToHtml from './asciidoc/deckToHtml.mjs';
 import parseDeck from './asciidoc/parseDeck.mjs';
 import highlightCode from './code/highlightCode.mjs';
 import { insertInlineScript, insertInlineStyle } from './domUtils.mjs';
 import { BUILD_AREA_PATH, DIST_FOLDER_PATH, LIB_FOLDER, REPOSITORY_ROOT_PATH } from './folders.mjs';
 import buildGraphs from './graphs/buildGraphs.mjs';
-import insertCustomFiles from './insertCustomFiles.mjs';
+import insertCustomFiles from './custom-files/insertCustomFiles.mjs';
 import applyLayouts from './layouts/applyLayouts.mjs';
 import { logInfo } from './log.mjs';
 

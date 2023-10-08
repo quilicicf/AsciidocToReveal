@@ -6,8 +6,7 @@ import { stoyle } from 'stoyle';
 
 import { BUILD_AREA_PATH } from '../folders.mjs';
 import { $, $$, removeFromParent } from '../domUtils.mjs';
-import { logWarn } from '../log.mjs';
-import theme from '../theme.mjs';
+import { theme, logWarn } from '../log.mjs';
 
 const MERMAID_CONFIGURATION = {
   quiet: true,

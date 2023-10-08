@@ -6,8 +6,7 @@ import { stoyle } from 'stoyle';
 
 import { $$, insertInlineStyle } from '../domUtils.mjs';
 import { NODE_MODULES_PATH } from '../folders.mjs';
-import { logInfo, logWarn } from '../log.mjs';
-import theme from '../theme.mjs';
+import { logInfo, logWarn, theme } from '../log.mjs';
 
 const DEFAULT_THEME = 'one-dark';
 const CLASSIC_PRISM_THEMES_PATH = resolve(NODE_MODULES_PATH, 'prismjs', 'themes');

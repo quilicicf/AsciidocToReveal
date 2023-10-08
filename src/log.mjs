@@ -1,6 +1,17 @@
-import { stoyle } from 'stoyle';
+import { stoyle, DecorationCode, ForegroundSimpleCode } from 'stoyle';
 
-import theme from './theme.mjs';
+export const theme = {
+  // Generic
+  dim: { decoration: DecorationCode.Dim },
+  strong: { decoration: DecorationCode.Bold },
+  emphasis: { decoration: DecorationCode.Italic },
+  info: { color: ForegroundSimpleCode.FG_Blue },
+  error: { color: ForegroundSimpleCode.FG_Red },
+  warning: { color: ForegroundSimpleCode.FG_Yellow },
+  success: { color: ForegroundSimpleCode.FG_Green },
+  link: { color: ForegroundSimpleCode.FG_Blue, decoration: DecorationCode.Underline },
+};
+
 
 function format (content, type, style) {
   return stoyle`[${type}] `({ nodes: [ style ] }) + content + '\n';

@@ -5,8 +5,7 @@ import { stoyle } from 'stoyle';
 
 import twemojiMap from './twemojis.mjs';
 import { BUILD_AREA_PATH } from '../../folders.mjs';
-import theme from '../../theme.mjs';
-import { logWarn } from '../../log.mjs';
+import { theme, logWarn } from '../../log.mjs';
 
 const UNITS = [ 'px', 'em' ];
 const EMOJIS = {};

@@ -1,11 +1,10 @@
-import { existsSync } from 'fs';
 import { watch } from 'chokidar';
+import { existsSync } from 'fs';
 import { stoyle } from 'stoyle';
 
 import { asciidocToReveal } from '../src/asciidocToReveal.mjs';
 import { REPOSITORY_ROOT_PATH } from '../src/folders.mjs';
-import { logInfo } from '../src/log.mjs';
-import theme from '../src/theme.mjs';
+import { logInfo, theme } from '../src/log.mjs';
 
 export const command = 'watch';
 export const aliases = [ 'w' ];

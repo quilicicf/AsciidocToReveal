@@ -236,7 +236,7 @@ flowchart LR
 * Commands `build` & `watch`
 * Configuration `[COMING SOON]`
 
-[source]
+[source,role=fragment]
 --
 Usage: a2r <command> [options]
 

@@ -4,8 +4,7 @@ import { basename, extname, join, resolve } from 'path';
 import { stoyle } from 'stoyle';
 
 import { $, $$, changeElementTag, createNewElement, insertInlineStyle, readFileToDataUri, removeFromParent, replaceInParent } from '../domUtils.mjs';
-import { logWarn } from '../log.mjs';
-import theme from '../theme.mjs';
+import { theme, logWarn } from '../log.mjs';
 import processBlocksRecursively from './processBlocksRecursively.mjs';
 
 const BASE_HTML = `
