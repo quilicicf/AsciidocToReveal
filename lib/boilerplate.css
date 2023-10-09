@@ -1,0 +1,73 @@
+:root {
+  --color-green: #56bb8a;
+  --color-orange: #ffd666;
+  --color-red: #e67c73;
+  --color-gray: #666;
+  --color-light-gray: #e8e8e8;
+
+  --font-extra-small: .5em;
+  --font-small: .7em;
+  --font-big: 1.2em;
+}
+
+.green {
+  color: var(--color-green);
+}
+
+.orange {
+  color: var(--color-orange);
+}
+
+.red {
+  color: var(--color-red);
+}
+
+.gray {
+  color: var(--color-gray);
+}
+
+.dim {
+  color: var(--color-gray);
+}
+
+.small {
+  font-size: .7em;
+}
+
+.extra-small {
+  font-size: var(--font-extra-small);
+}
+
+.big {
+  font-size: var(--font-big);
+}
+
+em {
+  font-style: italic;
+}
+
+.subtitle {
+  font-size: var(--font-small);
+  color: var(--color-gray);
+}
+
+.reveal pre code {
+  max-height: unset !important;
+}
+
+.dim > code:not(pre code) {
+  color: var(--color-gray);
+}
+
+.speaker-notes {
+  color: var(--r-main-color) !important;
+  border: solid 1px var(--r-main-color) !important;
+  background-color: var(--r-background-color) !important;
+}
+
+.speaker-notes code:not(pre code) {
+  color: var(--color-primary);
+  padding: 0 .2em;
+  border-radius: .2em;
+  border: solid 1px var(--color-primary);
+}
