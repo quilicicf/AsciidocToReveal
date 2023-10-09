@@ -45,7 +45,6 @@ export async function handler (args) {
   };
   const chokidarOptions = {
     cwd: REPOSITORY_ROOT_PATH,
-    ignoreInitial: true,
   };
 
   logInfo(stoyle`Watcher started on ${inputFile}`({ nodes: [ theme.strong ] }));
