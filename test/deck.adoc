@@ -36,6 +36,11 @@ https://github.com/quilicicf/AsciidocToReveal[The code]
 
 == Features I wanted
 
+[.layout-columns]
+====
+
+[.column-6x]
+=====
 * Input simpler than HTML
 * Self-sufficient HTML output
 * Smallest possible HTML output
@@ -43,6 +48,10 @@ https://github.com/quilicicf/AsciidocToReveal[The code]
 * Layouts
 * Code highlight
 * Mermaid graphs
+=====
+
+[.column-6x]
+=====
 * My favorite boilerplate
 * Emojis emoji:heart_eyes[]emoji:heart_eyes[1.2,em]emoji:heart_eyes[]
 * CLI tool
@@ -50,6 +59,9 @@ https://github.com/quilicicf/AsciidocToReveal[The code]
 * Custom JS/CSS
 * Light/dark themes
 * Custom fonts `[COMING SOON]`
+=====
+
+====
 
 == How it's built
 
