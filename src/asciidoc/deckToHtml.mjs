@@ -150,7 +150,7 @@ function embedImages (dom, { ast, inputFolder }) {
       {},
     );
 
-  const preferredImageTypes = [ 'svg', 'webp', 'avif' ];
+  const preferredImageTypes = [ 'svg', 'webp', 'avif', 'jxl' ];
   const badImageTypes = Object.values(images)
     .map(({ type }) => type)
     .filter((type) => !preferredImageTypes.includes(type));
