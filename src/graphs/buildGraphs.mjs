@@ -1,12 +1,12 @@
-import { createHash } from 'crypto';
-import { resolve } from 'path';
 import { run } from '@mermaid-js/mermaid-cli';
+import { createHash } from 'crypto';
 import { existsSync, readFileSync, writeFileSync } from 'fs';
+import { resolve } from 'path';
 import { stoyle } from 'stoyle';
+import { $, $$, removeFromParent } from '../domUtils.mjs';
 
 import { BUILD_AREA_PATH } from '../folders.mjs';
-import { $, $$, removeFromParent } from '../domUtils.mjs';
-import { theme, logWarn } from '../log.mjs';
+import { logWarn, theme } from '../log.mjs';
 
 const MERMAID_CONFIGURATION = {
   quiet: true,
@@ -86,19 +86,26 @@ function animateGraph (graphId, graphNode, animationNode) {
   const animationCodeNode = animationNode.querySelector('code');
   const animationCode = animationCodeNode.innerHTML;
 
-  JSON.parse(animationCode).forEach((animation) => animateNode(graphId, graphNode, animation));
+  JSON.parse(animationCode).forEach((animation) => animateNodes(graphId, graphNode, animation));
 
   removeFromParent(animationNode);
 }
 
-function animateNode (graphId, graphNode, animation) {
-  const elementToAnimate = graphNode.querySelector(animation.selector);
-  if (!elementToAnimate) {
-    logWarn(stoyle`Could not animate element ${animation.selector} in graph ${graphId}, not found.`({ nodes: [ theme.strong, theme.strong ] }));
+function unFuckUpSelector (fuckedUpSelector) {
+  return fuckedUpSelector.replaceAll('&gt;', '>');
+}
+
+function animateNodes (graphId, graphNode, animation) {
+  const selector = unFuckUpSelector(animation.selector);
+  const elementsToAnimate = [ ...graphNode.querySelectorAll(selector) ];
+  if (!elementsToAnimate.length) {
+    logWarn(stoyle`Could not animate elements defined by ${selector} in graph ${graphId}, not found.`({ nodes: [ theme.strong, theme.strong ] }));
     return;
   }
 
-  elementToAnimate.classList.add(...animation.classes);
-  Object.entries(animation.attributes)
-    .forEach(([ key, value ]) => elementToAnimate.setAttribute(key, value));
+  elementsToAnimate.forEach((elementToAnimate) => {
+    elementToAnimate.classList.add(...animation.classes);
+    Object.entries(animation.attributes)
+      .forEach(([ key, value ]) => elementToAnimate.setAttribute(key, value));
+  });
 }
