@@ -163,7 +163,15 @@ flowchart LR
 == Input simpler than HTML
 
 * Needed a markup language
+* Support in standard tools
 * Asciidoc > Markdown
+
+[.notes]
+====
+* HTML ain't exactly fun to edit
+* It's better for the markup tool to be supported in GitHub, editors etc... Looked at Wikitext, Creole, reStructuredText, BBCode.
+* Markdown & Asciidoc only real contenders, and Markdown has a lot of limitations, like the difficulty to add HTML classes to blocks
+====
 
 == Self-sufficient HTML output
 
@@ -188,11 +196,24 @@ flowchart LR
 </body>
 --
 
+[.notes]
+====
+* Another method is also to re-write simple things that don't need dependencies
+* Binary files are a bit more complex, but needed for images for example
+====
+
 == Smallest possible HTML output
 
-* Static HTML
+* Static-ish HTML
 * Minimal CSS & JS
-* Minification
+* Minify/Gzip
+
+[.notes]
+====
+* Keep JS to the minimum: Reveal.js only-ish
+* Only add CSS & JS for features that are actually used
+* Use tools to compress the final file as much as possible
+====
 
 == Speaker notes
 
@@ -203,7 +224,8 @@ There are some notes on this slide!
 * Aaaaaand
 * They
 * Are
-* Here
+* Here emoji:muscle[]
+* Basically just include the Notes plugin by default. It's the only one I've kept, the rest doesn't need to be interactive.
 ====
 
 == Layouts
@@ -220,19 +242,30 @@ There are some notes on this slide!
 * Used with asciidoc blocks
 =====
 
-[source,asciidoc,role="column-8x"]
+[source,asciidoc,role="keep-markup column-8x"]
 ----
+<div class="fragment">
 [.layout-columns]
 =====
+</div>
+
+<div class="fragment">
 [.column-4x]
 ======
 Left block, 4 spans
 ======
+</div>
+
+<div class="fragment">
 [.column-8x]
 ======
 Right block, 8 spans
 ======
+</div>
+
+<div class="fragment">
 =====
+</div>
 ----
 ====
 
@@ -241,6 +274,13 @@ Right block, 8 spans
 * Beautiful code
 * Show line numbers
 * Display code bit-by-bit
+
+[.notes]
+====
+* Syntax coloration done with link:https://prismjs.com/[PrismJS] because of how lightweight and versatile it is
+* Plugin link:https://prismjs.com/plugins/line-numbers/[line-numbers] added when class `line-numbers` is set on at least one code block
+* Plugin link:https://prismjs.com/plugins/keep-markup/[keep-markup] added when class `keep-markup` is set on at least one code block. Allows animating code display with
+====
 
 === Code highlight - example
 
@@ -255,7 +295,14 @@ flowchart LR
 
 * Mermaid code => SVG graph
 * Display bit-by-bit
-* Support dark/light themes [COMING SOON]
+* Support dark/light themes
+
+[.notes]
+====
+* GitHub-like integration of Mermaid in the deck allows for integrating the graph as an SVG inside the presentation. SVG is *light*! Even more so after gzip!
+* Displaying bit-by-bit is easy-ish. Could be better, but a simple format allows to fragment the graph
+* Switching the global theme switches the highlighting theme too!
+====
 
 === Mermaid graphs - example
 
@@ -341,33 +388,43 @@ flowchart LR
 
 * Default styles & colors
 * Deck-per-deck accent colors
-* Reveal configuration via query parameters
+* Reveal configuration
+
+[.notes]
+====
+* Default colors like red/green/yellow + font sizes + inline code blocks
+* I like to have a theme color for each presentation
+* Default Reveal.js options + query parameters for Reveal.js options
+====
 
 == Emojis
 
 * Asciidoctor extension
 * SVGs fetched on the net
 * Embedded like images
+* Size is configurable
+
+[source,asciidoc,role="fragment code-emojis"]
+--
+emoji:muscle[]emoji:muscle[1.4,em]emoji:muscle[]
+--
+
+[.fragment]
+emoji:muscle[]emoji:muscle[1.4,em]emoji:muscle[]
+
+[.notes]
+====
+* Inspired by link:https://github.com/ggrossetie/asciidoctor-emoji[asciidoctor-emoji] and changed to generate self-sufficient HTML file
+* SVGs are fetched on the same API as the public extension and stored in the build-area
+* They are embedded once in the CSS and referenced once per usage
+====
 
 == CLI tool
 
-* Commands `build` & `watch`
+* One CLI tool `a2r`
+* Two commands `build` & `watch`
+* Install with `npm link`, release `[COMING SOON]`
 * Configuration `[COMING SOON]`
-
-[source,role=fragment]
---
-Usage: a2r <command> [options]
-
-Commands:
-  a2r build  Build an HTML presentation from an asciidoc presentation  [aliases: b]
-  a2r watch  Watch a file containing an asciidoc presentation and convert it to an HTML presentation  [aliases: w]
-
-Options:
-  --help     Show help  [boolean]
-  --version  Show version number  [boolean]
-
-For more information, read the manual at https://github.com/quilicicf/AsciidocToReveal
---
 
 == Parameterization
 
@@ -376,6 +433,15 @@ For more information, read the manual at https://github.com/quilicicf/AsciidocTo
 * Used where needed
 * Documented `[COMING SOON]`
 * Validated `[COMING SOON]`
+
+[.notes]
+====
+* Prefix avoids collisions with other tools
+* In the `parseDeck` method, immutable configuration created once
+* Since it's in the deck that's passed to all methods
+* Documentation will come
+* Validation will come too
+====
 
 == Custom JS/CSS
 
@@ -401,17 +467,62 @@ And here we go!
 =====
 ====
 
+[.notes]
+====
+Allows to add specific styles & behaviors for each deck using CSS/JS(Reveal) directly.
+====
+
 == Light/dark themes
 
 * Built-in themes
 * Using Reveal.js framework
 * Light/dark/choice
 * Configurable accent color
-* No fonts!
+* Fonts as dedicated feature
 
-== Failed attempts
+[.notes]
+====
+* Wrote own themes to have slim ones without dependencies
+* Uses Reveal.js framework for themes, of course
+* Possible to have both light & dark in the same presentation! With manual switching or auto switching (based on browser preference)
+* The accent color can be configured for each presentation by selecting the hue and the chroma level
+* Fonts must be embedded, will be done specifically
+====
 
-`[COMING SOON]`
+== Rest of the roadmap
+
+* Document and validate deck parameters
+* Better fragments
+* Better graph animation
+* Watch shouldn't stop
+* Real live-reload
+* CLI tool should be configurable
+* Better cache
+* Images compression
+* Deno-ify?
+* Release
+
+[.notes]
+====
+* Currently, un-documented and parsed with a YOLO attitude
+* The default of fade-in-then-semi-out doesn't work everywhere. Syncing fragments from auto-animated list & something else either
+* Maybe by contributing to Mermaid so that ids are found everywhere in the generated SVG
+* Currently, watch stops whenever an error is encountered
+* Live-reload doesn't seem to work with standard tools, re-implement a KISS version?
+* For example, it should be possible to provide another path to watch for changes in watch to include assets, or to specify other browser targets for the JS, image compression target maybe later? etc...
+* For example, re-write graph SVGs when graph animation changes, and maybe cleanup the build area a bit?
+* Try JPEG XL or AVIF, and re-size according to size of biggest usage
+* I may try to deno-ify it to get native TS support and better security
+* I'll have to release it when it's ready, which at least means making the code public
+====
+
+== So how well does it perform?
+
+* PowerPoint: `~700KB minimum`
+* A2R baseline: `200KB`
+* Deck's input: `~16K chars`
+* Deck's output: `~304KB`
+* Deck's output, gzipped: `~76KB`
 
 == Q&A
 
