@@ -4,7 +4,7 @@ import { basename, extname, join, resolve } from 'path';
 import { stoyle } from 'stoyle';
 
 import { $, $$, changeElementTag, createNewElement, insertInlineStyle, readFileToDataUri, removeFromParent, replaceInParent } from '../domUtils.mjs';
-import { theme, logWarn } from '../log.mjs';
+import { logWarn, theme } from '../log.mjs';
 import processBlocksRecursively from './processBlocksRecursively.mjs';
 
 const BASE_HTML = `
@@ -113,7 +113,7 @@ function insertOtherSections (dom, { ast }) {
 
       // Re-add sections
       wrappingSection.appendChild(topLevelSectionAsDiv);
-      wrappingSection.appendChild(...subSectionsAsDivs);
+      subSectionsAsDivs.forEach((subSectionAsDiv) => wrappingSection.appendChild(subSectionAsDiv));
     }
 
     $$(dom, 'div.sect1,div.sect2')
@@ -237,19 +237,13 @@ async function embedEmojis (dom, { emojisRegister }) {
 function fixupCodeBlocks (dom, { ast }) {
   const state = {
     codeBlockIndex: 0,
-    multilineCodeBlocks: $$(dom, 'pre code'),
+    multilineCodeBlocks: $$(dom, '.keep-markup pre code'),
   };
   processBlocksRecursively(
     ast,
     (block) => {
-      const isSourceCode = block.content_model === 'verbatim';
-      const hasHtmlEncodedEntities = [ 'html', 'xhtml', 'xml' ].includes(block.getAttribute('language'));
-      if (!isSourceCode) {
-        return;
-      } else if (hasHtmlEncodedEntities) {
-        state.codeBlockIndex++; // Otherwise... oopsie!
-        return;
-      }
+      const shouldBeFixed = block.content_model === 'verbatim' && block?.getAttribute('role')?.includes('keep-markup');
+      if (!shouldBeFixed) { return; }
       const correspondingHtmlCodeBlock = state.multilineCodeBlocks[ state.codeBlockIndex++ ];
       correspondingHtmlCodeBlock.innerHTML = block.getSource();
     },
