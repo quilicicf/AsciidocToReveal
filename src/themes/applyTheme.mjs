@@ -17,7 +17,7 @@ const CHROMAS = {
 };
 
 export default function applyTheme (dom, { configuration }) {
-  const { themeName, themeHue, themeChromaLevel } = configuration;
+  const { themeName, themeHue, themeChromaLevel, startingThemeName, nonStartingThemeName, themeSwitchingMode } = configuration;
 
   const builtThemeFilePath = resolve(BUILD_AREA_PATH, `${themeName}-${themeHue}-${themeChromaLevel}.css`);
   if (!existsSync(builtThemeFilePath)) {
@@ -39,11 +39,30 @@ export default function applyTheme (dom, { configuration }) {
   const builtCss = readFileSync(builtThemeFilePath, 'utf8');
   insertInlineStyle(dom, 'REVEAL_THEME', builtCss);
 
-  if (themeName.endsWith('-manual')) {
-    const startTheme = themeName.split('-')[ 0 ];
-    $(dom, 'body').classList.add(`theme-${startTheme}`);
-    const themeSwitcherScript = buildThemeSwitcher(startTheme);
-    insertInlineScript(dom, 'THEME_SWITCHER', themeSwitcherScript);
+  if (themeSwitchingMode === 'manual') {
+    $(dom, 'body').classList.add(`theme-${startingThemeName}`);
+    insertInlineScript(
+      dom,
+      'THEME_SWITCHER',
+      `
+        function toggleDisabled(id, force = undefined) {
+          const sheetNode = document.getElementById('CSS_PRISM_' + id);
+          if (!sheetNode) { return; }
+          sheetNode.disabled = force === undefined ? !sheetNode.disabled: force;
+        }
+        
+        Reveal.on('ready', () => { toggleDisabled('${nonStartingThemeName.toUpperCase()}', true); });
+
+        Reveal.addKeyBinding( { keyCode: 84, key: 'T', description: 'Switch themes' }, () => {
+          const bodyNode = document.querySelector('body');
+          bodyNode.classList.toggle('theme-dark');
+          bodyNode.classList.toggle('theme-light');
+          
+          toggleDisabled('DARK');
+          toggleDisabled('LIGHT');
+        });
+      `,
+    );
   }
 
   return dom;
@@ -171,14 +190,4 @@ function prepareColorExports (themeName, themeHue, themeChromaLevel) {
         body.theme-light { ${prepareLightColorExport(theme)} }
       `;
   }
-}
-
-function buildThemeSwitcher () {
-  return `
-    Reveal.addKeyBinding( { keyCode: 84, key: 'T', description: 'Switch themes' }, () => {
-      const bodyNode = document.querySelector('body');
-      bodyNode.classList.toggle('theme-dark');
-      bodyNode.classList.toggle('theme-light');
-    });
-  `;
 }

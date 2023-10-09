@@ -1,5 +1,6 @@
 import Processor from '@asciidoctor/core';
 import { dirname } from 'path';
+import { DEFAULT_DARK_THEME, DEFAULT_LIGHT_THEME } from '../code/highlightCode.mjs';
 
 import registerEmojisExtension from './emojis/asciidoctor-emojis.mjs';
 
@@ -25,9 +26,13 @@ function parseConfiguration (ast) {
   const shouldFragmentLists = ast.getAttribute('a2r-fragment-lists') === 'true';
 
   const themeName = ast.getAttribute('a2r-theme-name') || 'dark';
+  const themeSwitchingMode = themeName.endsWith(('-manual')) ? 'manual' : 'auto';
+  const startingThemeName = themeName.split('-')[ 0 ];
+  const nonStartingThemeName = startingThemeName === 'dark' ? 'light' : 'dark';
   const themeHue = ast.getAttribute('a2r-theme-hue') || 170;
   const themeChromaLevel = ast.getAttribute('a2r-theme-chroma-level') || 'pastel';
-  const highlightTheme = ast.getAttribute('a2r-highlight-theme');
+  const highlightThemeDark = ast.getAttribute('a2r-highlight-theme-dark') || DEFAULT_DARK_THEME;
+  const highlightThemeLight = ast.getAttribute('a2r-highlight-theme-light') || DEFAULT_LIGHT_THEME;
 
   return {
     customJs,
@@ -39,6 +44,10 @@ function parseConfiguration (ast) {
     themeName,
     themeHue,
     themeChromaLevel,
-    highlightTheme,
+    startingThemeName,
+    nonStartingThemeName,
+    themeSwitchingMode,
+    highlightThemeDark,
+    highlightThemeLight,
   };
 }

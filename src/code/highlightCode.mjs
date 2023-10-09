@@ -2,13 +2,15 @@ import { readdirSync, readFileSync } from 'fs';
 import { resolve } from 'path';
 import Prism from 'prismjs';
 import loadLanguages from 'prismjs/components/index.js';
+import { compileString } from 'sass';
 import { stoyle } from 'stoyle';
 
 import { $$, insertInlineStyle } from '../domUtils.mjs';
 import { NODE_MODULES_PATH } from '../folders.mjs';
 import { logInfo, logWarn, theme } from '../log.mjs';
 
-const DEFAULT_THEME = 'one-dark';
+export const DEFAULT_DARK_THEME = 'one-dark';
+export const DEFAULT_LIGHT_THEME = 'one-light';
 const CLASSIC_PRISM_THEMES_PATH = resolve(NODE_MODULES_PATH, 'prismjs', 'themes');
 const EXTENDED_PRISM_THEMES_PATH = resolve(NODE_MODULES_PATH, 'prism-themes', 'themes');
 
@@ -25,7 +27,8 @@ const PRISM_PLUGINS = {
   },
 };
 
-export default async function highlightCode (dom, deck) {
+export default async function highlightCode (dom, { configuration }) {
+  const { themeName, highlightThemeDark, highlightThemeLight, themeSwitchingMode } = configuration;
   const languages = [
     ...new Set(
       $$(dom, 'pre code[data-lang]')
@@ -43,13 +46,43 @@ export default async function highlightCode (dom, deck) {
     .filter(([ key ]) => $$(dom, `.${key}`).length)
     .map(([ , plugin ]) => plugin);
 
-  const themeCssPath = findThemeCssPath(deck.configuration.highlightTheme);
-  const preparedDom = await prepareHighlighting(dom, pluginsToActivate, themeCssPath);
+  const highlightStyles = buildHighlightStyles(themeName, highlightThemeDark, highlightThemeLight, themeSwitchingMode);
+  const preparedDom = await prepareHighlighting(dom, pluginsToActivate, highlightStyles);
   Prism.highlightAllUnder(preparedDom.window.document); // NOTE: MUTATES AST!
   return preparedDom;
 }
 
-async function prepareHighlighting (dom, pluginsToActivate, themeCssPath) {
+function buildHighlightStyles (themeName, highlightThemeDark, highlightThemeLight, themeSwitchingMode) {
+  const darkThemeCssPath = findThemeCssPath(highlightThemeDark);
+  const darkTheme = readFileSync(darkThemeCssPath, 'utf8');
+  const lightThemeCssPath = findThemeCssPath(highlightThemeLight);
+  const lightTheme = readFileSync(lightThemeCssPath, 'utf8');
+
+  if (themeName === 'dark') {
+    return [ { id: 'PRISM_DARK', css: darkTheme } ];
+  }
+  if (themeName === 'light') {
+    return [ { id: 'PRISM_LIGHT', css: lightTheme } ];
+  }
+  if (themeSwitchingMode === 'manual') {
+    return [
+      { id: 'PRISM_DARK', css: darkTheme },
+      { id: 'PRISM_LIGHT', css: lightTheme },
+    ];
+  }
+  const { css } = compileString(
+    `@media (prefers-color-scheme: dark) { ${darkTheme} } @media (prefers-color-scheme: light) { ${lightTheme} }`,
+    {
+      style: 'compressed',
+      loadPaths: [ NODE_MODULES_PATH ],
+      sourceMap: false,
+      verbose: true,
+    },
+  );
+  return { id: 'PRISM', css };
+}
+
+async function prepareHighlighting (dom, pluginsToActivate, highlightStyles) {
   global.window = dom.window; // NOTE: required for Prism plugins, emulates a browser environment
   global.document = dom.window.document; // NOTE: required for Prism plugins, emulates a browser environment
   global.getComputedStyle = window.getComputedStyle; // Line-numbers plugin uses it as if in a browser => window instead of global
@@ -64,8 +97,8 @@ async function prepareHighlighting (dom, pluginsToActivate, themeCssPath) {
       Promise.resolve(''),
     );
 
-  const prismCss = readFileSync(themeCssPath, 'utf8');
-  insertInlineStyle(dom, 'PRISM', `${prismCss}${pluginsCss}`);
+  insertInlineStyle(dom, 'PRISM_PLUGINS', pluginsCss);
+  highlightStyles.forEach(({ id, css }) => { insertInlineStyle(dom, id, css); });
   return dom;
 }
 
@@ -87,14 +120,13 @@ function findAllThemes () {
     );
 }
 
-function findThemeCssPath (themeNameFromConfiguration) {
+function findThemeCssPath (themeName) {
   const themes = findAllThemes();
-  const themeName = themeNameFromConfiguration || DEFAULT_THEME;
   if (!themes[ themeName ]) {
     logWarn(stoyle`Unknown theme ${themeName}, using default theme (${DEFAULT_THEME}). Available themes are: [ ${Object.keys(themes).join(', ')} ]`(
       { nodes: [ theme.error, theme.success, theme.strong ] },
     ));
-    return themes[ DEFAULT_THEME ];
+    throw Error(`Oopsie, unknown theme ${themeName}`); // TODO: won't be possible once configuration is validated first
   }
   return themes[ themeName ];
 }
