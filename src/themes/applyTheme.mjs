@@ -163,11 +163,11 @@ function createTheme (hue, chromaLevel) {
   return {
     primaryColor: chromaJs.oklch(.6, chroma, hue),
     primaryColorLight: chromaJs.oklch(.8, chroma, hue),
-    primaryColorLighter: chromaJs.oklch(.94, .02, hue),
-    primaryColorLightest: chromaJs.oklch(.99, .02, hue),
+    primaryColorLighter: chromaJs.oklch(.94, .005, hue),
+    primaryColorLightest: chromaJs.oklch(.99, .005, hue),
     primaryColorDark: chromaJs.oklch(.4, chroma, hue),
-    primaryColorDarker: chromaJs.oklch(.06, .02, hue),
-    primaryColorDarkest: chromaJs.oklch(.01, .02, hue),
+    primaryColorDarker: chromaJs.oklch(.06, .005, hue),
+    primaryColorDarkest: chromaJs.oklch(.01, .005, hue),
   };
 }
 
