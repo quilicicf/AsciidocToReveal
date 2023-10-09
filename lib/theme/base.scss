@@ -45,4 +45,17 @@ section.has-light-background {
   border-radius: 7px;
 }
 
+.speaker-notes {
+  color: var(--r-main-color) !important;
+  border: solid 1px var(--r-main-color) !important;
+  background-color: var(--r-background-color) !important;
+}
+
+.speaker-notes code:not(pre code) {
+  color: var(--color-primary);
+  padding: 0 .2em;
+  border-radius: .2em;
+  border: solid 1px var(--color-primary);
+}
+
 // ---------------------------------------------
