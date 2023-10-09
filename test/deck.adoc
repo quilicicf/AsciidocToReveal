@@ -22,14 +22,23 @@ https://github.com/quilicicf/AsciidocToReveal[The code]
 == Failed attempts
 
 * Bundle a Reveal.js deck
+** link:https://github.com/hakimel/reveal.js/issues/2524[Contributions to Reveal.js]
+** link:https://api-domain-presentations.central.cloud.talend.com/[API presentations]
 * Create Parcel transformer
 * Use the official Asciidoc-Reveal plugin
 
+[.notes]
+====
+* Bundling was mostly OK but no single-file, & still rather heavy
+* Parcel transformer was not possible, no help from community
+* The official plugin was opinionated in ways I don't like, mostly irrelevant Asciidoc document-based view. Like h1 doesn't create a proper slide.
+====
+
 == Features I wanted
 
-* Simpler than HTML
-* Self-sufficient HTML
-* Smallest possible HTML
+* Input simpler than HTML
+* Self-sufficient HTML output
+* Smallest possible HTML output
 * Speaker notes
 * Layouts
 * Code highlight
@@ -42,12 +51,121 @@ https://github.com/quilicicf/AsciidocToReveal[The code]
 * Light/dark themes
 * Custom fonts `[COMING SOON]`
 
-== Simpler than HTML
+== How it's built
+
+=== Process
+
+[source,mermaid,role="graph graph-id-process"]
+----
+flowchart LR
+    asciicode([Asciidoc Code])
+    subgraph loa [Loop over AST]
+        base1([AST])
+        parseDeck([Deck + AST + DOM v1])
+        insertFavicon([Deck + AST + DOM v2])
+        insertTitleSection([Deck + AST + DOM v3])
+        insertOtherSections([Deck + AST + DOM v4])
+        embedImages([Deck + AST + DOM v5])
+        embedEmojis([Deck + AST + DOM v6])
+        fixupCodeBlocks([Deck + AST + DOM v7])
+        extractSpeakerNotes([Deck + AST + DOM v8])
+        fragmentLists([Deck + AST + DOM v9])
+    end
+    subgraph lod [Loop over DOM]
+        base2([Deck + DOM v1])
+        buildGraphs([Deck + DOM v2])
+        highlightCode([Deck + DOM v3])
+        applyLayouts([Deck + DOM v4])
+        applyTheme([Deck + DOM v5])
+        insertCustomFiles([Deck + DOM v6])
+    end
+    htmlCode([HTML code])
+    minifiedHtmlCode([Minified code])
+    gzippedHtmlCode([Gzipped code])
+
+    asciicode --> |Create base DOM| loa
+        base2 --> |Build graphs| buildGraphs
+        buildGraphs --> |Highlight code| highlightCode
+        highlightCode --> |Apply layouts| applyLayouts
+        applyLayouts --> |Apply themes| applyTheme
+        applyTheme --> |Insert custom files| insertCustomFiles
+    loa --> lod
+        base1 --> |Parse asciidoc| parseDeck
+        parseDeck --> |Insert favicon| insertFavicon
+        insertFavicon --> |Insert title section| insertTitleSection
+        insertTitleSection --> |Insert other sections| insertOtherSections
+        insertOtherSections --> |Embed images| embedImages
+        embedImages --> |Embed emojis| embedEmojis
+        embedEmojis --> |Fixup code blocks| fixupCodeBlocks
+        fixupCodeBlocks --> |Extract speaker notes| extractSpeakerNotes
+        extractSpeakerNotes --> |Fragment lists| fragmentLists
+    lod --> |Generate HTML| htmlCode
+    htmlCode --> |Minify| minifiedHtmlCode
+    minifiedHtmlCode --> |Gzip| gzippedHtmlCode
+----
+
+[source,json,role="graph-animation graph-id-process"]
+----
+[
+  { "selector": ".root .nodes .root:nth-of-type(2)", "classes": [ "fragment" ], "attributes": { "data-fragment-index": 0 } },
+  { "selector": "#L-asciicode-loa-0", "classes": [ "fragment" ], "attributes": { "data-fragment-index": 0 } },
+  { "selector": "*:not(.nodes)>.root>.edgeLabels>.edgeLabel:nth-of-type(3)", "classes": [ "fragment" ], "attributes": { "data-fragment-index": 0 } },
+
+  { "selector": ".root .nodes .root:nth-of-type(1)", "classes": [ "fragment" ], "attributes": { "data-fragment-index": 1 } },
+  { "selector": "#L-loa-lod-0", "classes": [ "fragment" ], "attributes": { "data-fragment-index": 1 } },
+
+  { "selector": "#flowchart-htmlCode-17", "classes": [ "fragment" ], "attributes": { "data-fragment-index": 2 } },
+  { "selector": "#L-lod-htmlCode-0", "classes": [ "fragment" ], "attributes": { "data-fragment-index": 2 } },
+  { "selector": "*:not(.nodes)>.root>.edgeLabels>.edgeLabel:nth-of-type(5)", "classes": [ "fragment" ], "attributes": { "data-fragment-index": 2 } },
+
+  { "selector": "#flowchart-minifiedHtmlCode-18", "classes": [ "fragment" ], "attributes": { "data-fragment-index": 2 } },
+  { "selector": "#L-htmlCode-minifiedHtmlCode-0", "classes": [ "fragment" ], "attributes": { "data-fragment-index": 2 } },
+  { "selector": "*:not(.nodes)>.root>.edgeLabels>.edgeLabel:nth-of-type(1)", "classes": [ "fragment" ], "attributes": { "data-fragment-index": 2 } },
+  { "selector": "#flowchart-gzippedHtmlCode-19", "classes": [ "fragment" ], "attributes": { "data-fragment-index": 2 } },
+  { "selector": "#L-minifiedHtmlCode-gzippedHtmlCode-0", "classes": [ "fragment" ], "attributes": { "data-fragment-index": 2 } },
+  { "selector": "*:not(.nodes)>.root>.edgeLabels>.edgeLabel:nth-of-type(2)", "classes": [ "fragment" ], "attributes": { "data-fragment-index": 2 } }
+]
+----
+
+=== Architecture
+
+[.layout-columns]
+====
+[.column-3x]
+=====
+=====
+
+[.column-6x]
+=====
+[source,role="keep-markup"]
+----
+.
+├── <span class="token tag">build-area</span>            <span class="dim"># Build cache</span>
+├── <span class="token function">cli</span>                   <span class="dim"># CLI tool code</span>
+├── <span class="token tag">dist</span>                  <span class="dim"># Built deck</span>
+├── <span class="token string">lib</span>                   <span class="dim"># Base files for decks</span>
+├── <span class="token function">src</span>                   <span class="dim"># Source files for a2r</span>
+└── <span class="token string">test</span>                  <span class="dim"># Test presentation files</span>
+----
+=====
+====
+
+[.notes]
+====
+* Sources are read from the `test` folder
+* The `lib` folder contains files that need some compilation (SASS -> CSS, JS bundling)
+* The `src` folder contains the source code for `a2r`
+* The `cli` folder contains the CLI wrapper for `a2r`
+* The `build-area` folder contains pre-built parts of the configuration like emojis/graphs etc... to avoid re-fetching/-building immutable things
+* The `dist` folder contains the final result
+====
+
+== Input simpler than HTML
 
 * Needed a markup language
 * Asciidoc > Markdown
 
-== Self-sufficient HTML
+== Self-sufficient HTML output
 
 * Embed all dependencies (once)
 * Including binary files!
@@ -70,7 +188,7 @@ https://github.com/quilicicf/AsciidocToReveal[The code]
 </body>
 --
 
-== Smallest possible HTML
+== Smallest possible HTML output
 
 * Static HTML
 * Minimal CSS & JS
