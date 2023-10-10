@@ -10,35 +10,45 @@ import { CHROMA_LEVELS, DEFAULT_CHROMA_LEVEL, DEFAULT_HUE, DEFAULT_THEME, THEMES
 export const deckConfiguration = {
   customJs: {
     id: 'a2r-js',
-    documentation: ``,
+    documentation: `Specify a path to a custom JS file that will be the last loaded script in the final deck`,
+    defaultValue: '',
+    acceptedValues: 'Path relative to the deck\'s input file',
     validate (value, inputFolder) {
       return validateCustomFilePath(value, 'custom JS', inputFolder);
     },
   },
   customCss: {
     id: 'a2r-css',
-    documentation: ``,
+    documentation: `Specify a path to a custom CSS file that will be the last loaded style in the final deck`,
+    defaultValue: '',
+    acceptedValues: 'Path relative to the deck\'s input file',
     validate (value, inputFolder) {
       return validateCustomFilePath(value, 'custom CSS', inputFolder);
     },
   },
   favicon: {
     id: 'a2r-favicon',
-    documentation: ``,
+    documentation: `Specify a path to the file containing your favicon`,
+    defaultValue: '',
+    acceptedValues: 'Path relative to the deck\'s input file',
     validate (value, inputFolder) {
       return validateCustomFilePath(value, 'favicon', inputFolder);
     },
   },
   pageTitle: {
     id: 'a2r-page-title',
-    documentation: ``,
+    documentation: `Specify the HTML title for the deck`,
+    defaultValue: 'First slide\'s title',
+    acceptedValues: 'Any string',
     validate (value) {
-      return sanitize(value);
+      return value === undefined ? undefined : sanitize(value);
     },
   },
   shouldFragmentLists: {
     id: 'a2r-fragment-lists',
-    documentation: ``,
+    documentation: `Make all lists in the deck Reveal.js fragments`,
+    defaultValue: false,
+    acceptedValues: 'booleans',
     validate (value) {
       switch (value) {
         case 'true':
@@ -46,53 +56,63 @@ export const deckConfiguration = {
         case 'false':
           return false;
         case undefined:
-          return false;
+          return this.defaultValue;
         default:
           logWarn(stoyle`Invalid value ${value} for list fragmentation, not fragmenting`({ nodes: [ theme.strong ] }));
-          return false;
+          return this.defaultValue;
       }
     },
   },
 
   themeName: {
     id: 'a2r-theme-name',
-    documentation: ``,
+    documentation: `Select the theme to use`,
+    defaultValue: DEFAULT_THEME,
+    acceptedValues: Object.values(THEMES),
     validate (value) {
-      return validateEnumValue(value, 'theme name', Object.values(THEMES), DEFAULT_THEME);
+      return validateEnumValue(value, 'theme name', this.acceptedValues, this.defaultValue);
     },
   },
   themeHue: {
     id: 'a2r-theme-hue',
-    documentation: ``,
+    documentation: `The hue of the accent color`,
+    defaultValue: DEFAULT_HUE,
+    acceptedValues: '0 <= x <= 360',
     validate (value) {
-      if (value === undefined) { return DEFAULT_HUE; }
+      if (value === undefined) { return this.defaultValue; }
       if (0 <= value && value <= 360) { return value; }
 
-      logWarn(stoyle`Invalid theme hue ${value}, must be in range [ ${0}, ${360} ]. Using default hue ${DEFAULT_HUE} instead`({
+      logWarn(stoyle`Invalid theme hue ${value}, must be in range [ ${0}, ${360} ]. Using default hue ${this.defaultValue} instead`({
         nodes: [ theme.error, theme.success, theme.success, theme.info ],
       }));
-      return DEFAULT_HUE;
+      return this.defaultValue;
     },
   },
   themeChromaLevel: {
     id: 'a2r-theme-chroma-level',
-    documentation: ``,
+    documentation: `The chroma level of the accent color`,
+    defaultValue: DEFAULT_CHROMA_LEVEL,
+    acceptedValues: Object.keys(CHROMA_LEVELS),
     validate (value) {
-      return validateEnumValue(value, 'theme chroma level', Object.keys(CHROMA_LEVELS), DEFAULT_CHROMA_LEVEL);
+      return validateEnumValue(value, 'theme chroma level', this.acceptedValues, this.defaultValue);
     },
   },
   highlightThemeDark: {
     id: 'a2r-highlight-theme-dark',
-    documentation: ``,
+    documentation: 'The theme for syntax coloration in dark mode',
+    defaultValue: DEFAULT_DARK_HIGHLIGHT_THEME,
+    acceptedValues: Object.keys(HIGHLIGHT_THEMES).sort(),
     validate (value) {
-      return validateEnumValue(value, 'dark highlight theme', Object.keys(HIGHLIGHT_THEMES), DEFAULT_DARK_HIGHLIGHT_THEME);
+      return validateEnumValue(value, 'dark highlight theme', this.acceptedValues, this.defaultValue);
     },
   },
   highlightThemeLight: {
     id: 'a2r-highlight-theme-light',
-    documentation: ``,
+    documentation: 'The theme for syntax coloration in light mode',
+    defaultValue: DEFAULT_LIGHT_HIGHLIGHT_THEME,
+    acceptedValues: 'Same as for dark mode',
     validate (value) {
-      return validateEnumValue(value, 'light highlight theme', Object.keys(HIGHLIGHT_THEMES), DEFAULT_LIGHT_HIGHLIGHT_THEME);
+      return validateEnumValue(value, 'light highlight theme', Object.keys(HIGHLIGHT_THEMES), this.defaultValue);
     },
   },
 };

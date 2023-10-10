@@ -7,7 +7,8 @@
   },
   "scripts": {
     "build": "node cli/a2r.mjs build --input-file test/deck.adoc --output-file dist/deck.html",
-    "start": "node cli/a2r.mjs watch --input-file test/deck.adoc --output-file dist/deck.html"
+    "start": "node cli/a2r.mjs watch --input-file test/deck.adoc --output-file dist/deck.html",
+    "update-doc": "node scripts/documentParameters.mjs"
   },
   "keywords": [
     "asciidoc",

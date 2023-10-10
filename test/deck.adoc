@@ -455,6 +455,66 @@ emoji:muscle[]emoji:muscle[1.4,em]emoji:muscle[]
 * Validation will come too
 ====
 
+=== Parameters documentation
+
+// START PARAMETERS DOCUMENTATION
+[cols="2,1,3,2",role=extra-small]
+|===
+| Option | Default value | Accepted values | Description
+
+| `a2r-js`
+| 
+| Path relative to the deck's input file
+| Specify a path to a custom JS file that will be the last loaded script in the final deck
+
+| `a2r-css`
+| 
+| Path relative to the deck's input file
+| Specify a path to a custom CSS file that will be the last loaded style in the final deck
+
+| `a2r-favicon`
+| 
+| Path relative to the deck's input file
+| Specify a path to the file containing your favicon
+
+| `a2r-page-title`
+| First slide's title
+| Any string
+| Specify the HTML title for the deck
+
+| `a2r-fragment-lists`
+| false
+| booleans
+| Make all lists in the deck Reveal.js fragments
+
+| `a2r-theme-name`
+| dark
+| dark, light, light-and-dark-manual, dark-and-light-manual, light-and-dark-auto
+| Select the theme to use
+
+| `a2r-theme-hue`
+| 170
+| 0 <= x <= 360
+| The hue of the accent color
+
+| `a2r-theme-chroma-level`
+| pastel
+| pastel, classic, vibrant
+| The chroma level of the accent color
+
+| `a2r-highlight-theme-dark`
+| one-dark
+| a11y-dark, atom-dark, cb, coldark-cold, coldark-dark, coy, coy-without-shadows, darcula, dark, default, dracula, duotone-dark, duotone-earth, duotone-forest, duotone-light, duotone-sea, duotone-space, funky, ghcolors, gruvbox-dark, gruvbox-light, holi-theme, hopscotch, lucario, material-dark, material-light, material-oceanic, night-owl, nord, okaidia, one-dark, one-light, pojoaque, shades-of-purple, solarized-dark-atom, solarizedlight, synthwave84, tomorrow, twilight, vs, vsc-dark-plus, xonokai, z-touch
+| The theme for syntax coloration in dark mode
+
+| `a2r-highlight-theme-light`
+| one-light
+| Same as for dark mode
+| The theme for syntax coloration in light mode
+
+|===
+// END PARAMETERS DOCUMENTATION
+
 == Custom JS/CSS
 
 [.layout-columns]
@@ -503,7 +563,6 @@ Allows to add specific styles & behaviors for each deck using CSS/JS(Reveal) dir
 
 == Rest of the roadmap
 
-* Document deck parameters
 * Apply light/dark themes to mermaid graphs
 * Better fragments
 * Better graph animation
@@ -517,7 +576,6 @@ Allows to add specific styles & behaviors for each deck using CSS/JS(Reveal) dir
 
 [.notes]
 ====
-* Currently, un-documented
 * Currently, only dark mode is supported in graphs
 * The default of fade-in-then-semi-out doesn't work everywhere. Syncing fragments from auto-animated list & something else either
 * Maybe by contributing to Mermaid so that ids are found everywhere in the generated SVG
