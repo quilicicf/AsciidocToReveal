@@ -56,8 +56,7 @@ export default function deckToHtml (deck) {
 function insertFavicon (dom, { inputFolder, configuration }) {
   const { favicon } = configuration;
   if (favicon) {
-    const imageAbsolutePath = resolve(inputFolder, favicon);
-    const imageContent = readFileSync(imageAbsolutePath, 'utf8');
+    const imageContent = readFileSync(favicon, 'utf8');
     const dataUri = `data:image/svg+xml,${encodeURIComponent(imageContent)}`;
     $(dom, 'head')
       .insertAdjacentHTML('afterbegin', `<link rel="icon" href="${dataUri}"/>`);

@@ -9,8 +9,6 @@ import { $$, insertInlineStyle } from '../domUtils.mjs';
 import { NODE_MODULES_PATH } from '../folders.mjs';
 import { logInfo, logWarn, theme } from '../log.mjs';
 
-export const DEFAULT_DARK_THEME = 'one-dark';
-export const DEFAULT_LIGHT_THEME = 'one-light';
 const CLASSIC_PRISM_THEMES_PATH = resolve(NODE_MODULES_PATH, 'prismjs', 'themes');
 const EXTENDED_PRISM_THEMES_PATH = resolve(NODE_MODULES_PATH, 'prism-themes', 'themes');
 
@@ -26,6 +24,10 @@ const PRISM_PLUGINS = {
     pluginPath: 'prismjs/plugins/keep-markup/prism-keep-markup.js',
   },
 };
+
+export const HIGHLIGHT_THEMES = findAllThemes();
+export const DEFAULT_DARK_HIGHLIGHT_THEME = 'one-dark';
+export const DEFAULT_LIGHT_HIGHLIGHT_THEME = 'one-light';
 
 export default async function highlightCode (dom, { configuration }) {
   const { themeName, highlightThemeDark, highlightThemeLight, themeSwitchingMode } = configuration;

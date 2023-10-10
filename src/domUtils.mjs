@@ -66,3 +66,10 @@ export function insertInlineScript (dom, scriptId, scriptContent, scriptPosition
   $(dom, 'body')
     .insertAdjacentHTML(scriptPosition, `<script id="JS_${scriptId}" type="module">${scriptContent}</script>`);
 }
+
+
+export function sanitize (text) {
+  return text
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;');
+}

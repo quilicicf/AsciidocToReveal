@@ -503,7 +503,8 @@ Allows to add specific styles & behaviors for each deck using CSS/JS(Reveal) dir
 
 == Rest of the roadmap
 
-* Document and validate deck parameters
+* Document deck parameters
+* Apply light/dark themes to mermaid graphs
 * Better fragments
 * Better graph animation
 * Watch shouldn't stop
@@ -516,7 +517,8 @@ Allows to add specific styles & behaviors for each deck using CSS/JS(Reveal) dir
 
 [.notes]
 ====
-* Currently, un-documented and parsed with a YOLO attitude
+* Currently, un-documented
+* Currently, only dark mode is supported in graphs
 * The default of fade-in-then-semi-out doesn't work everywhere. Syncing fragments from auto-animated list & something else either
 * Maybe by contributing to Mermaid so that ids are found everywhere in the generated SVG
 * Currently, watch stops whenever an error is encountered
