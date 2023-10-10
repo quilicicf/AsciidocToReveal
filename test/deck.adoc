@@ -116,26 +116,26 @@ flowchart LR
     minifiedHtmlCode --> |Gzip| gzippedHtmlCode
 ----
 
-[source,json,role="graph-animation graph-id-process"]
+[graph-animation,graph-id-process]
 ----
 [
-  { "selector": ".root .nodes .root:nth-of-type(2)", "classes": [ "fragment" ], "attributes": { "data-fragment-index": 0 } },
-  { "selector": "#L-asciicode-loa-0", "classes": [ "fragment" ], "attributes": { "data-fragment-index": 0 } },
-  { "selector": "*:not(.nodes)>.root>.edgeLabels>.edgeLabel:nth-of-type(3)", "classes": [ "fragment" ], "attributes": { "data-fragment-index": 0 } },
+  { selector: '.root .nodes .root:nth-of-type(2)', classes: [ 'fragment' ], attributes: { 'data-fragment-index': 0 } },
+  { selector: '#L-asciicode-loa-0', classes: [ 'fragment' ], attributes: { 'data-fragment-index': 0 } },
+  { selector: '*:not(.nodes)>.root>.edgeLabels>.edgeLabel:nth-of-type(3)', classes: [ 'fragment' ], attributes: { 'data-fragment-index': 0 } },
 
-  { "selector": ".root .nodes .root:nth-of-type(1)", "classes": [ "fragment" ], "attributes": { "data-fragment-index": 1 } },
-  { "selector": "#L-loa-lod-0", "classes": [ "fragment" ], "attributes": { "data-fragment-index": 1 } },
+  { selector: '.root .nodes .root:nth-of-type(1)', classes: [ 'fragment' ], attributes: { 'data-fragment-index': 1 } },
+  { selector: '#L-loa-lod-0', classes: [ 'fragment' ], attributes: { 'data-fragment-index': 1 } },
 
-  { "selector": "#flowchart-htmlCode-17", "classes": [ "fragment" ], "attributes": { "data-fragment-index": 2 } },
-  { "selector": "#L-lod-htmlCode-0", "classes": [ "fragment" ], "attributes": { "data-fragment-index": 2 } },
-  { "selector": "*:not(.nodes)>.root>.edgeLabels>.edgeLabel:nth-of-type(5)", "classes": [ "fragment" ], "attributes": { "data-fragment-index": 2 } },
+  { selector: '#flowchart-htmlCode-17', classes: [ 'fragment' ], attributes: { 'data-fragment-index': 2 } },
+  { selector: '#L-lod-htmlCode-0', classes: [ 'fragment' ], attributes: { 'data-fragment-index': 2 } },
+  { selector: '*:not(.nodes)>.root>.edgeLabels>.edgeLabel:nth-of-type(5)', classes: [ 'fragment' ], attributes: { 'data-fragment-index': 2 } },
 
-  { "selector": "#flowchart-minifiedHtmlCode-18", "classes": [ "fragment" ], "attributes": { "data-fragment-index": 2 } },
-  { "selector": "#L-htmlCode-minifiedHtmlCode-0", "classes": [ "fragment" ], "attributes": { "data-fragment-index": 2 } },
-  { "selector": "*:not(.nodes)>.root>.edgeLabels>.edgeLabel:nth-of-type(1)", "classes": [ "fragment" ], "attributes": { "data-fragment-index": 2 } },
-  { "selector": "#flowchart-gzippedHtmlCode-19", "classes": [ "fragment" ], "attributes": { "data-fragment-index": 2 } },
-  { "selector": "#L-minifiedHtmlCode-gzippedHtmlCode-0", "classes": [ "fragment" ], "attributes": { "data-fragment-index": 2 } },
-  { "selector": "*:not(.nodes)>.root>.edgeLabels>.edgeLabel:nth-of-type(2)", "classes": [ "fragment" ], "attributes": { "data-fragment-index": 2 } }
+  { selector: '#flowchart-minifiedHtmlCode-18', classes: [ 'fragment' ], attributes: { 'data-fragment-index': 2 } },
+  { selector: '#L-htmlCode-minifiedHtmlCode-0', classes: [ 'fragment' ], attributes: { 'data-fragment-index': 2 } },
+  { selector: '*:not(.nodes)>.root>.edgeLabels>.edgeLabel:nth-of-type(1)', classes: [ 'fragment' ], attributes: { 'data-fragment-index': 2 } },
+  { selector: '#flowchart-gzippedHtmlCode-19', classes: [ 'fragment' ], attributes: { 'data-fragment-index': 2 } },
+  { selector: '#L-minifiedHtmlCode-gzippedHtmlCode-0', classes: [ 'fragment' ], attributes: { 'data-fragment-index': 2 } },
+  { selector: '*:not(.nodes)>.root>.edgeLabels>.edgeLabel:nth-of-type(2)', classes: [ 'fragment' ], attributes: { 'data-fragment-index': 2 } },
 ]
 ----
 
@@ -343,13 +343,13 @@ flowchart LR
 ----
 [
   {
-    "selector": "#AsciidocToReveal",
-    "classes": [ "fragment" ],
-    "attributes": { "data-fragment-index": 0 }
+    selector: '#AsciidocToReveal',
+    classes: [ 'fragment' ],
+    attributes: { 'data-fragment-index': 0 }
   },
-  { "selector": "[id^=flowchart-mermaidCode-]", "classes": [ "fragment" ], "attributes": { "data-fragment-index": 1 } },
-  { "selector": "#L-mermaidCode-svgCode-0", "classes": [ "fragment" ], "attributes": { "data-fragment-index": 2 } },
-  { "selector": "[id^=flowchart-svgCode-]", "classes": [ "fragment" ], "attributes": { "data-fragment-index": 2 } }
+  { selector: '[id^=flowchart-mermaidCode-]', classes: [ 'fragment' ], attributes: { 'data-fragment-index': 1 } },
+  { selector: '#L-mermaidCode-svgCode-0', classes: [ 'fragment' ], attributes: { 'data-fragment-index': 2 } },
+  { selector: '[id^=flowchart-svgCode-]', classes: [ 'fragment' ], attributes: { 'data-fragment-index': 2 } },
   // etc...
 ]
 ----
@@ -374,23 +374,23 @@ flowchart LR
     animationCode:::output --> animatedSvgCode
 ----
 
-[source,json,role="graph-animation graph-id-flowchart"]
+[graph-animation,graph-id-flowchart]
 ----
 [
-  { "selector": "#AsciidocToReveal", "classes": [ "fragment" ], "attributes": { "data-fragment-index": 0 } },
-  { "selector": "#Mermaid", "classes": [ "fragment" ], "attributes": { "data-fragment-index": 0 } },
+  { selector: '#AsciidocToReveal', classes: [ 'fragment' ], attributes: { 'data-fragment-index': 0 } },
+  { selector: '#Mermaid', classes: [ 'fragment' ], attributes: { 'data-fragment-index': 0 } },
 
-  { "selector": "[id^=flowchart-mermaidCode-]", "classes": [ "fragment" ], "attributes": { "data-fragment-index": 1 } },
+  { selector: '[id^=flowchart-mermaidCode-]', classes: [ 'fragment' ], attributes: { 'data-fragment-index': 1 } },
 
-  { "selector": "#L-mermaidCode-svgCode-0", "classes": [ "fragment" ], "attributes": { "data-fragment-index": 2 } },
-  { "selector": "[id^=flowchart-svgCode-]", "classes": [ "fragment" ], "attributes": { "data-fragment-index": 2 } },
+  { selector: '#L-mermaidCode-svgCode-0', classes: [ 'fragment' ], attributes: { 'data-fragment-index': 2 } },
+  { selector: '[id^=flowchart-svgCode-]', classes: [ 'fragment' ], attributes: { 'data-fragment-index': 2 } },
 
-  { "selector": "[id^=flowchart-animationCode-]", "classes": [ "fragment" ], "attributes": { "data-fragment-index": 3 } },
+  { selector: '[id^=flowchart-animationCode-]', classes: [ 'fragment' ], attributes: { 'data-fragment-index': 3 } },
 
-  { "selector": "#L-svgCode-animatedSvgCode-0", "classes": [ "fragment" ], "attributes": { "data-fragment-index": 4 } },
-  { "selector": "#L-animationCode-animatedSvgCode-0", "classes": [ "fragment" ], "attributes": { "data-fragment-index": 4 } },
-  { "selector": "[id^=flowchart-animatedSvgCode-]", "classes": [ "fragment" ], "attributes": { "data-fragment-index": 4 } },
-  { "selector": "#wtf" }
+  { selector: '#L-svgCode-animatedSvgCode-0', classes: [ 'fragment' ], attributes: { 'data-fragment-index': 4 } },
+  { selector: '#L-animationCode-animatedSvgCode-0', classes: [ 'fragment' ], attributes: { 'data-fragment-index': 4 } },
+  { selector: '[id^=flowchart-animatedSvgCode-]', classes: [ 'fragment' ], attributes: { 'data-fragment-index': 4 } },
+  { selector: '#wtf' },
 ]
 ----
 =====

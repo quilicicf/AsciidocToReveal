@@ -3,16 +3,19 @@ import { dirname } from 'path';
 import { DEFAULT_DARK_THEME, DEFAULT_LIGHT_THEME } from '../code/highlightCode.mjs';
 
 import registerEmojisExtension from './emojis/asciidoctor-emojis.mjs';
+import registerGraphAnimationExtension from './graph-animations/asciidoctor-graph-animations.mjs';
 
 export default function parseDeck (inputPath) {
   const inputFolder = dirname(inputPath);
   const processor = new Processor();
   const emojisRegister = registerEmojisExtension(processor.Extensions);
+  const graphAnimationsRegister = registerGraphAnimationExtension(processor.Extensions);
   const ast = processor.loadFile(inputPath, { catalog_assets: true });
   const configuration = parseConfiguration(ast);
   return {
     ast,
     emojisRegister,
+    graphAnimationsRegister,
     inputFolder,
     configuration,
   };

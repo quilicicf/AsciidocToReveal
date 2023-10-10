@@ -11,11 +11,7 @@ const UNITS = [ 'px', 'em' ];
 const EMOJIS = {};
 
 export default function register (registry) {
-  if (typeof registry.register === 'function') {
-    registry.register(function setInlineMacro () { this.inlineMacro(emojiInlineMacro); });
-  } else if (typeof registry.block === 'function') {
-    registry.inlineMacro(emojiInlineMacro);
-  }
+  registry.register(function setInlineMacro () { this.inlineMacro(emojiInlineMacro); });
   return EMOJIS;
 }
 

@@ -3,7 +3,7 @@ import { createHash } from 'crypto';
 import { existsSync, readFileSync, writeFileSync } from 'fs';
 import { resolve } from 'path';
 import { stoyle } from 'stoyle';
-import { $, $$, removeFromParent } from '../domUtils.mjs';
+import { $$ } from '../domUtils.mjs';
 
 import { BUILD_AREA_PATH } from '../folders.mjs';
 import { logWarn, theme } from '../log.mjs';
@@ -28,12 +28,12 @@ const MERMAID_CONFIGURATION = {
   },
 };
 
-export default async function buildGraphs (dom) {
+export default async function buildGraphs (dom, { graphAnimationsRegister }) {
   const graphContainers = $$(dom, '.graph');
   if (!graphContainers.length) { return dom; }
 
   return graphContainers.reduce(
-    (promise, graphContainer, index) => promise.then(async (seed) => processGraph(seed, graphContainer, index)),
+    (promise, graphContainer) => promise.then(async (seed) => processGraph(seed, graphContainer, graphAnimationsRegister)),
     Promise.resolve(dom),
   );
 }
@@ -42,20 +42,18 @@ export default async function buildGraphs (dom) {
  * Retrieves the mermaid code in a code block annotated with role 'graph'.
  * Generates the corresponding SVG definition, and substitutes the code block for the graph.
  */
-async function processGraph (dom, graphContainerNode, graphIndex) {
+async function processGraph (dom, graphContainerNode, graphAnimationsRegister) {
   const graphNode = graphContainerNode.querySelector('code');
 
   const graphId = [ ...graphContainerNode.classList.values() ]
-    .find((clazz) => clazz.startsWith('graph-id-')) || `graph-id-${graphIndex}`;
+    .find((clazz) => clazz.startsWith('graph-id-'));
 
   const graphCode = graphNode.innerHTML.replaceAll('&gt;', '>'); // Auto-replaced by JSDom when injected in the code block!
   graphContainerNode.innerHTML = await mermaidToSvg(graphId, graphCode);
   const newGraphNode = graphContainerNode.childNodes[ 0 ];
 
-  const animationNode = $(dom, `.graph-animation.${graphId}`);
-  if (animationNode) {
-    animateGraph(graphId, newGraphNode, animationNode);
-  }
+  (graphAnimationsRegister[ graphId ] || [])
+    .forEach((animation) => animateNodes(graphId, newGraphNode, animation));
 
   return dom;
 }
@@ -82,21 +80,8 @@ async function mermaidToSvg (graphId, graphCode) {
   return readFileSync(outputFilePath, 'utf8');
 }
 
-function animateGraph (graphId, graphNode, animationNode) {
-  const animationCodeNode = animationNode.querySelector('code');
-  const animationCode = animationCodeNode.innerHTML;
-
-  JSON.parse(animationCode).forEach((animation) => animateNodes(graphId, graphNode, animation));
-
-  removeFromParent(animationNode);
-}
-
-function unFuckUpSelector (fuckedUpSelector) {
-  return fuckedUpSelector.replaceAll('&gt;', '>');
-}
-
 function animateNodes (graphId, graphNode, animation) {
-  const selector = unFuckUpSelector(animation.selector);
+  const { selector, classes = [], attributes = {} } = animation;
   const elementsToAnimate = [ ...graphNode.querySelectorAll(selector) ];
   if (!elementsToAnimate.length) {
     logWarn(stoyle`Could not animate elements defined by ${selector} in graph ${graphId}, not found.`({ nodes: [ theme.strong, theme.strong ] }));
@@ -104,8 +89,8 @@ function animateNodes (graphId, graphNode, animation) {
   }
 
   elementsToAnimate.forEach((elementToAnimate) => {
-    elementToAnimate.classList.add(...animation.classes);
-    Object.entries(animation.attributes)
+    elementToAnimate.classList.add(...classes);
+    Object.entries(attributes)
       .forEach(([ key, value ]) => elementToAnimate.setAttribute(key, value));
   });
 }
