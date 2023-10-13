@@ -1,9 +1,10 @@
 import { run } from '@mermaid-js/mermaid-cli';
 import { createHash } from 'crypto';
 import { existsSync, readFileSync, writeFileSync } from 'fs';
+import jsdom from 'jsdom';
 import { resolve } from 'path';
 import { stoyle } from 'stoyle';
-import { $$ } from '../domUtils.mjs';
+import { $, removeFromParent } from '../domUtils.mjs';
 
 import { BUILD_AREA_PATH } from '../folders.mjs';
 import { logWarn, theme } from '../log.mjs';
@@ -16,10 +17,8 @@ const MERMAID_CONFIGURATION = {
   },
   parseMMDOptions: {
     backgroundColor: 'transparent',
-    myCSS: undefined, // TODO: add some if necessary
+    myCSS: undefined,
     mermaidConfig: {
-      theme: 'dark', // TODO: support light themes
-      darkMode: true, // TODO: support light themes
       logLevel: 'error',
       securityLevel: 'loose',
       startOnLoad: false,
@@ -28,34 +27,40 @@ const MERMAID_CONFIGURATION = {
   },
 };
 
-export default async function buildGraphs (dom, { graphAnimationsRegister }) {
-  const graphContainers = $$(dom, '.graph');
-  if (!graphContainers.length) { return dom; }
+export default async function buildGraphs (dom, { graphsRegister, graphAnimationsRegister, graphTypes }) {
+  const graphEntries = Object.entries(graphsRegister);
+  if (!graphEntries.length) { return dom; }
 
-  return graphContainers.reduce(
-    (promise, graphContainer) => promise.then(async (seed) => processGraph(seed, graphContainer, graphAnimationsRegister)),
-    Promise.resolve(dom),
+  const graphTypesWithPotentialDuplicates = await Promise.all(
+    graphEntries
+      .map(([ graphId, graphText ]) => processGraph(dom, graphId, graphText, graphAnimationsRegister)),
   );
+  [ ...new Set(graphTypesWithPotentialDuplicates) ].forEach((graphType) => graphTypes.push(graphType));
+
+  const animationsWithNoGraph = Object.keys(graphAnimationsRegister)
+    .filter((graphAnimationId) => !graphsRegister[ graphAnimationId ]);
+  if (animationsWithNoGraph.length) {
+    logWarn(stoyle`Graph animations [ ${animationsWithNoGraph.join(', ')} ] are linked to no known graph`({ nodes: [ theme ] }));
+  }
+
+  return dom;
 }
 
 /**
- * Retrieves the mermaid code in a code block annotated with role 'graph'.
- * Generates the corresponding SVG definition, and substitutes the code block for the graph.
+ * Generates the SVG definition of a graph, and substitutes the corresponding code block for the graph.
+ * Returns the graph type so the caller can add the appropriate CSS.
  */
-async function processGraph (dom, graphContainerNode, graphAnimationsRegister) {
-  const graphNode = graphContainerNode.querySelector('code');
-
-  const graphId = [ ...graphContainerNode.classList.values() ]
-    .find((clazz) => clazz.startsWith('graph-id-'));
-
-  const graphCode = graphNode.innerHTML.replaceAll('&gt;', '>'); // Auto-replaced by JSDom when injected in the code block!
-  graphContainerNode.innerHTML = await mermaidToSvg(graphId, graphCode);
-  const newGraphNode = graphContainerNode.childNodes[ 0 ];
+async function processGraph (dom, graphId, graphText, graphAnimationsRegister) {
+  const graphContainerNode = $(dom, `#graph-${graphId}`);
+  delete graphContainerNode.id;
+  graphContainerNode.innerHTML = await mermaidToSvg(graphId, graphText);
+  const graphNode = graphContainerNode.childNodes[ 0 ];
+  const graphType = graphNode.getAttribute('aria-roledescription');
 
   (graphAnimationsRegister[ graphId ] || [])
-    .forEach((animation) => animateNodes(graphId, newGraphNode, animation));
+    .forEach((animation) => animateNodes(graphId, graphNode, animation));
 
-  return dom;
+  return graphType;
 }
 
 /**
@@ -75,9 +80,30 @@ async function mermaidToSvg (graphId, graphCode) {
   if (!existsSync(outputFilePath)) {
     writeFileSync(inputFilePath, graphCode, 'utf8');
     await run(inputFilePath, outputFilePath, MERMAID_CONFIGURATION);
+    const initialSvg = readFileSync(outputFilePath, 'utf8');
+    const dom = new jsdom.JSDOM(initialSvg);
+    const graphNode = $(dom, 'svg');
+    addDiagramTweaks(graphNode, graphId);
+    writeFileSync(outputFilePath, graphNode.outerHTML);
   }
 
   return readFileSync(outputFilePath, 'utf8');
+}
+
+function addDiagramTweaks (graphNode, graphId) {
+  const graphType = graphNode.getAttribute('aria-roledescription');
+  graphNode.id = `graph-${graphId}`;
+  graphNode.classList.add(graphType);
+  removeFromParent(graphNode.querySelector('style')); // Added globally to avoid duplication
+
+  switch (graphType) {
+    case 'flowchart-v2':
+      const firstRootNode = graphNode.querySelector('g>g.root');
+      firstRootNode.classList.add('top-level'); // Mark top-level root for easier access!
+      return;
+    default:
+      return;
+  }
 }
 
 function animateNodes (graphId, graphNode, animation) {

@@ -59,12 +59,12 @@ export function readFileToDataUri (type, filePath) {
 
 export function insertInlineStyle (dom, styleId, styleContent, stylePosition = 'beforeend') {
   $(dom, 'head')
-    .insertAdjacentHTML(stylePosition, `<style id="CSS_${styleId}">${styleContent}</style>`);
+    .insertAdjacentHTML(stylePosition, `<style id="${styleId}">${styleContent}</style>`);
 }
 
 export function insertInlineScript (dom, scriptId, scriptContent, scriptPosition = 'beforeend') {
   $(dom, 'body')
-    .insertAdjacentHTML(scriptPosition, `<script id="JS_${scriptId}" type="module">${scriptContent}</script>`);
+    .insertAdjacentHTML(scriptPosition, `<script id="${scriptId}" type="module">${scriptContent}</script>`);
 }
 
 

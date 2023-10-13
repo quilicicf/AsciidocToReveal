@@ -67,7 +67,7 @@ https://github.com/quilicicf/AsciidocToReveal[The code]
 
 === Process
 
-[source,mermaid,role="graph graph-id-process"]
+[graph,process]
 ----
 flowchart LR
     asciicode([Asciidoc Code])
@@ -116,7 +116,7 @@ flowchart LR
     minifiedHtmlCode --> |Gzip| gzippedHtmlCode
 ----
 
-[graph-animation,graph-id-process]
+[graph-animation,process]
 ----
 [
   { selector: '.root .nodes .root:nth-of-type(2)', classes: [ 'fragment' ], attributes: { 'data-fragment-index': 0 } },
@@ -357,7 +357,7 @@ flowchart LR
 
 [.column-4x]
 =====
-[source,mermaid,role="graph graph-id-flowchart"]
+[graph,flowchart]
 ----
 flowchart LR
     subgraph AsciidocToReveal
@@ -374,7 +374,7 @@ flowchart LR
     animationCode:::output --> animatedSvgCode
 ----
 
-[graph-animation,graph-id-flowchart]
+[graph-animation,flowchart]
 ----
 [
   { selector: '#AsciidocToReveal', classes: [ 'fragment' ], attributes: { 'data-fragment-index': 0 } },
@@ -578,7 +578,7 @@ Allows to add specific styles & behaviors for each deck using CSS/JS(Reveal) dir
 ====
 * Currently, only dark mode is supported in graphs
 * The default of fade-in-then-semi-out doesn't work everywhere. Syncing fragments from auto-animated list & something else either
-* Maybe by contributing to Mermaid so that ids are found everywhere in the generated SVG
+* Maybe by contributing to Mermaid so that ids are found everywhere in the generated SVG? Or at least add classes where they help (like adding `.no-cluster` on the first `root` of a flowchart)
 * Currently, watch stops whenever an error is encountered
 * Live-reload doesn't seem to work with standard tools, re-implement a KISS version?
 * For example, it should be possible to provide another path to watch for changes in watch to include assets, or to specify other browser targets for the JS, image compression target maybe later? etc...

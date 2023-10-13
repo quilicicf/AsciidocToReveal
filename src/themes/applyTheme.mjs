@@ -2,10 +2,11 @@ import chromaJs from 'chroma-js';
 import { existsSync, readFileSync, writeFileSync } from 'fs';
 import { resolve } from 'path';
 import { compileString } from 'sass';
+import { stoyle } from 'stoyle';
 
 import { $, insertInlineScript, insertInlineStyle } from '../domUtils.mjs';
-import { BUILD_AREA_PATH, LIB_FOLDER, NODE_MODULES_PATH } from '../folders.mjs';
-import { logInfo } from '../log.mjs';
+import { BUILD_AREA_PATH, DIAGRAM_STYLES_FOLDER, LIB_FOLDER, NODE_MODULES_PATH } from '../folders.mjs';
+import { logInfo, logWarn, theme } from '../log.mjs';
 
 const BASE_SCSS_PATH = resolve(LIB_FOLDER, 'theme', 'base.scss');
 
@@ -26,24 +27,18 @@ export const CHROMA_LEVELS = {
 };
 export const DEFAULT_CHROMA_LEVEL = Object.keys(CHROMA_LEVELS)[ 0 ];
 
-export default function applyTheme (dom, { configuration }) {
+export default function applyTheme (dom, { graphTypes, configuration }) {
   const { themeName, themeHue, themeChromaLevel, startingThemeName, nonStartingThemeName, themeSwitchingMode } = configuration;
 
   const builtThemeFilePath = resolve(BUILD_AREA_PATH, `${themeName}-${themeHue}-${themeChromaLevel}.css`);
   if (!existsSync(builtThemeFilePath)) {
-    logInfo('Bundling theme file');
-    const colorExports = prepareColorExports(themeName, themeHue, themeChromaLevel);
-    const baseScss = readFileSync(BASE_SCSS_PATH, 'utf8');
-    const { css } = compileString(
-      baseScss.replace(REPLACEMENT_TAG, colorExports),
-      {
-        style: 'compressed',
-        loadPaths: [ NODE_MODULES_PATH ],
-        sourceMap: false,
-        verbose: true,
-      },
-    );
+    const css = buildThemeStyle(themeName, themeHue, themeChromaLevel);
     writeFileSync(builtThemeFilePath, css, 'utf8');
+  }
+
+  if (graphTypes.length) {
+    logInfo(stoyle`Applying themes for graph types: [ ${graphTypes.join(', ')} ]`({ nodes: [ theme.strong ] }));
+    graphTypes.forEach((graphType) => insertGraphStyle(dom, graphType, themeName));
   }
 
   const builtCss = readFileSync(builtThemeFilePath, 'utf8');
@@ -51,31 +46,65 @@ export default function applyTheme (dom, { configuration }) {
 
   if (themeSwitchingMode === 'manual') {
     $(dom, 'body').classList.add(`theme-${startingThemeName}`);
-    insertInlineScript(
-      dom,
-      'THEME_SWITCHER',
-      `
-        function toggleDisabled(id, force = undefined) {
-          const sheetNode = document.getElementById('CSS_PRISM_' + id);
-          if (!sheetNode) { return; }
-          sheetNode.disabled = force === undefined ? !sheetNode.disabled: force;
-        }
-        
-        Reveal.on('ready', () => { toggleDisabled('${nonStartingThemeName.toUpperCase()}', true); });
-
-        Reveal.addKeyBinding( { keyCode: 84, key: 'T', description: 'Switch themes' }, () => {
-          const bodyNode = document.querySelector('body');
-          bodyNode.classList.toggle('theme-dark');
-          bodyNode.classList.toggle('theme-light');
-          
-          toggleDisabled('DARK');
-          toggleDisabled('LIGHT');
-        });
-      `,
-    );
+    const manualThemeSwitcherFilePath = resolve(LIB_FOLDER, 'manualThemeSwitcher.mjs');
+    const manualThemeSwitcher = readFileSync(manualThemeSwitcherFilePath, 'utf8');
+    const scriptContent = `
+      ${manualThemeSwitcher}
+      Reveal.on('ready', () => { toggleDisabled('${nonStartingThemeName.toUpperCase()}', true); });
+    `;
+    insertInlineScript(dom, 'THEME_SWITCHER', scriptContent);
   }
 
   return dom;
+}
+
+function buildThemeStyle (themeName, themeHue, themeChromaLevel) {
+  logInfo('Bundling theme file');
+  const colorExports = prepareColorExports(themeName, themeHue, themeChromaLevel);
+  const baseScss = readFileSync(BASE_SCSS_PATH, 'utf8');
+  const { css } = compileString(
+    baseScss.replace(REPLACEMENT_TAG, colorExports),
+    {
+      style: 'compressed',
+      loadPaths: [ NODE_MODULES_PATH ],
+      sourceMap: false,
+      verbose: true,
+    },
+  );
+  return css;
+}
+
+function insertGraphStyle (dom, graphType, themeName) {
+  const darkStyleFilePath = resolve(DIAGRAM_STYLES_FOLDER, `${graphType}_dark.css`);
+  const darkStyle = readFileSync(darkStyleFilePath, 'utf8');
+  const lightStyleFilePath = resolve(DIAGRAM_STYLES_FOLDER, `${graphType}_light.css`);
+  const lightStyle = readFileSync(lightStyleFilePath, 'utf8');
+  const styleIdPrefix = graphType.toUpperCase().replaceAll('-', '_');
+  switch (themeName) {
+    case THEMES.DARK:
+      insertInlineStyle(dom, `${styleIdPrefix}_DARK`, darkStyle);
+      return;
+    case THEMES.LIGHT:
+      insertInlineStyle(dom, `${styleIdPrefix}_LIGHT`, lightStyle);
+      return;
+    case THEMES.DARK_AND_LIGHT_MANUAL:
+    case THEMES.LIGHT_AND_DARK_MANUAL:
+      insertInlineStyle(dom, `${styleIdPrefix}_DARK`, darkStyle);
+      insertInlineStyle(dom, `${styleIdPrefix}_LIGHT`, lightStyle);
+      return;
+
+    case THEMES.LIGHT_AND_DARK_AUTO:
+      const autoSwitchingStyle = `
+        @media (prefers-color-scheme: dark) { body { ${darkStyle} } }
+        @media (prefers-color-scheme: light) { body { ${lightStyle} } }
+      `;
+      insertInlineStyle(dom, `${styleIdPrefix}`, autoSwitchingStyle);
+      return;
+
+    default:
+      logWarn(stoyle`Unsupported theme name ${themeName}`({ nodes: [ theme.strong ] }));
+      return;
+  }
 }
 
 function prepareDarkColorExport (theme) {
