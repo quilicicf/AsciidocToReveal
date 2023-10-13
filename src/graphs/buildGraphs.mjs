@@ -114,8 +114,10 @@ function animateNodes (graphId, graphNode, animation) {
     return;
   }
 
+  const defaultClassesToAdd = [ 'fragment', 'fade-in' ];
   elementsToAnimate.forEach((elementToAnimate) => {
-    elementToAnimate.classList.add(...classes);
+    const classesToAdd = classes.length ? classes : defaultClassesToAdd;
+    elementToAnimate.classList.add(...classesToAdd);
     Object.entries(attributes)
       .forEach(([ key, value ]) => elementToAnimate.setAttribute(key, value));
   });

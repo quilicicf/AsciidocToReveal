@@ -120,23 +120,23 @@ flowchart LR
 [graph-animation,process]
 ----
 [
-  { selector: '.root .nodes .root:nth-of-type(2)', classes: [ 'fragment' ], attributes: { 'data-fragment-index': 0 } },
-  { selector: '#L-asciicode-loa-0', classes: [ 'fragment' ], attributes: { 'data-fragment-index': 0 } },
-  { selector: '*:not(.nodes)>.root>.edgeLabels>.edgeLabel:nth-of-type(3)', classes: [ 'fragment' ], attributes: { 'data-fragment-index': 0 } },
+  { selector: '.root .nodes .root:nth-of-type(2)', attributes: { 'data-fragment-index': 0 } },
+  { selector: '#L-asciicode-loa-0', attributes: { 'data-fragment-index': 0 } },
+  { selector: '.root.top-level>.edgeLabels>.edgeLabel:nth-of-type(3)', attributes: { 'data-fragment-index': 0 } },
 
-  { selector: '.root .nodes .root:nth-of-type(1)', classes: [ 'fragment' ], attributes: { 'data-fragment-index': 1 } },
-  { selector: '#L-loa-lod-0', classes: [ 'fragment' ], attributes: { 'data-fragment-index': 1 } },
+  { selector: '.root .nodes .root:nth-of-type(1)', attributes: { 'data-fragment-index': 1 } },
+  { selector: '#L-loa-lod-0', attributes: { 'data-fragment-index': 1 } },
 
-  { selector: '#flowchart-htmlCode-17', classes: [ 'fragment' ], attributes: { 'data-fragment-index': 2 } },
-  { selector: '#L-lod-htmlCode-0', classes: [ 'fragment' ], attributes: { 'data-fragment-index': 2 } },
-  { selector: '*:not(.nodes)>.root>.edgeLabels>.edgeLabel:nth-of-type(5)', classes: [ 'fragment' ], attributes: { 'data-fragment-index': 2 } },
+  { selector: '#flowchart-htmlCode-17', attributes: { 'data-fragment-index': 2 } },
+  { selector: '#L-lod-htmlCode-0', attributes: { 'data-fragment-index': 2 } },
+  { selector: '.root.top-level>.edgeLabels>.edgeLabel:nth-of-type(5)', attributes: { 'data-fragment-index': 2 } },
 
-  { selector: '#flowchart-minifiedHtmlCode-18', classes: [ 'fragment' ], attributes: { 'data-fragment-index': 2 } },
-  { selector: '#L-htmlCode-minifiedHtmlCode-0', classes: [ 'fragment' ], attributes: { 'data-fragment-index': 2 } },
-  { selector: '*:not(.nodes)>.root>.edgeLabels>.edgeLabel:nth-of-type(1)', classes: [ 'fragment' ], attributes: { 'data-fragment-index': 2 } },
-  { selector: '#flowchart-gzippedHtmlCode-19', classes: [ 'fragment' ], attributes: { 'data-fragment-index': 2 } },
-  { selector: '#L-minifiedHtmlCode-gzippedHtmlCode-0', classes: [ 'fragment' ], attributes: { 'data-fragment-index': 2 } },
-  { selector: '*:not(.nodes)>.root>.edgeLabels>.edgeLabel:nth-of-type(2)', classes: [ 'fragment' ], attributes: { 'data-fragment-index': 2 } },
+  { selector: '#flowchart-minifiedHtmlCode-18', attributes: { 'data-fragment-index': 2 } },
+  { selector: '#L-htmlCode-minifiedHtmlCode-0', attributes: { 'data-fragment-index': 2 } },
+  { selector: '.root.top-level>.edgeLabels>.edgeLabel:nth-of-type(1)', attributes: { 'data-fragment-index': 2 } },
+  { selector: '#flowchart-gzippedHtmlCode-19', attributes: { 'data-fragment-index': 2 } },
+  { selector: '#L-minifiedHtmlCode-gzippedHtmlCode-0', attributes: { 'data-fragment-index': 2 } },
+  { selector: '.root.top-level>.edgeLabels>.edgeLabel:nth-of-type(2)', attributes: { 'data-fragment-index': 2 } },
 ]
 ----
 
@@ -321,7 +321,7 @@ flowchart LR
 
 [.layout-columns]
 ====
-[.column-8x]
+[.column-7x]
 =====
 [source,mermaid]
 ----
@@ -345,18 +345,18 @@ flowchart LR
 [
   {
     selector: '#AsciidocToReveal',
-    classes: [ 'fragment' ],
+    classes: [ 'fragment', 'fade-up' ],
     attributes: { 'data-fragment-index': 0 }
   },
-  { selector: '[id^=flowchart-mermaidCode-]', classes: [ 'fragment' ], attributes: { 'data-fragment-index': 1 } },
-  { selector: '#L-mermaidCode-svgCode-0', classes: [ 'fragment' ], attributes: { 'data-fragment-index': 2 } },
-  { selector: '[id^=flowchart-svgCode-]', classes: [ 'fragment' ], attributes: { 'data-fragment-index': 2 } },
+  { selector: '[id^=flowchart-mermaidCode-]', attributes: { 'data-fragment-index': 1 } },
+  { selector: '#L-mermaidCode-svgCode-0', attributes: { 'data-fragment-index': 2 } },
+  { selector: '[id^=flowchart-svgCode-]', attributes: { 'data-fragment-index': 2 } },
   // etc...
 ]
 ----
 =====
 
-[.column-4x]
+[.column-5x.vertically-centered-panel]
 =====
 [graph,flowchart]
 ----
@@ -378,19 +378,19 @@ flowchart LR
 [graph-animation,flowchart]
 ----
 [
-  { selector: '#AsciidocToReveal', classes: [ 'fragment' ], attributes: { 'data-fragment-index': 0 } },
-  { selector: '#Mermaid', classes: [ 'fragment' ], attributes: { 'data-fragment-index': 0 } },
+  { selector: '#AsciidocToReveal', attributes: { 'data-fragment-index': 0 } },
+  { selector: '#Mermaid', attributes: { 'data-fragment-index': 0 } },
 
-  { selector: '[id^=flowchart-mermaidCode-]', classes: [ 'fragment' ], attributes: { 'data-fragment-index': 1 } },
+  { selector: '[id^=flowchart-mermaidCode-]', attributes: { 'data-fragment-index': 1 } },
 
-  { selector: '#L-mermaidCode-svgCode-0', classes: [ 'fragment' ], attributes: { 'data-fragment-index': 2 } },
-  { selector: '[id^=flowchart-svgCode-]', classes: [ 'fragment' ], attributes: { 'data-fragment-index': 2 } },
+  { selector: '#L-mermaidCode-svgCode-0', attributes: { 'data-fragment-index': 2 } },
+  { selector: '[id^=flowchart-svgCode-]', attributes: { 'data-fragment-index': 2 } },
 
-  { selector: '[id^=flowchart-animationCode-]', classes: [ 'fragment' ], attributes: { 'data-fragment-index': 3 } },
+  { selector: '[id^=flowchart-animationCode-]', attributes: { 'data-fragment-index': 3 } },
 
-  { selector: '#L-svgCode-animatedSvgCode-0', classes: [ 'fragment' ], attributes: { 'data-fragment-index': 4 } },
-  { selector: '#L-animationCode-animatedSvgCode-0', classes: [ 'fragment' ], attributes: { 'data-fragment-index': 4 } },
-  { selector: '[id^=flowchart-animatedSvgCode-]', classes: [ 'fragment' ], attributes: { 'data-fragment-index': 4 } },
+  { selector: '#L-svgCode-animatedSvgCode-0', attributes: { 'data-fragment-index': 4 } },
+  { selector: '#L-animationCode-animatedSvgCode-0', attributes: { 'data-fragment-index': 4 } },
+  { selector: '[id^=flowchart-animatedSvgCode-]', attributes: { 'data-fragment-index': 4 } },
   { selector: '#wtf' },
 ]
 ----
@@ -444,16 +444,16 @@ emoji:muscle[]emoji:muscle[1.4,em]emoji:muscle[]
 * Parameters prefixed with `a2r`
 * Parsed into configuration once
 * Used where needed
-* Documented `[COMING SOON]`
-* Validated `[COMING SOON]`
+* Documented
+* Validated
 
 [.notes]
 ====
 * Prefix avoids collisions with other tools
 * In the `parseDeck` method, immutable configuration created once
 * Since it's in the deck that's passed to all methods
-* Documentation will come
-* Validation will come too
+* Documentation on next slide
+* Validation done at the very beginning, no broken configuration past that gate
 ====
 
 === Parameters documentation
@@ -569,7 +569,6 @@ Allows to add specific styles & behaviors for each deck using CSS/JS(Reveal) dir
 
 == Rest of the roadmap
 
-* Better fragments
 * Better graph animation
 * Watch shouldn't stop
 * Real live-reload
@@ -581,7 +580,6 @@ Allows to add specific styles & behaviors for each deck using CSS/JS(Reveal) dir
 
 [.notes]
 ====
-* The default of fade-in-then-semi-out doesn't work everywhere. Syncing fragments from auto-animated list & something else either
 * Maybe by contributing to Mermaid so that ids are found everywhere in the generated SVG? Or at least add classes where they help (like adding `.no-cluster` on the first `root` of a flowchart)
 * Currently, watch stops whenever an error is encountered
 * Live-reload doesn't seem to work with standard tools, re-implement a KISS version?

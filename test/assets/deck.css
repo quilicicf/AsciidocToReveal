@@ -3,6 +3,17 @@
   margin: auto;
 }
 
+.vertically-centered-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.vertically-centered-panel > * {
+  width: 100%;
+}
+
 .reveal table td {
   padding: 0 .5em;
 }
