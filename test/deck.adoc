@@ -595,7 +595,7 @@ Allows to add specific styles & behaviors for each deck using CSS/JS(Reveal) dir
 * PowerPoint: `~700KB minimum`
 * A2R baseline: `200KB`
 * Deck's input: `~18K chars`
-* Deck's output: `~308KB`
+* Deck's output: `~312KB`
 * Deck's output, gzipped: `~76KB`
 
 == Q&A
