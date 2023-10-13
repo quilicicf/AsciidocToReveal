@@ -47,6 +47,7 @@ export default function deckToHtml (deck) {
     fixupCodeBlocks,
     extractSpeakerNotes,
     fragmentLists,
+    fragmentTables,
   ].reduce(
     (promise, operation) => promise.then(async (dom) => operation(dom, deck)),
     Promise.resolve(baseDom),
@@ -257,18 +258,18 @@ function extractSpeakerNotes (dom) {
   return dom;
 }
 
+function isInNotes (node) {
+  if (node.tagName === 'SECTION') {
+    return false;
+  } else if (node.tagName === 'ASIDE' && node.classList.contains('notes')) {
+    return true;
+  } else {
+    return isInNotes(node.parentNode);
+  }
+}
+
 function fragmentLists (dom, { configuration }) {
   if (!configuration.shouldFragmentLists) { return dom; }
-
-  const isInNotes = (node) => {
-    if (node.tagName === 'SECTION') {
-      return false;
-    } else if (node.tagName === 'ASIDE' && node.classList.contains('notes')) {
-      return true;
-    } else {
-      return isInNotes(node.parentNode);
-    }
-  };
 
   $$(dom, 'ul li')
     .filter((listItemNode) => !isInNotes(listItemNode))
@@ -279,6 +280,16 @@ function fragmentLists (dom, { configuration }) {
         listItemNode.classList.add('list-item-with-children');
       }
     });
+
+  return dom;
+}
+
+function fragmentTables (dom, { configuration }) {
+  if (!configuration.shouldFragmentTables) { return dom; }
+
+  $$(dom, 'tbody > tr')
+    .filter((tableRowNode) => !isInNotes(tableRowNode))
+    .forEach((tableRowNode) => tableRowNode.classList.add('fragment'));
 
   return dom;
 }

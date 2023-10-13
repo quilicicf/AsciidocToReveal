@@ -50,17 +50,16 @@ export const deckConfiguration = {
     defaultValue: false,
     acceptedValues: 'booleans',
     validate (value) {
-      switch (value) {
-        case 'true':
-          return true;
-        case 'false':
-          return false;
-        case undefined:
-          return this.defaultValue;
-        default:
-          logWarn(stoyle`Invalid value ${value} for list fragmentation, not fragmenting`({ nodes: [ theme.strong ] }));
-          return this.defaultValue;
-      }
+      return validateBoolean(value, 'list fragmentation', this.defaultValue);
+    },
+  },
+  shouldFragmentTables: {
+    id: 'a2r-fragment-tables',
+    documentation: `Make all tables in the deck Reveal.js fragments`,
+    defaultValue: false,
+    acceptedValues: 'booleans',
+    validate (value) {
+      return validateBoolean(value, 'table fragmentation', this.defaultValue);
     },
   },
 
@@ -169,4 +168,18 @@ function validateEnumValue (value, name, acceptedValues, defaultValue) {
   }
 
   return value || defaultValue;
+}
+
+function validateBoolean (value, name, defaultValue) {
+  switch (value) {
+    case 'true':
+      return true;
+    case 'false':
+      return false;
+    case undefined:
+      return defaultValue;
+    default:
+      logWarn(stoyle`Invalid value ${value} for ${name}, not fragmenting`({ nodes: [ theme.strong, undefined ] }));
+      return defaultValue;
+  }
 }

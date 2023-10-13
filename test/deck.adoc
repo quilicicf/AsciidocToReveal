@@ -4,6 +4,7 @@
 :a2r-page-title: Asciidoc 2 Reveal.js
 :a2r-favicon: assets/favicon.svg
 :a2r-fragment-lists: true
+:a2r-fragment-tables: true
 :a2r-theme-name: dark-and-light-manual
 
 = image:asciidoc-logo.svg[Asciidoc logo,role=thumb] => image:reveal-logo.png[Reveal.js logo,role=thumb]
@@ -486,6 +487,11 @@ emoji:muscle[]emoji:muscle[1.4,em]emoji:muscle[]
 | false
 | booleans
 | Make all lists in the deck Reveal.js fragments
+
+| `a2r-fragment-tables`
+| false
+| booleans
+| Make all tables in the deck Reveal.js fragments
 
 | `a2r-theme-name`
 | dark

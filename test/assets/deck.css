@@ -2,3 +2,7 @@
   width: 18em;
   margin: auto;
 }
+
+.reveal table td {
+  padding: 0 .5em;
+}
