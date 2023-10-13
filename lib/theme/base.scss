@@ -21,6 +21,10 @@
   text-shadow: 1px 1px var(--r-background-color);
 }
 
+.reveal aside.controls {
+  color: var(--color-primary) !important;
+}
+
 section.has-light-background {
   p, h1, h2, h3, h4 {
     text-shadow: none;

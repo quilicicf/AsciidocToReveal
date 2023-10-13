@@ -258,9 +258,7 @@ function extractSpeakerNotes (dom) {
 }
 
 function fragmentLists (dom, { configuration }) {
-  if (!configuration.shouldFragmentLists) {
-    return dom;
-  }
+  if (!configuration.shouldFragmentLists) { return dom; }
 
   const isInNotes = (node) => {
     if (node.tagName === 'SECTION') {
@@ -274,7 +272,13 @@ function fragmentLists (dom, { configuration }) {
 
   $$(dom, 'ul li')
     .filter((listItemNode) => !isInNotes(listItemNode))
-    .forEach((listItemNode) => listItemNode.classList.add('fragment'));
+    .forEach((listItemNode) => {
+      listItemNode.classList.add('fragment');
+      const hasChildrenItems = [ ...listItemNode.querySelectorAll('li') ].length;
+      if (hasChildrenItems) {
+        listItemNode.classList.add('list-item-with-children');
+      }
+    });
 
   return dom;
 }

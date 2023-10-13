@@ -58,3 +58,16 @@ em {
 .dim > code:not(pre code) {
   color: var(--color-gray);
 }
+
+/* Animate nested lists without fading out nested items twice  */
+.fragment.list-item-with-children > p, ::marker {
+  visibility: hidden;
+}
+
+.fragment.list-item-with-children.visible > p, ::marker {
+  visibility: visible;
+}
+
+.fragment.list-item-with-children.visible:not(.current-fragment) > p, ::marker {
+  color: color-mix(in srgb, var(--r-main-color) 50%, transparent); /* For some reason, opacity does not apply to the marker */
+}
