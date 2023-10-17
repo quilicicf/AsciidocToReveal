@@ -1,3 +1,4 @@
+import { watch as _watch } from 'chokidar';
 import { existsSync as _existsSync, readdirSync as _readdirSync, readFileSync, writeFileSync } from 'fs';
 
 export function readdirSync (filePath) {
@@ -22,4 +23,10 @@ export function readTextFileSync (filePath, converter) {
 
 export function writeTextFileSync (filePath, content) {
   writeFileSync(filePath, content, 'utf8');
+}
+
+export function watch (globs, { cwd }, listeners) {
+  const watcher = _watch(globs, { cwd });
+  Object.entries(listeners)
+    .forEach(([ messageType, listener ]) => watcher.on(messageType, listener));
 }

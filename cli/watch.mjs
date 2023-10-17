@@ -1,11 +1,10 @@
-import { watch } from 'chokidar';
 import { stoyle } from 'stoyle';
 
 import { asciidocToReveal } from '../src/asciidocToReveal.mjs';
-import { hashString } from '../src/third-party/crypto/api.mjs';
 import { REPOSITORY_ROOT_PATH } from '../src/folders.mjs';
-import { existsSync, readTextFileSync } from '../src/third-party/fs/api.mjs';
 import { logInfo, theme } from '../src/log.mjs';
+import { hashString } from '../src/third-party/crypto/api.mjs';
+import { existsSync, readTextFileSync, watch } from '../src/third-party/fs/api.mjs';
 import startLiveReloadServer from './liveReloadServer.mjs';
 
 export const command = 'watch';
@@ -45,22 +44,26 @@ export async function handler (args) {
   const state = {
     queue: Promise.resolve(),
   };
-  const chokidarOptions = {
-    cwd: REPOSITORY_ROOT_PATH,
-  };
 
   const initialInputHash = readTextFileSync(inputFile, hashString);
   const liveReloadServer = startLiveReloadServer(initialInputHash);
 
   logInfo(stoyle`Watcher started on ${inputFile}`({ nodes: [ theme.strong ] }));
-  watch([ inputFile ], chokidarOptions)
-    .on('all', (event, path) => {
-      logInfo('=====================================================================');
-      logInfo(stoyle`File ${path} received event ${event}`({ nodes: [ theme.strong, theme.strong ] }));
-      state.queue = state.queue.then(async () => {
-        const newInputHash = readTextFileSync(inputFile, hashString);
-        await asciidocToReveal(inputFile, outputFile, { shouldAddLiveReload: true });
-        liveReloadServer.reload(newInputHash);
-      });
-    });
+  watch(
+    [ inputFile ],
+    {
+      cwd: REPOSITORY_ROOT_PATH,
+    },
+    {
+      all: (event, path) => {
+        logInfo('=====================================================================');
+        logInfo(stoyle`File ${path} received event ${event}`({ nodes: [ theme.strong, theme.strong ] }));
+        state.queue = state.queue.then(async () => {
+          const newInputHash = readTextFileSync(inputFile, hashString);
+          await asciidocToReveal(inputFile, outputFile, { shouldAddLiveReload: true });
+          liveReloadServer.reload(newInputHash);
+        });
+      },
+    },
+  );
 }
