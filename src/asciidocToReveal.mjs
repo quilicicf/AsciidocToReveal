@@ -2,17 +2,17 @@ import minifyHtml from '@minify-html/node';
 import { Parcel } from '@parcel/core';
 import { existsSync, readFileSync, writeFileSync } from 'fs';
 import { resolve } from 'path';
-
-import applyTheme from './themes/applyTheme.mjs';
 import deckToHtml from './asciidoc/deckToHtml.mjs';
 import parseDeck from './asciidoc/parseDeck.mjs';
 import highlightCode from './code/highlightCode.mjs';
+import insertCustomFiles from './custom-files/insertCustomFiles.mjs';
 import { insertInlineScript, insertInlineStyle } from './domUtils.mjs';
 import { BUILD_AREA_PATH, DIST_FOLDER_PATH, LIB_FOLDER, REPOSITORY_ROOT_PATH } from './folders.mjs';
 import buildGraphs from './graphs/buildGraphs.mjs';
-import insertCustomFiles from './custom-files/insertCustomFiles.mjs';
 import applyLayouts from './layouts/applyLayouts.mjs';
 import { logInfo } from './log.mjs';
+
+import applyTheme from './themes/applyTheme.mjs';
 
 const DECK_JS_FILE_PATH = resolve(LIB_FOLDER, 'deck.mjs');
 const BUILT_DECK_JS_FILE_PATH = resolve(BUILD_AREA_PATH, 'deck.js');
@@ -45,7 +45,7 @@ const PARCEL_JS_CONFIGURATION = {
   ],
 };
 
-export async function asciidocToReveal (inputPath, outputPath = OUTPUT_FILE_PATH) {
+export async function asciidocToReveal (inputPath, outputPath = OUTPUT_FILE_PATH, buildOptions = {}) {
   if (!existsSync(BUILT_DECK_JS_FILE_PATH) || !existsSync(BUILT_DECK_CSS_FILE_PATH)) {
     // TODO: Rethink this.
     //       * Either the version of Reveal is fixed and these files can be pre-compiled
@@ -54,7 +54,7 @@ export async function asciidocToReveal (inputPath, outputPath = OUTPUT_FILE_PATH
     await new Parcel(PARCEL_JS_CONFIGURATION).run();
   }
 
-  const deck = parseDeck(inputPath);
+  const deck = parseDeck(inputPath, buildOptions);
   const baseDom = deckToHtml(deck);
   const finalDom = await [
     buildGraphs,
@@ -62,6 +62,7 @@ export async function asciidocToReveal (inputPath, outputPath = OUTPUT_FILE_PATH
     applyLayouts,
     applyTheme,
     insertCustomFiles,
+    insertLiveReloadScript,
     addRevealJs,
   ].reduce((promise, operation) => promise.then(async (dom) => operation(dom, deck)), Promise.resolve(baseDom));
 
@@ -71,6 +72,18 @@ export async function asciidocToReveal (inputPath, outputPath = OUTPUT_FILE_PATH
     MINIFIER_CONFIGURATION,
   ).toString('utf8');
   writeFileSync(outputPath, minified, 'utf8');
+}
+
+function insertLiveReloadScript (dom, { inputHash, buildOptions }) {
+  if (!buildOptions.shouldAddLiveReload) { return dom; }
+
+  const liveReloadScriptPath = resolve(LIB_FOLDER, 'liveReload.mjs');
+  const liveReloadScriptTemplate = readFileSync(liveReloadScriptPath, 'utf8');
+  const liveReloadScript = liveReloadScriptTemplate.replace('$$HASH$$', inputHash);
+
+  insertInlineScript(dom, 'LIVE_RELOAD', liveReloadScript);
+
+  return dom;
 }
 
 function addRevealJs (dom) {

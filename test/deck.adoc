@@ -571,7 +571,6 @@ Allows to add specific styles & behaviors for each deck using CSS/JS(Reveal) dir
 
 * Better graph animation
 * Watch shouldn't stop
-* Real live-reload
 * CLI tool should be configurable
 * Better cache
 * Images compression
@@ -582,7 +581,6 @@ Allows to add specific styles & behaviors for each deck using CSS/JS(Reveal) dir
 ====
 * Maybe by contributing to Mermaid so that ids are found everywhere in the generated SVG? Or at least add classes where they help (like adding `.no-cluster` on the first `root` of a flowchart)
 * Currently, watch stops whenever an error is encountered
-* Live-reload doesn't seem to work with standard tools, re-implement a KISS version?
 * For example, it should be possible to provide another path to watch for changes in watch to include assets, or to specify other browser targets for the JS, image compression target maybe later? etc...
 * For example, re-write graph SVGs when graph animation changes, and maybe cleanup the build area a bit?
 * Try JPEG XL or AVIF, and re-size according to size of biggest usage

@@ -1,11 +1,11 @@
 import { run } from '@mermaid-js/mermaid-cli';
-import { createHash } from 'crypto';
 import { existsSync, readFileSync, writeFileSync } from 'fs';
 import jsdom from 'jsdom';
 import { resolve } from 'path';
 import { stoyle } from 'stoyle';
-import { $, removeFromParent } from '../domUtils.mjs';
 
+import { hashString } from '../contentHasher.mjs';
+import { $, removeFromParent } from '../domUtils.mjs';
 import { BUILD_AREA_PATH } from '../folders.mjs';
 import { logWarn, theme } from '../log.mjs';
 
@@ -69,11 +69,7 @@ async function processGraph (dom, graphId, graphText, graphAnimationsRegister) {
  * This pollutes the build area a bit, but allows the builder to skip rebuilds when the mermaid code doesn't change.
  */
 async function mermaidToSvg (graphId, graphCode) {
-  const graphCodeHash = createHash('md5')
-    .update(graphCode)
-    .digest('hex')
-    .substring(0, 12);
-
+  const graphCodeHash = hashString(graphCode);
   const inputFilePath = resolve(BUILD_AREA_PATH, `${graphId}.mermaid`);
   const outputFilePath = resolve(BUILD_AREA_PATH, `${graphId}_${graphCodeHash}.svg`);
 

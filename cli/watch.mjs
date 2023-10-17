@@ -3,8 +3,10 @@ import { existsSync } from 'fs';
 import { stoyle } from 'stoyle';
 
 import { asciidocToReveal } from '../src/asciidocToReveal.mjs';
+import { hashFile } from '../src/contentHasher.mjs';
 import { REPOSITORY_ROOT_PATH } from '../src/folders.mjs';
 import { logInfo, theme } from '../src/log.mjs';
+import startLiveReloadServer from './liveReloadServer.mjs';
 
 export const command = 'watch';
 export const aliases = [ 'w' ];
@@ -47,11 +49,18 @@ export async function handler (args) {
     cwd: REPOSITORY_ROOT_PATH,
   };
 
+  const initialInputHash = hashFile(inputFile);
+  const liveReloadServer = startLiveReloadServer(initialInputHash);
+
   logInfo(stoyle`Watcher started on ${inputFile}`({ nodes: [ theme.strong ] }));
   watch([ inputFile ], chokidarOptions)
     .on('all', (event, path) => {
       logInfo('=====================================================================');
       logInfo(stoyle`File ${path} received event ${event}`({ nodes: [ theme.strong, theme.strong ] }));
-      state.queue = state.queue.then(() => asciidocToReveal(inputFile, outputFile));
+      state.queue = state.queue.then(async () => {
+        const newInputHash = hashFile(inputFile);
+        await asciidocToReveal(inputFile, outputFile, { shouldAddLiveReload: true });
+        liveReloadServer.reload(newInputHash);
+      });
     });
 }
