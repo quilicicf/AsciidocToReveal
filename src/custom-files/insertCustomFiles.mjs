@@ -1,9 +1,9 @@
-import { resolve } from 'path';
 import { stoyle } from 'stoyle';
 
 import { insertInlineScript, insertInlineStyle } from '../domUtils.mjs';
 import { existsSync, readTextFileSync } from '../third-party/fs/api.mjs';
 import { logInfo, logWarn, theme } from '../log.mjs';
+import { resolve } from '../third-party/path/api.mjs';
 
 export default function insertCustomFiles (dom, { inputFolder, configuration }) {
   const { customCss, customJs } = configuration;

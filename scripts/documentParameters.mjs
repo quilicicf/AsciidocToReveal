@@ -1,10 +1,9 @@
 #!/usr/bin/env node
 
-import { resolve } from 'path';
-
 import { deckConfiguration } from '../src/asciidoc/configuration/deckConfiguration.mjs';
 import { TEST_FOLDER } from '../src/folders.mjs';
 import { readTextFileSync, writeTextFileSync } from '../src/third-party/fs/api.mjs';
+import { resolve } from '../src/third-party/path/api.mjs';
 
 const START_TAG = '// START PARAMETERS DOCUMENTATION';
 const END_TAG = '// END PARAMETERS DOCUMENTATION';

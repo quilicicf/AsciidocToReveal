@@ -1,8 +1,8 @@
 import Processor from '@asciidoctor/core';
-import { dirname, resolve } from 'path';
 
 import { hashString } from '../third-party/crypto/api.mjs';
 import { readTextFileSync } from '../third-party/fs/api.mjs';
+import { getParentFolderName, resolve } from '../third-party/path/api.mjs';
 import { parseConfiguration } from './configuration/deckConfiguration.mjs';
 import registerEmojisExtension from './emojis/asciidoctor-emojis.mjs';
 import registerGraphAnimationExtension from './graph-animations/asciidoctor-graph-animations.mjs';
@@ -32,7 +32,7 @@ export default function parseDeck (inputPath, buildOptions) {
 }
 
 function findInputFolder (inputPath) {
-  const folderPath = dirname(inputPath);
+  const folderPath = getParentFolderName(inputPath);
   return folderPath.startsWith('/') // TODO: not Windows-friendly
     ? folderPath
     : resolve(process.cwd(), folderPath); // TODO: not Deno-friendly

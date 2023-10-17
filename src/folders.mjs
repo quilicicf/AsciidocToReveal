@@ -1,8 +1,7 @@
-import { dirname, resolve } from 'path';
-import { fileURLToPath } from 'url';
+import { getParentFolderName, resolve, fileUrlToPath } from './third-party/path/api.mjs';
 
 function getModuleFolder (importMeta) {
-  return resolve(dirname(fileURLToPath(importMeta.url)));
+  return resolve(getParentFolderName(fileUrlToPath(importMeta.url)));
 }
 
 // Folders

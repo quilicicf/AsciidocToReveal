@@ -1,6 +1,5 @@
 import { run } from '@mermaid-js/mermaid-cli';
 import jsdom from 'jsdom';
-import { resolve } from 'path';
 import { stoyle } from 'stoyle';
 
 import { hashString } from '../third-party/crypto/api.mjs';
@@ -8,6 +7,7 @@ import { $, removeFromParent } from '../domUtils.mjs';
 import { BUILD_AREA_PATH } from '../folders.mjs';
 import { existsSync, readTextFileSync, writeTextFileSync } from '../third-party/fs/api.mjs';
 import { logWarn, theme } from '../log.mjs';
+import { resolve } from '../third-party/path/api.mjs';
 
 const MERMAID_CONFIGURATION = {
   quiet: true,

@@ -1,10 +1,10 @@
 import { get } from 'https';
-import { resolve } from 'path';
 import { stoyle } from 'stoyle';
 
 import { BUILD_AREA_PATH } from '../../folders.mjs';
 import { logWarn, theme } from '../../log.mjs';
 import { existsSync, writeTextFileSync } from '../../third-party/fs/api.mjs';
+import { resolve } from '../../third-party/path/api.mjs';
 import twemojiMap from './twemojis.mjs';
 
 const UNITS = [ 'px', 'em' ];

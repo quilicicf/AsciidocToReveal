@@ -1,4 +1,3 @@
-import { resolve } from 'path';
 import Prism from 'prismjs';
 import loadLanguages from 'prismjs/components/index.js';
 import { compileString } from 'sass';
@@ -9,6 +8,7 @@ import { NODE_MODULES_PATH } from '../folders.mjs';
 import { readdirSync, readTextFileSync } from '../third-party/fs/api.mjs';
 import { logInfo, logWarn, theme } from '../log.mjs';
 import { DEFAULT_THEME } from '../themes/applyTheme.mjs';
+import { resolve } from '../third-party/path/api.mjs';
 
 const CLASSIC_PRISM_THEMES_PATH = resolve(NODE_MODULES_PATH, 'prismjs', 'themes');
 const EXTENDED_PRISM_THEMES_PATH = resolve(NODE_MODULES_PATH, 'prism-themes', 'themes');

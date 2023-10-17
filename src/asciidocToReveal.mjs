@@ -1,6 +1,5 @@
 import minifyHtml from '@minify-html/node';
 import { Parcel } from '@parcel/core';
-import { resolve } from 'path';
 
 import deckToHtml from './asciidoc/deckToHtml.mjs';
 import parseDeck from './asciidoc/parseDeck.mjs';
@@ -13,6 +12,7 @@ import buildGraphs from './graphs/buildGraphs.mjs';
 import applyLayouts from './layouts/applyLayouts.mjs';
 import { logInfo } from './log.mjs';
 import applyTheme from './themes/applyTheme.mjs';
+import { resolve } from './third-party/path/api.mjs';
 
 const DECK_JS_FILE_PATH = resolve(LIB_FOLDER, 'deck.mjs');
 const BUILT_DECK_JS_FILE_PATH = resolve(BUILD_AREA_PATH, 'deck.js');

@@ -1,4 +1,3 @@
-import { resolve } from 'path';
 import { compileString } from 'sass';
 import { stoyle } from 'stoyle';
 
@@ -7,6 +6,7 @@ import { BUILD_AREA_PATH, DIAGRAM_STYLES_FOLDER, LIB_FOLDER, NODE_MODULES_PATH }
 import { oklch } from '../third-party/colors/api.mjs';
 import { existsSync, readTextFileSync, writeTextFileSync } from '../third-party/fs/api.mjs';
 import { logInfo, logWarn, theme } from '../log.mjs';
+import { resolve } from '../third-party/path/api.mjs';
 
 const BASE_SCSS_PATH = resolve(LIB_FOLDER, 'theme', 'base.scss');
 

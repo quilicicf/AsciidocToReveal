@@ -1,10 +1,10 @@
 import jsdom from 'jsdom';
-import { basename, extname, join, resolve } from 'path';
 import { stoyle } from 'stoyle';
 
 import { $, $$, changeElementTag, createNewElement, insertInlineStyle, readFileToDataUri, removeFromParent, replaceInParent } from '../domUtils.mjs';
-import { readTextFileSync } from '../third-party/fs/api.mjs';
 import { logWarn, theme } from '../log.mjs';
+import { readTextFileSync } from '../third-party/fs/api.mjs';
+import { getBaseName, getExtension, join, resolve } from '../third-party/path/api.mjs';
 import processBlocksRecursively from './processBlocksRecursively.mjs';
 
 const BASE_HTML = `
@@ -135,9 +135,9 @@ function embedImages (dom, { ast, inputFolder }) {
     .reduce(
       (seed, image) => {
         const name = image.getTarget();
-        const extension = extname(name);
+        const extension = getExtension(name);
         const type = extension.replace(/^\./g, '');
-        const id = basename(name, extension);
+        const id = getBaseName(name, extension);
         const cssClass = `img-${id}`;
         const imageRelativePath = join(image.getImagesDirectory(), name);
         const imageAbsolutePath = resolve(inputFolder, imageRelativePath);
@@ -166,7 +166,7 @@ function embedImages (dom, { ast, inputFolder }) {
   $$(dom, '.image,.imageblock')
     .forEach((parentNode) => {
       const imgNode = parentNode.querySelector('img');
-      const imageName = basename(imgNode.src);
+      const imageName = getBaseName(imgNode.src);
       const image = images[ imageName ];
       const style = [
         ...(imgNode.width ? [ `width: ${imgNode.width}px` ] : []),
