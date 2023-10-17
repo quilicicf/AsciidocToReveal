@@ -1,9 +1,9 @@
-import { get } from 'https';
 import { stoyle } from 'stoyle';
 
 import { BUILD_AREA_PATH } from '../../folders.mjs';
-import { logWarn, theme } from '../../log.mjs';
+import { logError, theme } from '../../log.mjs';
 import { existsSync, writeTextFileSync } from '../../third-party/fs/api.mjs';
+import { httpGet } from '../../third-party/http/api.mjs';
 import { resolve } from '../../third-party/path/api.mjs';
 import twemojiMap from './twemojis.mjs';
 
@@ -16,19 +16,12 @@ export default function register (registry) {
 }
 
 async function fetchAndWriteEmoji (emojiName, emojiUnicode, emojiFilePath) {
-  const emojiContent = await fetchEmoji(emojiName, emojiUnicode);
-  writeTextFileSync(emojiFilePath, emojiContent.toString());
-}
-
-async function fetchEmoji (emojiName, emojiUnicode) {
-  return new Promise((resolve, reject) => {
-    get(`https://cdn.jsdelivr.net/npm/twemoji@latest/2/svg/${emojiUnicode}.svg`, (response) => {
-      const dataChunks = [];
-      response.on('data', (fragments) => { dataChunks.push(fragments); });
-      response.on('end', () => { resolve(Buffer.concat(dataChunks).toString()); });
-      response.on('error', () => { reject(Error(`Cannot retrieve emoji ${emojiName} with code ${emojiUnicode}`)); });
-    });
-  });
+  try {
+    const emojiContent = await httpGet(`https://cdn.jsdelivr.net/npm/twemoji@latest/2/svg/${emojiUnicode}.svg`);
+    writeTextFileSync(emojiFilePath, emojiContent.toString());
+  } catch (ignore) {
+    logError(stoyle`Cannot retrieve emoji ${emojiName} with code ${emojiUnicode}`({ nodes: [ theme.strong, theme.strong ] }));
+  }
 }
 
 function emojiInlineMacro () {
@@ -37,6 +30,17 @@ function emojiInlineMacro () {
   self.positionalAttributes([ 'size', 'unit' ]);
 
   const defaultSize = '1em';
+
+  function getEmojiFetcher (emojiFilePath, emojiName, emojiUnicode) {
+    if (existsSync(emojiFilePath)) {
+      return Promise.resolve(); // Already fetched!
+    } else if (EMOJIS[ emojiName ]) {
+      return Promise.resolve(); // Already being fetched!
+    } else {
+      return fetchAndWriteEmoji(emojiName, emojiUnicode, emojiFilePath);
+    }
+  }
+
   self.process(function process (parent, emojiName, attributes) {
     const sizeAttribute = castSizeOrThrow(attributes.size);
     const unitAttribute = checkUnitOrThrow(attributes.unit);
@@ -45,23 +49,14 @@ function emojiInlineMacro () {
       : defaultSize;
     const emojiUnicode = twemojiMap[ emojiName ];
     if (emojiUnicode) {
-      const className = `emoji-${emojiName}`;
       const emojiFilePath = resolve(BUILD_AREA_PATH, `emoji_${emojiName}.svg`);
-      const emoji = {
+
+      EMOJIS[ emojiName ] = {
         filePath: emojiFilePath,
-        cssClass: className,
-        fetcher: existsSync(emojiFilePath)
-          ? Promise.resolve()
-          : fetchAndWriteEmoji(emojiName, emojiUnicode, emojiFilePath),
+        cssClass: `emoji-${emojiName}`,
+        fetcher: getEmojiFetcher(emojiFilePath, emojiName, emojiUnicode),
       };
-      if (existsSync(emojiFilePath)) {
-        emoji.fetcher = Promise.resolve(); // Already fetched!
-      } else if (EMOJIS[ emojiName ]) {
-        emoji.fetcher = EMOJIS[ emojiName ].fetcher; // Already being fetched!
-      } else {
-        emoji.fetcher = fetchAndWriteEmoji(emojiName, emojiUnicode, emojiFilePath);
-      }
-      EMOJIS[ emojiName ] = emoji;
+
       return self.createInline(parent, 'image', '', {
         target: '',
         type: 'emoji',
@@ -72,7 +67,7 @@ function emojiInlineMacro () {
         },
       });
     }
-    logWarn(stoyle`Skipping emoji inline macro, ${emojiName} not found`({ nodes: [ theme.strong ] }));
+    logError(stoyle`Skipping emoji inline macro, ${emojiName} not found`({ nodes: [ theme.strong ] }));
     return self.createInline(parent, 'quoted', `[emoji ${emojiName} not found]`, attributes);
   });
 }

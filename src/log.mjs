@@ -28,6 +28,6 @@ export function logWarn (content) {
 }
 
 export function logError (content) {
-  const message = format(content, 'WARN', theme.warning);
+  const message = format(content, 'ERROR', theme.error);
   process.stdout.write(message);
 }

@@ -3,7 +3,7 @@ import { stoyle } from 'stoyle';
 
 import { $, $$, changeElementTag, createNewElement, insertInlineStyle, readFileToDataUri, removeFromParent, replaceInParent } from '../domUtils.mjs';
 import { logWarn, theme } from '../log.mjs';
-import { readTextFileSync } from '../third-party/fs/api.mjs';
+import { existsSync, readTextFileSync } from '../third-party/fs/api.mjs';
 import { getBaseName, getExtension, join, resolve } from '../third-party/path/api.mjs';
 import processBlocksRecursively from './processBlocksRecursively.mjs';
 
@@ -203,16 +203,17 @@ function createEmojiCss (emoji) {
  * This allows embedding all emojis in the HTML file without repeating them multiple times.
  */
 async function embedEmojis (dom, { emojisRegister }) {
-  const emojisAsArray = await Promise.all(
-    Object.entries(emojisRegister)
-      .map(async ([ name, metadata ]) => {
-        await metadata.fetcher; // Possibly still calling the server to get the SVG
-        return { name, cssClass: metadata.cssClass, dataUri: readFileToDataUri('svg', metadata.filePath) };
-      }),
+  await Promise.all( // Wait for all HTTP calls to end and all SVGs to be on disk
+    Object.values(emojisRegister)
+      .map(({ fetcher }) => fetcher),
   );
-  const emojis = emojisAsArray.reduce((seed, emoji) => ({ ...seed, [ emoji.name ]: emoji }), {});
 
-  const css = emojisAsArray
+  const emojis = Object.entries(emojisRegister)
+    .filter(([ , metadata ]) => existsSync(metadata.filePath)) // Sometimes, HTTP GET failed, let's avoid breaking watcher in that case
+    .map(([ name, metadata ]) => ({ name, cssClass: metadata.cssClass, dataUri: readFileToDataUri('svg', metadata.filePath) }))
+    .reduce((seed, emoji) => ({ ...seed, [ emoji.name ]: emoji }), {});
+
+  const css = Object.values(emojis)
     .reduce((seed, emoji) => `${seed} ${createEmojiCss(emoji)}`, '');
   insertInlineStyle(dom, 'EMOJIS', css);
 
@@ -220,6 +221,9 @@ async function embedEmojis (dom, { emojisRegister }) {
     .forEach((parentNode) => {
       const imgNode = parentNode.querySelector('img');
       const emojiName = imgNode.alt;
+
+      if (!emojis[ emojiName ]) { return; }
+
       const cssClass = emojis[ emojiName ].cssClass;
       const style = `width: ${imgNode.getAttribute('width')}; height: ${imgNode.getAttribute('height')}`;
       const newImgNode = createNewElement(dom, 'span', [ cssClass ], { style, role: 'image' });
