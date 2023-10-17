@@ -1,4 +1,3 @@
-import minifyHtml from '@minify-html/node';
 import { Parcel } from '@parcel/core';
 
 import deckToHtml from './asciidoc/deckToHtml.mjs';
@@ -7,11 +6,12 @@ import highlightCode from './code/highlightCode.mjs';
 import insertCustomFiles from './custom-files/insertCustomFiles.mjs';
 import { insertInlineScript, insertInlineStyle } from './domUtils.mjs';
 import { BUILD_AREA_PATH, DIST_FOLDER_PATH, LIB_FOLDER, REPOSITORY_ROOT_PATH } from './folders.mjs';
-import { existsSync, readTextFileSync, writeTextFileSync } from './third-party/fs/api.mjs';
 import buildGraphs from './graphs/buildGraphs.mjs';
 import applyLayouts from './layouts/applyLayouts.mjs';
 import { logInfo } from './log.mjs';
 import applyTheme from './themes/applyTheme.mjs';
+import { existsSync, readTextFileSync, writeTextFileSync } from './third-party/fs/api.mjs';
+import { minify } from './third-party/minifier/api.mjs';
 import { resolve } from './third-party/path/api.mjs';
 
 const DECK_JS_FILE_PATH = resolve(LIB_FOLDER, 'deck.mjs');
@@ -19,12 +19,6 @@ const BUILT_DECK_JS_FILE_PATH = resolve(BUILD_AREA_PATH, 'deck.js');
 const BUILT_DECK_CSS_FILE_PATH = resolve(BUILD_AREA_PATH, 'deck.css');
 const OUTPUT_FILE_PATH = resolve(DIST_FOLDER_PATH, 'deck.html');
 
-const MINIFIER_CONFIGURATION = {
-  keep_spaces_between_attributes: false,
-  keep_comments: false,
-  minify_js: true,
-  minify_css: true,
-};
 const PARCEL_JS_CONFIGURATION = {
   entries: [ DECK_JS_FILE_PATH ],
   mode: 'production',
@@ -67,10 +61,7 @@ export async function asciidocToReveal (inputPath, outputPath = OUTPUT_FILE_PATH
   ].reduce((promise, operation) => promise.then(async (dom) => operation(dom, deck)), Promise.resolve(baseDom));
 
   const unMinified = finalDom.serialize();
-  const minified = minifyHtml.minify(
-    Buffer.from(unMinified),
-    MINIFIER_CONFIGURATION,
-  ).toString('utf8');
+  const minified = minify(unMinified);
   writeTextFileSync(outputPath, minified);
 }
 
