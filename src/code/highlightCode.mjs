@@ -1,13 +1,12 @@
 import Prism from 'prismjs';
 import loadLanguages from 'prismjs/components/index.js';
-import { compileString } from 'sass';
 import { stoyle } from 'stoyle';
 
 import { $$, insertInlineStyle } from '../domUtils.mjs';
 import { NODE_MODULES_PATH } from '../folders.mjs';
-import { readdirSync, readTextFileSync } from '../third-party/fs/api.mjs';
 import { logInfo, logWarn, theme } from '../log.mjs';
 import { DEFAULT_THEME } from '../themes/applyTheme.mjs';
+import { readdirSync, readTextFileSync } from '../third-party/fs/api.mjs';
 import { resolve } from '../third-party/path/api.mjs';
 
 const CLASSIC_PRISM_THEMES_PATH = resolve(NODE_MODULES_PATH, 'prismjs', 'themes');
@@ -73,16 +72,8 @@ function buildHighlightStyles (themeName, highlightThemeDark, highlightThemeLigh
       { id: 'PRISM_LIGHT', css: lightTheme },
     ];
   }
-  const { css } = compileString(
-    `@media (prefers-color-scheme: dark) { ${darkTheme} } @media (prefers-color-scheme: light) { ${lightTheme} }`,
-    {
-      style: 'compressed',
-      loadPaths: [ NODE_MODULES_PATH ],
-      sourceMap: false,
-      verbose: true,
-    },
-  );
-  return { id: 'PRISM', css };
+
+  return { id: 'PRISM', css: `@media (prefers-color-scheme: dark) { ${darkTheme} } @media (prefers-color-scheme: light) { ${lightTheme} }` };
 }
 
 async function prepareHighlighting (dom, pluginsToActivate, highlightStyles) {

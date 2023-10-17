@@ -1,12 +1,12 @@
-import { compileString } from 'sass';
 import { stoyle } from 'stoyle';
 
 import { $, insertInlineScript, insertInlineStyle } from '../domUtils.mjs';
 import { BUILD_AREA_PATH, DIAGRAM_STYLES_FOLDER, LIB_FOLDER, NODE_MODULES_PATH } from '../folders.mjs';
+import { logInfo, logWarn, theme } from '../log.mjs';
 import { oklch } from '../third-party/colors/api.mjs';
 import { existsSync, readTextFileSync, writeTextFileSync } from '../third-party/fs/api.mjs';
-import { logInfo, logWarn, theme } from '../log.mjs';
 import { resolve } from '../third-party/path/api.mjs';
+import { compileStyle } from '../third-party/sass/api.mjs';
 
 const BASE_SCSS_PATH = resolve(LIB_FOLDER, 'theme', 'base.scss');
 
@@ -62,16 +62,7 @@ function buildThemeStyle (themeName, themeHue, themeChromaLevel) {
   logInfo('Bundling theme file');
   const colorExports = prepareColorExports(themeName, themeHue, themeChromaLevel);
   const baseScss = readTextFileSync(BASE_SCSS_PATH);
-  const { css } = compileString(
-    baseScss.replace(REPLACEMENT_TAG, colorExports),
-    {
-      style: 'compressed',
-      loadPaths: [ NODE_MODULES_PATH ],
-      sourceMap: false,
-      verbose: true,
-    },
-  );
-  return css;
+  return compileStyle(baseScss.replace(REPLACEMENT_TAG, colorExports), NODE_MODULES_PATH);
 }
 
 function insertGraphStyle (dom, graphType, themeName) {
