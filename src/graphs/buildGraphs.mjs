@@ -1,12 +1,12 @@
 import { run } from '@mermaid-js/mermaid-cli';
-import { existsSync, readFileSync, writeFileSync } from 'fs';
 import jsdom from 'jsdom';
 import { resolve } from 'path';
 import { stoyle } from 'stoyle';
 
-import { hashString } from '../contentHasher.mjs';
+import { hashString } from '../third-party/crypto/api.mjs';
 import { $, removeFromParent } from '../domUtils.mjs';
 import { BUILD_AREA_PATH } from '../folders.mjs';
+import { existsSync, readTextFileSync, writeTextFileSync } from '../third-party/fs/api.mjs';
 import { logWarn, theme } from '../log.mjs';
 
 const MERMAID_CONFIGURATION = {
@@ -74,16 +74,15 @@ async function mermaidToSvg (graphId, graphCode) {
   const outputFilePath = resolve(BUILD_AREA_PATH, `${graphId}_${graphCodeHash}.svg`);
 
   if (!existsSync(outputFilePath)) {
-    writeFileSync(inputFilePath, graphCode, 'utf8');
+    writeTextFileSync(inputFilePath, graphCode);
     await run(inputFilePath, outputFilePath, MERMAID_CONFIGURATION);
-    const initialSvg = readFileSync(outputFilePath, 'utf8');
-    const dom = new jsdom.JSDOM(initialSvg);
+    const dom = readTextFileSync(outputFilePath, (svg) => new jsdom.JSDOM(svg));
     const graphNode = $(dom, 'svg');
     addDiagramTweaks(graphNode, graphId);
-    writeFileSync(outputFilePath, graphNode.outerHTML);
+    writeTextFileSync(outputFilePath, graphNode.outerHTML);
   }
 
-  return readFileSync(outputFilePath, 'utf8');
+  return readTextFileSync(outputFilePath);
 }
 
 function addDiagramTweaks (graphNode, graphId) {

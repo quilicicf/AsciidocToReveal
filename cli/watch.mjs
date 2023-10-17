@@ -1,10 +1,10 @@
 import { watch } from 'chokidar';
-import { existsSync } from 'fs';
 import { stoyle } from 'stoyle';
 
 import { asciidocToReveal } from '../src/asciidocToReveal.mjs';
-import { hashFile } from '../src/contentHasher.mjs';
+import { hashString } from '../src/third-party/crypto/api.mjs';
 import { REPOSITORY_ROOT_PATH } from '../src/folders.mjs';
+import { existsSync, readTextFileSync } from '../src/third-party/fs/api.mjs';
 import { logInfo, theme } from '../src/log.mjs';
 import startLiveReloadServer from './liveReloadServer.mjs';
 
@@ -49,7 +49,7 @@ export async function handler (args) {
     cwd: REPOSITORY_ROOT_PATH,
   };
 
-  const initialInputHash = hashFile(inputFile);
+  const initialInputHash = readTextFileSync(inputFile, hashString);
   const liveReloadServer = startLiveReloadServer(initialInputHash);
 
   logInfo(stoyle`Watcher started on ${inputFile}`({ nodes: [ theme.strong ] }));
@@ -58,7 +58,7 @@ export async function handler (args) {
       logInfo('=====================================================================');
       logInfo(stoyle`File ${path} received event ${event}`({ nodes: [ theme.strong, theme.strong ] }));
       state.queue = state.queue.then(async () => {
-        const newInputHash = hashFile(inputFile);
+        const newInputHash = readTextFileSync(inputFile, hashString);
         await asciidocToReveal(inputFile, outputFile, { shouldAddLiveReload: true });
         liveReloadServer.reload(newInputHash);
       });

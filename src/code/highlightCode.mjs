@@ -1,4 +1,3 @@
-import { readdirSync, readFileSync } from 'fs';
 import { resolve } from 'path';
 import Prism from 'prismjs';
 import loadLanguages from 'prismjs/components/index.js';
@@ -7,7 +6,9 @@ import { stoyle } from 'stoyle';
 
 import { $$, insertInlineStyle } from '../domUtils.mjs';
 import { NODE_MODULES_PATH } from '../folders.mjs';
+import { readdirSync, readTextFileSync } from '../third-party/fs/api.mjs';
 import { logInfo, logWarn, theme } from '../log.mjs';
+import { DEFAULT_THEME } from '../themes/applyTheme.mjs';
 
 const CLASSIC_PRISM_THEMES_PATH = resolve(NODE_MODULES_PATH, 'prismjs', 'themes');
 const EXTENDED_PRISM_THEMES_PATH = resolve(NODE_MODULES_PATH, 'prism-themes', 'themes');
@@ -56,9 +57,9 @@ export default async function highlightCode (dom, { configuration }) {
 
 function buildHighlightStyles (themeName, highlightThemeDark, highlightThemeLight, themeSwitchingMode) {
   const darkThemeCssPath = findThemeCssPath(highlightThemeDark);
-  const darkTheme = readFileSync(darkThemeCssPath, 'utf8');
+  const darkTheme = readTextFileSync(darkThemeCssPath);
   const lightThemeCssPath = findThemeCssPath(highlightThemeLight);
-  const lightTheme = readFileSync(lightThemeCssPath, 'utf8');
+  const lightTheme = readTextFileSync(lightThemeCssPath);
 
   if (themeName === 'dark') {
     return [ { id: 'PRISM_DARK', css: darkTheme } ];
@@ -93,7 +94,7 @@ async function prepareHighlighting (dom, pluginsToActivate, highlightStyles) {
     .reduce(
       (promise, plugin) => promise.then(async (seed) => {
         await import(plugin.pluginPath);
-        const pluginCss = plugin.cssPath ? readFileSync(plugin.cssPath, 'utf8') : '';
+        const pluginCss = plugin.cssPath ? readTextFileSync(plugin.cssPath) : '';
         return `${seed}${pluginCss}${plugin.additionalCss}`;
       }),
       Promise.resolve(''),

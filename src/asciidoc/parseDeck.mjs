@@ -1,7 +1,8 @@
 import Processor from '@asciidoctor/core';
 import { dirname, resolve } from 'path';
-import { hashFile } from '../contentHasher.mjs';
 
+import { hashString } from '../third-party/crypto/api.mjs';
+import { readTextFileSync } from '../third-party/fs/api.mjs';
 import { parseConfiguration } from './configuration/deckConfiguration.mjs';
 import registerEmojisExtension from './emojis/asciidoctor-emojis.mjs';
 import registerGraphAnimationExtension from './graph-animations/asciidoctor-graph-animations.mjs';
@@ -16,7 +17,7 @@ export default function parseDeck (inputPath, buildOptions) {
   const graphTypes = []; // Added when graphs are converted because mermaid detects the type, we rely on it
   const ast = processor.loadFile(inputPath, { catalog_assets: true });
   const configuration = parseConfiguration(ast, inputFolder);
-  const inputHash = hashFile(inputPath);
+  const inputHash = readTextFileSync(inputPath, hashString);
   return {
     ast,
     emojisRegister,

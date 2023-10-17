@@ -1,17 +1,17 @@
 import minifyHtml from '@minify-html/node';
 import { Parcel } from '@parcel/core';
-import { existsSync, readFileSync, writeFileSync } from 'fs';
 import { resolve } from 'path';
+
 import deckToHtml from './asciidoc/deckToHtml.mjs';
 import parseDeck from './asciidoc/parseDeck.mjs';
 import highlightCode from './code/highlightCode.mjs';
 import insertCustomFiles from './custom-files/insertCustomFiles.mjs';
 import { insertInlineScript, insertInlineStyle } from './domUtils.mjs';
 import { BUILD_AREA_PATH, DIST_FOLDER_PATH, LIB_FOLDER, REPOSITORY_ROOT_PATH } from './folders.mjs';
+import { existsSync, readTextFileSync, writeTextFileSync } from './third-party/fs/api.mjs';
 import buildGraphs from './graphs/buildGraphs.mjs';
 import applyLayouts from './layouts/applyLayouts.mjs';
 import { logInfo } from './log.mjs';
-
 import applyTheme from './themes/applyTheme.mjs';
 
 const DECK_JS_FILE_PATH = resolve(LIB_FOLDER, 'deck.mjs');
@@ -71,15 +71,17 @@ export async function asciidocToReveal (inputPath, outputPath = OUTPUT_FILE_PATH
     Buffer.from(unMinified),
     MINIFIER_CONFIGURATION,
   ).toString('utf8');
-  writeFileSync(outputPath, minified, 'utf8');
+  writeTextFileSync(outputPath, minified);
 }
 
 function insertLiveReloadScript (dom, { inputHash, buildOptions }) {
   if (!buildOptions.shouldAddLiveReload) { return dom; }
 
   const liveReloadScriptPath = resolve(LIB_FOLDER, 'liveReload.mjs');
-  const liveReloadScriptTemplate = readFileSync(liveReloadScriptPath, 'utf8');
-  const liveReloadScript = liveReloadScriptTemplate.replace('$$HASH$$', inputHash);
+  const liveReloadScript = readTextFileSync(
+    liveReloadScriptPath,
+    (template) => template.replace('$$HASH$$', inputHash),
+  );
 
   insertInlineScript(dom, 'LIVE_RELOAD', liveReloadScript);
 
@@ -87,10 +89,10 @@ function insertLiveReloadScript (dom, { inputHash, buildOptions }) {
 }
 
 function addRevealJs (dom) {
-  const style = readFileSync(BUILT_DECK_CSS_FILE_PATH, 'utf8');
+  const style = readTextFileSync(BUILT_DECK_CSS_FILE_PATH);
   insertInlineStyle(dom, 'REVEAL', style, 'afterbegin');
 
-  const script = readFileSync(BUILT_DECK_JS_FILE_PATH, 'utf8')
+  const script = readTextFileSync(BUILT_DECK_JS_FILE_PATH)
     .replaceAll('<script>', '<"+"script>')
     .replaceAll('</script>', '</"+"script>');
   insertInlineScript(dom, 'REVEAL', script, 'afterbegin');

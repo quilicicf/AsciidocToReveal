@@ -1,6 +1,4 @@
-import { readFileSync } from 'fs';
-
-import readAsBase64 from './readAsBase64.mjs';
+import { readAsBase64Sync, readTextFileSync } from './third-party/fs/api.mjs';
 
 export function $ (dom, selector) {
   return dom.window.document.querySelector(selector);
@@ -48,10 +46,9 @@ function toSvgDataUri (content) {
 export function readFileToDataUri (type, filePath) {
   switch (type) {
     case 'svg':
-      return toSvgDataUri(readFileSync(filePath, 'utf8'));
+      return readTextFileSync(filePath, (content) => toSvgDataUri(content));
     case 'png':
-      const imageBase64 = readAsBase64(filePath);
-      return `data:image/${type};base64,${imageBase64}`;
+      return `data:image/${type};base64,${readAsBase64Sync(filePath)}`;
     default:
       throw Error(`Unsupported image type: ${type}`);
   }

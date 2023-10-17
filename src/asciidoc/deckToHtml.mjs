@@ -1,9 +1,9 @@
-import { readFileSync } from 'fs';
 import jsdom from 'jsdom';
 import { basename, extname, join, resolve } from 'path';
 import { stoyle } from 'stoyle';
 
 import { $, $$, changeElementTag, createNewElement, insertInlineStyle, readFileToDataUri, removeFromParent, replaceInParent } from '../domUtils.mjs';
+import { readTextFileSync } from '../third-party/fs/api.mjs';
 import { logWarn, theme } from '../log.mjs';
 import processBlocksRecursively from './processBlocksRecursively.mjs';
 
@@ -54,11 +54,11 @@ export default function deckToHtml (deck) {
   );
 }
 
-function insertFavicon (dom, { inputFolder, configuration }) {
+function insertFavicon (dom, { configuration }) {
   const { favicon } = configuration;
   if (favicon) {
-    const imageContent = readFileSync(favicon, 'utf8');
-    const dataUri = `data:image/svg+xml,${encodeURIComponent(imageContent)}`;
+    const imageContent = readTextFileSync(favicon, (content) => encodeURIComponent(content));
+    const dataUri = `data:image/svg+xml,${imageContent}`;
     $(dom, 'head')
       .insertAdjacentHTML('afterbegin', `<link rel="icon" href="${dataUri}"/>`);
   }

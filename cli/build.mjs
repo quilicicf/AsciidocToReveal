@@ -1,5 +1,4 @@
-import { existsSync } from 'fs';
-
+import { existsSync } from '../src/third-party/fs/api.mjs';
 import { asciidocToReveal } from '../src/asciidocToReveal.mjs';
 
 export const command = 'build';

@@ -1,11 +1,11 @@
 import chromaJs from 'chroma-js';
-import { existsSync, readFileSync, writeFileSync } from 'fs';
 import { resolve } from 'path';
 import { compileString } from 'sass';
 import { stoyle } from 'stoyle';
 
 import { $, insertInlineScript, insertInlineStyle } from '../domUtils.mjs';
 import { BUILD_AREA_PATH, DIAGRAM_STYLES_FOLDER, LIB_FOLDER, NODE_MODULES_PATH } from '../folders.mjs';
+import { existsSync, readTextFileSync, writeTextFileSync } from '../third-party/fs/api.mjs';
 import { logInfo, logWarn, theme } from '../log.mjs';
 
 const BASE_SCSS_PATH = resolve(LIB_FOLDER, 'theme', 'base.scss');
@@ -33,7 +33,7 @@ export default function applyTheme (dom, { graphTypes, configuration }) {
   const builtThemeFilePath = resolve(BUILD_AREA_PATH, `${themeName}-${themeHue}-${themeChromaLevel}.css`);
   if (!existsSync(builtThemeFilePath)) {
     const css = buildThemeStyle(themeName, themeHue, themeChromaLevel);
-    writeFileSync(builtThemeFilePath, css, 'utf8');
+    writeTextFileSync(builtThemeFilePath, css);
   }
 
   if (graphTypes.length) {
@@ -41,13 +41,13 @@ export default function applyTheme (dom, { graphTypes, configuration }) {
     graphTypes.forEach((graphType) => insertGraphStyle(dom, graphType, themeName));
   }
 
-  const builtCss = readFileSync(builtThemeFilePath, 'utf8');
+  const builtCss = readTextFileSync(builtThemeFilePath);
   insertInlineStyle(dom, 'REVEAL_THEME', builtCss);
 
   if (themeSwitchingMode === 'manual') {
     $(dom, 'body').classList.add(`theme-${startingThemeName}`);
     const manualThemeSwitcherFilePath = resolve(LIB_FOLDER, 'manualThemeSwitcher.mjs');
-    const manualThemeSwitcher = readFileSync(manualThemeSwitcherFilePath, 'utf8');
+    const manualThemeSwitcher = readTextFileSync(manualThemeSwitcherFilePath);
     const scriptContent = `
       ${manualThemeSwitcher}
       Reveal.on('ready', () => { toggleDisabled('${nonStartingThemeName.toUpperCase()}', true); });
@@ -61,7 +61,7 @@ export default function applyTheme (dom, { graphTypes, configuration }) {
 function buildThemeStyle (themeName, themeHue, themeChromaLevel) {
   logInfo('Bundling theme file');
   const colorExports = prepareColorExports(themeName, themeHue, themeChromaLevel);
-  const baseScss = readFileSync(BASE_SCSS_PATH, 'utf8');
+  const baseScss = readTextFileSync(BASE_SCSS_PATH);
   const { css } = compileString(
     baseScss.replace(REPLACEMENT_TAG, colorExports),
     {
@@ -76,9 +76,9 @@ function buildThemeStyle (themeName, themeHue, themeChromaLevel) {
 
 function insertGraphStyle (dom, graphType, themeName) {
   const darkStyleFilePath = resolve(DIAGRAM_STYLES_FOLDER, `${graphType}_dark.css`);
-  const darkStyle = readFileSync(darkStyleFilePath, 'utf8');
+  const darkStyle = readTextFileSync(darkStyleFilePath);
   const lightStyleFilePath = resolve(DIAGRAM_STYLES_FOLDER, `${graphType}_light.css`);
-  const lightStyle = readFileSync(lightStyleFilePath, 'utf8');
+  const lightStyle = readTextFileSync(lightStyleFilePath);
   const styleIdPrefix = graphType.toUpperCase().replaceAll('-', '_');
   switch (themeName) {
     case THEMES.DARK:
@@ -213,17 +213,17 @@ function createTheme (hue, chromaLevel) {
 function prepareColorExports (themeName, themeHue, themeChromaLevel) {
   const theme = createTheme(themeHue, themeChromaLevel);
   switch (themeName) {
-    case 'dark':
+    case THEMES.DARK:
       return `body { ${prepareDarkColorExport(theme)} }`;
-    case 'light':
+    case THEMES.LIGHT:
       return `body { ${prepareLightColorExport(theme)} }`;
-    case 'dark-and-light-auto':
+    case THEMES.LIGHT_AND_DARK_AUTO:
       return `
         @media (prefers-color-scheme: dark) { body { ${prepareDarkColorExport(theme)} } }
         @media (prefers-color-scheme: light) { body { ${prepareLightColorExport(theme)} } }
       `;
-    case 'dark-and-light-manual':
-    case 'light-and-dark-manual':
+    case THEMES.DARK_AND_LIGHT_MANUAL:
+    case THEMES.LIGHT_AND_DARK_MANUAL:
       return `
         body.theme-dark { ${prepareDarkColorExport(theme)} }
         body.theme-light { ${prepareLightColorExport(theme)} }

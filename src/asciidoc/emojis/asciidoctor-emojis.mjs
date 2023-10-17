@@ -1,11 +1,11 @@
 import { get } from 'https';
 import { resolve } from 'path';
-import { existsSync, writeFileSync } from 'fs';
 import { stoyle } from 'stoyle';
 
-import twemojiMap from './twemojis.mjs';
 import { BUILD_AREA_PATH } from '../../folders.mjs';
-import { theme, logWarn } from '../../log.mjs';
+import { logWarn, theme } from '../../log.mjs';
+import { existsSync, writeTextFileSync } from '../../third-party/fs/api.mjs';
+import twemojiMap from './twemojis.mjs';
 
 const UNITS = [ 'px', 'em' ];
 const EMOJIS = {};
@@ -17,7 +17,7 @@ export default function register (registry) {
 
 async function fetchAndWriteEmoji (emojiName, emojiUnicode, emojiFilePath) {
   const emojiContent = await fetchEmoji(emojiName, emojiUnicode);
-  writeFileSync(emojiFilePath, emojiContent.toString(), 'utf8');
+  writeTextFileSync(emojiFilePath, emojiContent.toString());
 }
 
 async function fetchEmoji (emojiName, emojiUnicode) {

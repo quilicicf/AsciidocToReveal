@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 
-import { readFileSync, writeFileSync } from 'fs';
 import { resolve } from 'path';
-import { deckConfiguration } from '../src/asciidoc/configuration/deckConfiguration.mjs';
 
+import { deckConfiguration } from '../src/asciidoc/configuration/deckConfiguration.mjs';
 import { TEST_FOLDER } from '../src/folders.mjs';
+import { readTextFileSync, writeTextFileSync } from '../src/third-party/fs/api.mjs';
 
 const START_TAG = '// START PARAMETERS DOCUMENTATION';
 const END_TAG = '// END PARAMETERS DOCUMENTATION';
@@ -29,9 +29,9 @@ async function main () {
     '|===',
   ].join('\n');
   const deckPath = resolve(TEST_FOLDER, 'deck.adoc');
-  const deckContent = readFileSync(deckPath, 'utf8');
+  const deckContent = readTextFileSync(deckPath);
   const updatedDeckContent = substituteInDeck(deckContent, START_TAG, END_TAG, table);
-  writeFileSync(deckPath, updatedDeckContent, 'utf8');
+  writeTextFileSync(deckPath, updatedDeckContent);
 }
 
 function substituteInDeck (deckContent, startTag, endTag, value) {

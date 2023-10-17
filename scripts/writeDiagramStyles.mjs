@@ -1,12 +1,12 @@
 #!/usr/bin/env node
 
 import { run } from '@mermaid-js/mermaid-cli';
-import { readFileSync, writeFileSync } from 'fs';
 import jsdom from 'jsdom';
 import { resolve } from 'path';
 import { stoyle } from 'stoyle';
 import { $ } from '../src/domUtils.mjs';
 import { LIB_FOLDER } from '../src/folders.mjs';
+import { readTextFileSync, writeTextFileSync } from '../src/third-party/fs/api.mjs';
 import { logInfo, theme } from '../src/log.mjs';
 
 const MERMAID_DARK_CONFIGURATION = {
@@ -126,7 +126,7 @@ async function main () {
         logInfo(stoyle`Processing diagram ${key}`({ nodes: [ theme.strong ] }));
 
         const inputFilePath = `/tmp/${key}.mermaid`;
-        writeFileSync(inputFilePath, diagram, 'utf8');
+        writeTextFileSync(inputFilePath, diagram);
         await processDiagram(inputFilePath, `/tmp/${key}_dark.svg`, resolve(DIAGRAMS_PATH, `${key}_dark.css`), MERMAID_DARK_CONFIGURATION);
         await processDiagram(inputFilePath, `/tmp/${key}_light.svg`, resolve(DIAGRAMS_PATH, `${key}_light.css`), MERMAID_LIGHT_CONFIGURATION);
       }),
@@ -135,12 +135,12 @@ async function main () {
 
 async function processDiagram (inputFilePath, svgFilePath, outputFilePath, mermaidConfiguration) {
   await run(inputFilePath, svgFilePath, mermaidConfiguration);
-  const svg = readFileSync(svgFilePath, 'utf8');
+  const svg = readTextFileSync(svgFilePath);
   const dom = new jsdom.JSDOM(svg);
   const style = $(dom, 'style').innerHTML;
   const diagramType = $(dom, 'svg').getAttribute('aria-roledescription');
   const updatedStyle = style.replaceAll('#my-svg', `svg.${diagramType}`);
-  writeFileSync(outputFilePath, updatedStyle, 'utf8');
+  writeTextFileSync(outputFilePath, updatedStyle);
 }
 
 function stripIndent (edgesArray, ...nodes) {
