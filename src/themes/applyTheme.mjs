@@ -1,10 +1,10 @@
-import chromaJs from 'chroma-js';
 import { resolve } from 'path';
 import { compileString } from 'sass';
 import { stoyle } from 'stoyle';
 
 import { $, insertInlineScript, insertInlineStyle } from '../domUtils.mjs';
 import { BUILD_AREA_PATH, DIAGRAM_STYLES_FOLDER, LIB_FOLDER, NODE_MODULES_PATH } from '../folders.mjs';
+import { oklch } from '../third-party/colors/api.mjs';
 import { existsSync, readTextFileSync, writeTextFileSync } from '../third-party/fs/api.mjs';
 import { logInfo, logWarn, theme } from '../log.mjs';
 
@@ -200,13 +200,13 @@ function prepareLightColorExport (theme) {
 function createTheme (hue, chromaLevel) {
   const chroma = CHROMA_LEVELS[ chromaLevel ];
   return {
-    primaryColor: chromaJs.oklch(.6, chroma, hue),
-    primaryColorLight: chromaJs.oklch(.8, chroma, hue),
-    primaryColorLighter: chromaJs.oklch(.94, .005, hue),
-    primaryColorLightest: chromaJs.oklch(.99, .005, hue),
-    primaryColorDark: chromaJs.oklch(.4, chroma, hue),
-    primaryColorDarker: chromaJs.oklch(.06, .005, hue),
-    primaryColorDarkest: chromaJs.oklch(.01, .005, hue),
+    primaryColor: oklch(.6, chroma, hue),
+    primaryColorLight: oklch(.8, chroma, hue),
+    primaryColorLighter: oklch(.94, .005, hue),
+    primaryColorLightest: oklch(.99, .005, hue),
+    primaryColorDark: oklch(.4, chroma, hue),
+    primaryColorDarker: oklch(.06, .005, hue),
+    primaryColorDarkest: oklch(.01, .005, hue),
   };
 }
 
