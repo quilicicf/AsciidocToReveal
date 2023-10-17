@@ -1,7 +1,8 @@
 import { stoyle } from 'stoyle';
-import { v4 } from 'uuid';
 import { WebSocketServer } from 'ws';
+
 import { logInfo, theme } from '../src/log.mjs';
+import { uuid } from '../src/third-party/uuid/api.mjs';
 
 export default function startLiveReloadServer (initialHash) {
   const wss = new WebSocketServer({ port: 1234 });
@@ -10,7 +11,7 @@ export default function startLiveReloadServer (initialHash) {
     clients: {},
   };
   wss.on('connection', (ws) => {
-    const key = v4();
+    const key = uuid();
     logInfo(stoyle`Registering client ${key}`({ nodes: [ theme.strong ] }));
     state.clients[ key ] = ws;
   });
