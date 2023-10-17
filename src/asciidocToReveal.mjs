@@ -1,5 +1,3 @@
-import { Parcel } from '@parcel/core';
-
 import deckToHtml from './asciidoc/deckToHtml.mjs';
 import parseDeck from './asciidoc/parseDeck.mjs';
 import highlightCode from './code/highlightCode.mjs';
@@ -10,6 +8,7 @@ import buildGraphs from './graphs/buildGraphs.mjs';
 import applyLayouts from './layouts/applyLayouts.mjs';
 import { logInfo } from './log.mjs';
 import applyTheme from './themes/applyTheme.mjs';
+import { bundle } from './third-party/bundler/api.mjs';
 import { existsSync, readTextFileSync, writeTextFileSync } from './third-party/fs/api.mjs';
 import { minify } from './third-party/minifier/api.mjs';
 import { resolve } from './third-party/path/api.mjs';
@@ -19,33 +18,13 @@ const BUILT_DECK_JS_FILE_PATH = resolve(BUILD_AREA_PATH, 'deck.js');
 const BUILT_DECK_CSS_FILE_PATH = resolve(BUILD_AREA_PATH, 'deck.css');
 const OUTPUT_FILE_PATH = resolve(DIST_FOLDER_PATH, 'deck.html');
 
-const PARCEL_JS_CONFIGURATION = {
-  entries: [ DECK_JS_FILE_PATH ],
-  mode: 'production',
-  defaultConfig: '@parcel/config-default',
-  shouldContentHash: false,
-  defaultTargetOptions: {
-    sourceMaps: false,
-    distDir: BUILD_AREA_PATH,
-    engines: {
-      browsers: [ 'last 1 Firefox version' ],
-    },
-  },
-  additionalReporters: [
-    {
-      packageName: '@parcel/reporter-cli',
-      resolveFrom: REPOSITORY_ROOT_PATH,
-    },
-  ],
-};
-
 export async function asciidocToReveal (inputPath, outputPath = OUTPUT_FILE_PATH, buildOptions = {}) {
   if (!existsSync(BUILT_DECK_JS_FILE_PATH) || !existsSync(BUILT_DECK_CSS_FILE_PATH)) {
     // TODO: Rethink this.
     //       * Either the version of Reveal is fixed and these files can be pre-compiled
     //       * Or it should depend on the child project and the resolution of Node packages must evolve
     logInfo('Bundling input deck file');
-    await new Parcel(PARCEL_JS_CONFIGURATION).run();
+    await bundle(DECK_JS_FILE_PATH, BUILD_AREA_PATH, REPOSITORY_ROOT_PATH);
   }
 
   const deck = parseDeck(inputPath, buildOptions);
