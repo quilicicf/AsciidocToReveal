@@ -1,9 +1,7 @@
-import { stoyle } from 'stoyle';
-
 import { BUILD_AREA_PATH, DIAGRAM_STYLES_FOLDER, LIB_FOLDER, NODE_MODULES_PATH } from '../folders.mjs';
-import { logInfo, logWarn, theme } from '../log.mjs';
 import { oklch } from '../third-party/colors/api.mjs';
 import { existsSync, readTextFileSync, writeTextFileSync } from '../third-party/fs/api.mjs';
+import { _, logInfo, logWarn, theme } from '../third-party/logger/log.mjs';
 import { resolve } from '../third-party/path/api.mjs';
 import { compileStyle } from '../third-party/sass/api.mjs';
 
@@ -36,7 +34,7 @@ export default function applyTheme (dom, { graphTypes, configuration }) {
   }
 
   if (graphTypes.length) {
-    logInfo(stoyle`Applying themes for graph types: [ ${graphTypes.join(', ')} ]`({ nodes: [ theme.strong ] }));
+    logInfo(_`Applying themes for graph types: [ ${graphTypes.join(', ')} ]`({ nodes: [ theme.strong ] }));
     graphTypes.forEach((graphType) => insertGraphStyle(dom, graphType, themeName));
   }
 
@@ -94,7 +92,7 @@ function insertGraphStyle (dom, graphType, themeName) {
       return;
 
     default:
-      logWarn(stoyle`Unsupported theme name ${themeName}`({ nodes: [ theme.strong ] }));
+      logWarn(_`Unsupported theme name ${themeName}`({ nodes: [ theme.strong ] }));
       return;
   }
 }

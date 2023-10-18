@@ -1,12 +1,10 @@
 // noinspection JSUnusedGlobalSymbols
 
-import { stoyle } from 'stoyle';
-
 import { DEFAULT_DARK_HIGHLIGHT_THEME, DEFAULT_LIGHT_HIGHLIGHT_THEME, HIGHLIGHT_THEMES } from '../../code/highlightCode.mjs';
+import { CHROMA_LEVELS, DEFAULT_CHROMA_LEVEL, DEFAULT_HUE, DEFAULT_THEME, THEMES } from '../../themes/applyTheme.mjs';
 import { sanitize } from '../../third-party/dom/api.mjs';
 import { existsSync } from '../../third-party/fs/api.mjs';
-import { logError, logWarn, theme } from '../../log.mjs';
-import { CHROMA_LEVELS, DEFAULT_CHROMA_LEVEL, DEFAULT_HUE, DEFAULT_THEME, THEMES } from '../../themes/applyTheme.mjs';
+import { _, logError, logWarn, theme } from '../../third-party/logger/log.mjs';
 import { join } from '../../third-party/path/api.mjs';
 
 export const deckConfiguration = {
@@ -83,7 +81,7 @@ export const deckConfiguration = {
       if (value === undefined) { return this.defaultValue; }
       if (0 <= value && value <= 360) { return value; }
 
-      logWarn(stoyle`Invalid theme hue ${value}, must be in range [ ${0}, ${360} ]. Using default hue ${this.defaultValue} instead`({
+      logWarn(_`Invalid theme hue ${value}, must be in range [ ${0}, ${360} ]. Using default hue ${this.defaultValue} instead`({
         nodes: [ theme.error, theme.success, theme.success, theme.info ],
       }));
       return this.defaultValue;
@@ -145,7 +143,7 @@ export function parseConfiguration (ast, inputFolder) {
 function validateCustomFilePath (value, name, inputFolder) {
   if (value === undefined) { return undefined; }
   if (value.includes('..')) {
-    logError(stoyle`Cannot load ${name} ${value}, path must be relative to the deck's location without back-tracking`({
+    logError(_`Cannot load ${name} ${value}, path must be relative to the deck's location without back-tracking`({
       nodes: [ undefined, theme.strong ],
     }));
     return undefined;
@@ -153,7 +151,7 @@ function validateCustomFilePath (value, name, inputFolder) {
 
   const absolutePath = join(inputFolder, value);
   if (!existsSync(absolutePath)) {
-    logWarn(stoyle`Cannot load ${name} ${value}, file not found`({ nodes: [ undefined, theme.strong ] }));
+    logWarn(_`Cannot load ${name} ${value}, file not found`({ nodes: [ undefined, theme.strong ] }));
     return undefined;
   }
 
@@ -163,7 +161,7 @@ function validateCustomFilePath (value, name, inputFolder) {
 function validateEnumValue (value, name, acceptedValues, defaultValue) {
   if (value === undefined) { return defaultValue; }
   if (!acceptedValues.includes(value)) {
-    logWarn(stoyle`Invalid value ${value} for ${name}, accepted values are [ ${acceptedValues.join(', ')} ]. Using default value ${defaultValue} instead`({
+    logWarn(_`Invalid value ${value} for ${name}, accepted values are [ ${acceptedValues.join(', ')} ]. Using default value ${defaultValue} instead`({
       nodes: [ theme.error, undefined, theme.success, theme.info ],
     }));
     return defaultValue;
@@ -181,7 +179,7 @@ function validateBoolean (value, name, defaultValue) {
     case undefined:
       return defaultValue;
     default:
-      logWarn(stoyle`Invalid value ${value} for ${name}, not fragmenting`({ nodes: [ theme.strong, undefined ] }));
+      logWarn(_`Invalid value ${value} for ${name}, not fragmenting`({ nodes: [ theme.strong, undefined ] }));
       return defaultValue;
   }
 }

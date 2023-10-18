@@ -1,6 +1,6 @@
 import { stoyle } from 'stoyle';
 
-import { logWarn, theme } from '../log.mjs';
+import { _, logWarn, theme } from '../third-party/logger/log.mjs';
 import { removeFromParent, replaceInParent, toDom } from '../third-party/dom/api.mjs';
 import { existsSync, readAsBase64Sync, readTextFileSync } from '../third-party/fs/api.mjs';
 import { getBaseName, getExtension, join, resolve } from '../third-party/path/api.mjs';
@@ -153,7 +153,7 @@ function embedImages (dom, { ast, inputFolder }) {
   if (badImageTypes.length) {
     const bad = badImageTypes.join(', ');
     const good = preferredImageTypes.join(', ');
-    logWarn(stoyle`Your deck contains inefficient image types [ ${bad} ], consider using [ ${good} ] instead`({ nodes: [ theme.error, theme.success ] }));
+    logWarn(_`Your deck contains inefficient image types [ ${bad} ], consider using [ ${good} ] instead`({ nodes: [ theme.error, theme.success ] }));
   }
 
   const css = Object.values(images)

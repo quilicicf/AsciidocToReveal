@@ -5,7 +5,7 @@ import insertCustomFiles from './custom-files/insertCustomFiles.mjs';
 import { BUILD_AREA_PATH, DIST_FOLDER_PATH, LIB_FOLDER, REPOSITORY_ROOT_PATH } from './folders.mjs';
 import buildGraphs from './graphs/buildGraphs.mjs';
 import applyLayouts from './layouts/applyLayouts.mjs';
-import { logInfo } from './log.mjs';
+import { logInfo } from './third-party/logger/log.mjs';
 import applyTheme from './themes/applyTheme.mjs';
 import { bundle } from './third-party/bundler/api.mjs';
 import { INSERT_POSITIONS } from './third-party/dom/api.mjs';

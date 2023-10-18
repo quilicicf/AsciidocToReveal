@@ -1,4 +1,4 @@
-import { stoyle, DecorationCode, ForegroundSimpleCode } from 'stoyle';
+import { DecorationCode, ForegroundSimpleCode, stoyle } from 'stoyle';
 
 export const theme = {
   // Generic
@@ -12,22 +12,23 @@ export const theme = {
   link: { color: ForegroundSimpleCode.FG_Blue, decoration: DecorationCode.Underline },
 };
 
-
-function format (content, type, style) {
-  return stoyle`[${type}] `({ nodes: [ style ] }) + content + '\n';
-}
+export const _ = stoyle;
 
 export function logInfo (content) {
-  const message = format(content, 'INFO', theme.info);
+  const message = formatLog(content, 'INFO', theme.info);
   process.stdout.write(message);
 }
 
 export function logWarn (content) {
-  const message = format(content, 'WARN', theme.warning);
+  const message = formatLog(content, 'WARN', theme.warning);
   process.stdout.write(message);
 }
 
 export function logError (content) {
-  const message = format(content, 'ERROR', theme.error);
+  const message = formatLog(content, 'ERROR', theme.error);
   process.stdout.write(message);
+}
+
+function formatLog (content, type, style) {
+  return _`[${type}] `({ nodes: [ style ] }) + content + '\n';
 }

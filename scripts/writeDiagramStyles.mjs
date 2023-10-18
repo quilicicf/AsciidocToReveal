@@ -6,7 +6,7 @@ import { stoyle } from 'stoyle';
 import { $ } from '../src/domUtils.mjs';
 import { LIB_FOLDER } from '../src/folders.mjs';
 import { readTextFileSync, writeTextFileSync } from '../src/third-party/fs/api.mjs';
-import { logInfo, theme } from '../src/log.mjs';
+import { logInfo, theme } from '../src/third-party/logger/log.mjs';
 import { resolve } from '../src/third-party/path/api.mjs';
 
 const MERMAID_DARK_CONFIGURATION = {

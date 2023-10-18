@@ -2,7 +2,7 @@ import { stoyle } from 'stoyle';
 
 import { asciidocToReveal } from '../src/asciidocToReveal.mjs';
 import { REPOSITORY_ROOT_PATH } from '../src/folders.mjs';
-import { logInfo, theme } from '../src/log.mjs';
+import { logInfo, theme } from '../src/third-party/logger/log.mjs';
 import { hashString } from '../src/third-party/crypto/api.mjs';
 import { existsSync, readTextFileSync, watch } from '../src/third-party/fs/api.mjs';
 import startLiveReloadServer from './liveReloadServer.mjs';

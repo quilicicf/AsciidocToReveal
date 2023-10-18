@@ -1,11 +1,10 @@
 import { run } from '@mermaid-js/mermaid-cli';
-import { stoyle } from 'stoyle';
 import { BUILD_AREA_PATH } from '../folders.mjs';
-import { logWarn, theme } from '../log.mjs';
 
 import { hashString } from '../third-party/crypto/api.mjs';
 import { removeFromParent, toDom } from '../third-party/dom/api.mjs';
 import { existsSync, readTextFileSync, writeTextFileSync } from '../third-party/fs/api.mjs';
+import { _, logWarn, theme } from '../third-party/logger/log.mjs';
 import { resolve } from '../third-party/path/api.mjs';
 
 const MERMAID_CONFIGURATION = {
@@ -39,7 +38,7 @@ export default async function buildGraphs (dom, { graphsRegister, graphAnimation
   const animationsWithNoGraph = Object.keys(graphAnimationsRegister)
     .filter((graphAnimationId) => !graphsRegister[ graphAnimationId ]);
   if (animationsWithNoGraph.length) {
-    logWarn(stoyle`Graph animations [ ${animationsWithNoGraph.join(', ')} ] are linked to no known graph`({ nodes: [ theme ] }));
+    logWarn(_`Graph animations [ ${animationsWithNoGraph.join(', ')} ] are linked to no known graph`({ nodes: [ theme ] }));
   }
 
   return dom;
@@ -104,7 +103,7 @@ function animateNodes (graphId, graphNode, animation) {
   const { selector, classes = [], attributes = {} } = animation;
   const elementsToAnimate = [ ...graphNode.querySelectorAll(selector) ];
   if (!elementsToAnimate.length) {
-    logWarn(stoyle`Could not animate elements defined by ${selector} in graph ${graphId}, not found.`({ nodes: [ theme.strong, theme.strong ] }));
+    logWarn(_`Could not animate elements defined by ${selector} in graph ${graphId}, not found.`({ nodes: [ theme.strong, theme.strong ] }));
     return;
   }
 

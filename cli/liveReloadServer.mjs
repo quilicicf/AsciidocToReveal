@@ -1,7 +1,7 @@
 import { stoyle } from 'stoyle';
 import { WebSocketServer } from 'ws';
 
-import { logInfo, theme } from '../src/log.mjs';
+import { logInfo, theme } from '../src/third-party/logger/log.mjs';
 import { uuid } from '../src/third-party/uuid/api.mjs';
 
 export default function startLiveReloadServer (initialHash) {

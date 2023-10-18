@@ -1,9 +1,7 @@
-import { stoyle } from 'stoyle';
-
 import { BUILD_AREA_PATH } from '../../folders.mjs';
-import { logError, theme } from '../../log.mjs';
 import { existsSync, writeTextFileSync } from '../../third-party/fs/api.mjs';
 import { httpGet } from '../../third-party/http/api.mjs';
+import { _, logError, theme } from '../../third-party/logger/log.mjs';
 import { resolve } from '../../third-party/path/api.mjs';
 import twemojiMap from './twemojis.mjs';
 
@@ -20,7 +18,7 @@ async function fetchAndWriteEmoji (emojiName, emojiUnicode, emojiFilePath) {
     const emojiContent = await httpGet(`https://cdn.jsdelivr.net/npm/twemoji@latest/2/svg/${emojiUnicode}.svg`);
     writeTextFileSync(emojiFilePath, emojiContent.toString());
   } catch (ignore) {
-    logError(stoyle`Cannot retrieve emoji ${emojiName} with code ${emojiUnicode}`({ nodes: [ theme.strong, theme.strong ] }));
+    logError(_`Cannot retrieve emoji ${emojiName} with code ${emojiUnicode}`({ nodes: [ theme.strong, theme.strong ] }));
   }
 }
 
@@ -67,7 +65,7 @@ function emojiInlineMacro () {
         },
       });
     }
-    logError(stoyle`Skipping emoji inline macro, ${emojiName} not found`({ nodes: [ theme.strong ] }));
+    logError(_`Skipping emoji inline macro, ${emojiName} not found`({ nodes: [ theme.strong ] }));
     return self.createInline(parent, 'quoted', `[emoji ${emojiName} not found]`, attributes);
   });
 }
