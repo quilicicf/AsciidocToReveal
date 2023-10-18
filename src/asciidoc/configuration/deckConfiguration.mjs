@@ -1,7 +1,7 @@
 // noinspection JSUnusedGlobalSymbols
 
 import { DEFAULT_DARK_HIGHLIGHT_THEME, DEFAULT_LIGHT_HIGHLIGHT_THEME, HIGHLIGHT_THEMES } from '../../code/highlightCode.mjs';
-import { CHROMA_LEVELS, DEFAULT_CHROMA_LEVEL, DEFAULT_HUE, DEFAULT_THEME, THEMES } from '../../themes/applyTheme.mjs';
+import { DEFAULT_COLOR, DEFAULT_THEME, THEMES } from '../../themes/applyTheme.mjs';
 import { sanitize } from '../../third-party/dom/api.mjs';
 import { existsSync } from '../../third-party/fs/api.mjs';
 import { _, logError, logWarn, theme } from '../../third-party/logger/log.mjs';
@@ -72,28 +72,32 @@ export const deckConfiguration = {
       return validateEnumValue(value, 'theme name', this.acceptedValues, this.defaultValue);
     },
   },
-  themeHue: {
-    id: 'a2r-theme-hue',
-    documentation: `The hue of the accent color`,
-    defaultValue: DEFAULT_HUE,
-    acceptedValues: '0 <= x <= 360',
+  themeColor: {
+    id: 'a2r-theme-color',
+    documentation: `The theme\'s accent color`,
+    defaultValue: DEFAULT_COLOR,
+    acceptedValues: 'oklch as JSON, ex: [ .6, .1, 170 ]',
     validate (value) {
       if (value === undefined) { return this.defaultValue; }
-      if (0 <= value && value <= 360) { return value; }
 
-      logWarn(_`Invalid theme hue ${value}, must be in range [ ${0}, ${360} ]. Using default hue ${this.defaultValue} instead`({
-        nodes: [ theme.error, theme.success, theme.success, theme.info ],
-      }));
-      return this.defaultValue;
-    },
-  },
-  themeChromaLevel: {
-    id: 'a2r-theme-chroma-level',
-    documentation: `The chroma level of the accent color`,
-    defaultValue: DEFAULT_CHROMA_LEVEL,
-    acceptedValues: Object.keys(CHROMA_LEVELS),
-    validate (value) {
-      return validateEnumValue(value, 'theme chroma level', this.acceptedValues, this.defaultValue);
+      try {
+        JSON.parse(value);
+      } catch (error) {
+        logWarn(_`The theme color ${value} is not valid JSON`({ nodes: [ theme.error ] }));
+        return this.defaultValue;
+      }
+
+      const [ lightString = undefined, chromaString = undefined, hueString = undefined ] = JSON.parse(value);
+
+      try {
+        const light = validateNumber(lightString, 'theme color light', 0, 1);
+        const chroma = validateNumber(chromaString, 'theme color chroma', 0, .37);
+        const hue = validateNumber(hueString, 'theme color hue', 0, 360);
+        return [ light, chroma, hue ];
+      } catch (error) {
+        logWarn(error.message);
+        return this.defaultValue;
+      }
     },
   },
   highlightThemeDark: {
@@ -182,4 +186,19 @@ function validateBoolean (value, name, defaultValue) {
       logWarn(_`Invalid value ${value} for ${name}, not fragmenting`({ nodes: [ theme.strong, undefined ] }));
       return defaultValue;
   }
+}
+
+function validateNumber (numberAsString, name, min, max) {
+  if (isNaN(numberAsString)) {
+    throw Error(_`The provided ${name}, must be a number, got ${numberAsString}`({ nodes: [ theme.strong, theme.error ] }));
+  }
+
+  const number = parseFloat(numberAsString);
+  if (number < min || number > max) {
+    throw Error(_`The provided ${name} should be in range [ ${min}, ${max} ], got ${number}`({
+      nodes: [ theme.strong, theme.success, theme.success, theme.error ],
+    }));
+  }
+
+  return number;
 }

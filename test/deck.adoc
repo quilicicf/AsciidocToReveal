@@ -6,6 +6,7 @@
 :a2r-fragment-lists: true
 :a2r-fragment-tables: true
 :a2r-theme-name: dark-and-light-manual
+:a2r-theme-color: [ 0.65, 0.23, 17 ]
 
 = image:asciidoc-logo.svg[Asciidoc logo,role=thumb] => image:reveal-logo.png[Reveal.js logo,role=thumb]
 
@@ -498,15 +499,14 @@ emoji:muscle[]emoji:muscle[1.4,em]emoji:muscle[]
 | dark, light, light-and-dark-manual, dark-and-light-manual, light-and-dark-auto
 | Select the theme to use
 
-| `a2r-theme-hue`
-| 170
-| 0 <= x <= 360
-| The hue of the accent color
-
-| `a2r-theme-chroma-level`
-| pastel
-| pastel, classic, vibrant
-| The chroma level of the accent color
+| `a2r-theme-color`
+| [
+  0.6,
+  0.1,
+  170
+]
+| oklch as JSON, ex: [ .6, .1, 170 ]
+| The theme's accent color
 
 | `a2r-highlight-theme-dark`
 | one-dark

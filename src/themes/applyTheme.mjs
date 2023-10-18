@@ -15,21 +15,17 @@ export const THEMES = {
   DARK_AND_LIGHT_MANUAL: 'dark-and-light-manual',
   LIGHT_AND_DARK_AUTO: 'light-and-dark-auto',
 };
+export const DEFAULT_COLOR = [ .6, .1, 170 ];
 export const DEFAULT_THEME = THEMES.DARK;
-export const DEFAULT_HUE = 170;
-export const CHROMA_LEVELS = {
-  pastel: 0.100,
-  classic: 0.200,
-  vibrant: 0.300,
-};
-export const DEFAULT_CHROMA_LEVEL = Object.keys(CHROMA_LEVELS)[ 0 ];
 
 export default function applyTheme (dom, { graphTypes, configuration }) {
-  const { themeName, themeHue, themeChromaLevel, startingThemeName, nonStartingThemeName, themeSwitchingMode } = configuration;
+  const { themeName, themeColor, startingThemeName, nonStartingThemeName, themeSwitchingMode } = configuration;
 
-  const builtThemeFilePath = resolve(BUILD_AREA_PATH, `${themeName}-${themeHue}-${themeChromaLevel}.css`);
+  const [ light, chroma, hue ] = themeColor;
+  const stringColor = `oklch-${light}-${chroma}-${hue}`;
+  const builtThemeFilePath = resolve(BUILD_AREA_PATH, `${themeName}-${stringColor}.css`);
   if (!existsSync(builtThemeFilePath)) {
-    const css = buildThemeStyle(themeName, themeHue, themeChromaLevel);
+    const css = buildThemeStyle(themeName, themeColor);
     writeTextFileSync(builtThemeFilePath, css);
   }
 
@@ -187,21 +183,28 @@ function prepareLightColorExport (theme) {
   `;
 }
 
-function createTheme (hue, chromaLevel) {
-  const chroma = CHROMA_LEVELS[ chromaLevel ];
+function maxOf (a, b) {
+  return a > b ? a : b;
+}
+
+function minOf (a, b) {
+  return a < b ? a : b;
+}
+
+function createTheme ([ light, chroma, hue ]) {
   return {
-    primaryColor: oklch(.6, chroma, hue),
-    primaryColorLight: oklch(.8, chroma, hue),
+    primaryColor: oklch(light, chroma, hue),
+    primaryColorLight: oklch(maxOf(light + .2, 1), chroma, hue),
     primaryColorLighter: oklch(.94, .005, hue),
     primaryColorLightest: oklch(.99, .005, hue),
-    primaryColorDark: oklch(.4, chroma, hue),
+    primaryColorDark: oklch(minOf(light - .2, 0), chroma, hue),
     primaryColorDarker: oklch(.06, .005, hue),
     primaryColorDarkest: oklch(.01, .005, hue),
   };
 }
 
-function prepareColorExports (themeName, themeHue, themeChromaLevel) {
-  const theme = createTheme(themeHue, themeChromaLevel);
+function prepareColorExports (themeName, themeColor) {
+  const theme = createTheme(themeColor);
   switch (themeName) {
     case THEMES.DARK:
       return `body { ${prepareDarkColorExport(theme)} }`;

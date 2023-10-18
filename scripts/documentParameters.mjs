@@ -12,7 +12,7 @@ async function main () {
   const tableContent = Object.entries(deckConfiguration)
     .map(([ , { id, documentation, defaultValue, acceptedValues } ]) => ([
       `| \`${id}\``,
-      `| ${defaultValue}`,
+      `| ${Array.isArray(defaultValue) ? JSON.stringify(defaultValue, null, 2) : defaultValue}`,
       `| ${Array.isArray(acceptedValues) ? acceptedValues.join(', ') : acceptedValues}`,
       `| ${documentation}`,
       '',
