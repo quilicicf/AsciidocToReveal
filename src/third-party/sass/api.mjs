@@ -1,4 +1,4 @@
-import { compileString } from 'sass';
+import { compileString } from 'npm:sass';
 
 export function compileStyle (source, modulesPath) {
   const { css } = compileString(

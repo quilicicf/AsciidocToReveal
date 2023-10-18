@@ -1,4 +1,4 @@
-import { DecorationCode, ForegroundSimpleCode, stoyle } from 'stoyle';
+import { DecorationCode, ForegroundSimpleCode, stoyle } from 'npm:stoyle';
 
 export const theme = {
   // Generic
@@ -16,17 +16,17 @@ export const _ = stoyle;
 
 export function logInfo (content) {
   const message = formatLog(content, 'INFO', theme.info);
-  process.stdout.write(message);
+  Deno.stdout.write(new TextEncoder().encode(message));
 }
 
 export function logWarn (content) {
   const message = formatLog(content, 'WARN', theme.warning);
-  process.stdout.write(message);
+  Deno.stdout.write(new TextEncoder().encode(message));
 }
 
 export function logError (content) {
   const message = formatLog(content, 'ERROR', theme.error);
-  process.stdout.write(message);
+  Deno.stdout.write(new TextEncoder().encode(message));
 }
 
 function formatLog (content, type, style) {

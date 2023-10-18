@@ -1,4 +1,4 @@
-import { Parcel } from '@parcel/core';
+import { Parcel } from 'npm:@parcel/core';
 
 export async function bundle (inputFilePath, outputFolderPath, resolveFrom) {
   await new Parcel({

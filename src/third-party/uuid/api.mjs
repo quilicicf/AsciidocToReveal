@@ -1,4 +1,4 @@
-import { v4 } from 'uuid';
+import { v4 } from 'npm:uuid';
 
 export function uuid () {
   return v4();

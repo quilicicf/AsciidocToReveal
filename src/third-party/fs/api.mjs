@@ -1,35 +1,25 @@
-import { watch as _watch } from 'chokidar';
-import { existsSync as _existsSync, mkdirSync as _mkdirSync, readdirSync as _readdirSync, readFileSync, statSync as _statSync, writeFileSync } from 'fs';
-
-export const statSync = _statSync;
-export const mkdirSync = _mkdirSync;
+import { encodeBase64 } from 'https://deno.land/std@0.204.0/encoding/base64.ts';
+import { existsSync as _existSync } from 'https://deno.land/std@0.92.0/fs/exists.ts';
 
 export function readdirSync (filePath) {
-  return _readdirSync(filePath);
+  return [ ...Deno.readDirSync(filePath) ]
+    .map(({ name }) => name);
 }
 
-export function existsSync (filePath) {
-  return _existsSync(filePath);
-}
+export const existsSync = _existSync;
+export const statSync = Deno.statSync;
+export const mkdirSync = Deno.mkdirSync;
 
 export function readAsBase64Sync (filePath) {
-  return Buffer
-    .from(readFileSync(filePath))
-    .toString('base64');
+  return encodeBase64(Deno.readFileSync(filePath));
 }
 
 export function readTextFileSync (filePath, converter) {
   return typeof converter === 'function'
-    ? converter(readFileSync(filePath, 'utf8'))
-    : readFileSync(filePath, 'utf8');
+    ? converter(Deno.readTextFileSync(filePath))
+    : Deno.readTextFileSync(filePath);
 }
 
 export function writeTextFileSync (filePath, content) {
-  writeFileSync(filePath, content, 'utf8');
-}
-
-export function watch (globs, { cwd }, listeners) {
-  const watcher = _watch(globs, { cwd, disableGlobbing: false, depth: 10 });
-  Object.entries(listeners)
-    .forEach(([ messageType, listener ]) => watcher.on(messageType, listener));
+  Deno.writeTextFileSync(filePath, content);
 }

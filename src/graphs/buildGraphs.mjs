@@ -1,9 +1,9 @@
-import { run } from '@mermaid-js/mermaid-cli';
+import { run } from 'npm:@mermaid-js/mermaid-cli';
 
 import { hashString } from '../third-party/crypto/api.mjs';
-import { removeFromParent, toDom } from '../third-party/dom/api.mjs';
+import { MIME_TYPES, removeFromParent, toDom } from '../third-party/dom/api.mjs';
 import { existsSync, readTextFileSync, writeTextFileSync } from '../third-party/fs/api.mjs';
-import { _, logWarn, theme } from '../third-party/logger/log.mjs';
+import { _, logWarn, theme } from '../third-party/logger/api.mjs';
 import { resolve } from '../third-party/path/api.mjs';
 
 const MERMAID_CONFIGURATION = {
@@ -67,14 +67,14 @@ async function processGraph (dom, graphId, graphText, deck) {
  * This pollutes the build area a bit, but allows the builder to skip rebuilds when the mermaid code doesn't change.
  */
 async function mermaidToSvg (graphId, graphCode, { cachePath }) {
-  const graphCodeHash = hashString(graphCode);
+  const graphCodeHash = await hashString(graphCode);
   const inputFilePath = resolve(cachePath, `${graphId}.mermaid`);
   const outputFilePath = resolve(cachePath, `${graphId}_${graphCodeHash}.svg`);
 
   if (!existsSync(outputFilePath)) {
     writeTextFileSync(inputFilePath, graphCode);
     await run(inputFilePath, outputFilePath, MERMAID_CONFIGURATION);
-    const dom = readTextFileSync(outputFilePath, (svg) => toDom(svg));
+    const dom = readTextFileSync(outputFilePath, (svg) => toDom(svg, MIME_TYPES.HTML)); // FIXME: hack
     const graphNode = dom.select('svg');
     addDiagramTweaks(graphNode, graphId);
     writeTextFileSync(outputFilePath, graphNode.outerHTML);

@@ -1,5 +1,5 @@
 import { existsSync, readTextFileSync } from '../third-party/fs/api.mjs';
-import { _, logInfo, logWarn, theme } from '../third-party/logger/log.mjs';
+import { _, logInfo, logWarn, theme } from '../third-party/logger/api.mjs';
 import { resolve } from '../third-party/path/api.mjs';
 
 export default function insertCustomFiles (dom, { inputFolder, configuration }) {

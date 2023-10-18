@@ -1,5 +1,7 @@
-import { fileURLToPath } from 'url';
-import { basename, dirname, extname, join as _join, resolve as _resolve } from 'path';
+import { basename, dirname, extname, isAbsolute as _isAbsolute, join as _join, resolve as _resolve } from 'https://deno.land/std@0.204.0/path/mod.ts';
+import { fileURLToPath } from 'node:url';
+
+export const isAbsolute = _isAbsolute;
 
 export function getParentFolderName (path) {
   return dirname(path);
@@ -21,6 +23,6 @@ export function resolve (...paths) {
   return _resolve(...paths);
 }
 
-export function fileUrlToPath(fileUrl) {
+export function fileUrlToPath (fileUrl) {
   return fileURLToPath(fileUrl);
 }

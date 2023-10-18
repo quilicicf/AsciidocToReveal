@@ -1,6 +1,6 @@
 import { existsSync, writeTextFileSync } from '../../third-party/fs/api.mjs';
 import { httpGet } from '../../third-party/http/api.mjs';
-import { _, logError, theme } from '../../third-party/logger/log.mjs';
+import { _, logError, theme } from '../../third-party/logger/api.mjs';
 import { resolve } from '../../third-party/path/api.mjs';
 import twemojiMap from './twemojis.mjs';
 

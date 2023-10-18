@@ -1,17 +1,22 @@
-import jsdom from 'jsdom';
+import { DOMParser } from 'https://deno.land/x/deno_dom/deno-dom-wasm.ts';
 
 export const INSERT_POSITIONS = {
   BEFORE_END: 'beforeend',
   AFTER_BEGIN: 'afterbegin',
 };
 
-export function toDom (source) {
-  const delegate = new jsdom.JSDOM(source);
+export const MIME_TYPES = {
+  HTML: 'text/html',
+  SVG: 'image/svg+xml',
+};
+
+export function toDom (source, mimeType = MIME_TYPES.HTML) {
+  const parser = new DOMParser();
+  const document = parser.parseFromString(source, mimeType);
 
   return {
-    delegate,
-    window: delegate.window,
-    document: delegate.window.document,
+    // window: delegate.window,
+    document,
     select (selector) {
       return this.document.querySelector(selector);
     },
@@ -33,21 +38,33 @@ export function toDom (source) {
       element.parentNode.replaceChild(newElement, element);
     },
     insertHtml (selector, html, position = INSERT_POSITIONS.BEFORE_END) {
-      this.select(selector)
-        .insertAdjacentHTML(position, html);
+      const element = this.select(selector);
+      insertHtml(element, html, position);
     },
-    insertInlineStyle (styleId, styleContent, stylePosition = INSERT_POSITIONS.BEFORE_END) {
-      this.select('head')
-        .insertAdjacentHTML(stylePosition, `<style id="${styleId}">${styleContent}</style>`);
+    insertInlineStyle (id, content, position = INSERT_POSITIONS.BEFORE_END) {
+      this.insertHtml('head', `<style id="${id}">${content}</style>`, position);
     },
-    insertInlineScript (scriptId, scriptContent, scriptPosition = INSERT_POSITIONS.BEFORE_END) {
-      this.select('body')
-        .insertAdjacentHTML(scriptPosition, `<script id="${scriptId}" type="module">${scriptContent}</script>`);
+    insertInlineScript (id, content, position = INSERT_POSITIONS.BEFORE_END) {
+      this.insertHtml('body', `<script id="${id}" type="module">${content}</script>`, position);
     },
     toHtml () {
-      return this.delegate.serialize();
+      return this.select('html').outerHTML;
     },
   };
+}
+
+export function insertHtml (element, content, position = INSERT_POSITIONS.BEFORE_END) {
+  const baseHtml = element.innerHTML;
+  switch (position) {
+    case INSERT_POSITIONS.BEFORE_END:
+      element.innerHTML = `${baseHtml}${content}`;
+      break;
+    case INSERT_POSITIONS.AFTER_BEGIN:
+      element.innerHTML = `${content}${baseHtml}`;
+      break;
+    default:
+      throw Error(`Position ${position} unsupported`);
+  }
 }
 
 export function replaceInParent (element, newElement) {

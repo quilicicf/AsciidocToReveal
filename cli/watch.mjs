@@ -1,10 +1,10 @@
 import { stoyle } from 'stoyle';
 
-import { REPOSITORY_ROOT_PATH } from '../src/folders.mjs';
+import { asciidocToReveal } from '../src/asciidocToReveal.mjs';
 import { hashString } from '../src/third-party/crypto/api.mjs';
-import { existsSync, mkdirSync, readTextFileSync, watch } from '../src/third-party/fs/api.mjs';
-import { logInfo, theme } from '../src/third-party/logger/log.mjs';
-import { getBaseName, resolve } from '../src/third-party/path/api.mjs';
+import { existsSync, mkdirSync, readTextFileSync } from '../src/third-party/fs/api.mjs';
+import { _, logInfo, theme } from '../src/third-party/logger/api.mjs';
+import { getBaseName, isAbsolute, resolve } from '../src/third-party/path/api.mjs';
 import startLiveReloadServer from './liveReloadServer.mjs';
 
 export const command = 'watch';
@@ -65,11 +65,12 @@ export async function handler (args) {
     queue: Promise.resolve(),
   };
 
-  const initialInputHash = readTextFileSync(inputFile, hashString);
+  const initialInputContent = readTextFileSync(inputFile);
+  const initialInputHash = await hashString(initialInputContent);
   const liveReloadServer = startLiveReloadServer(initialInputHash);
 
   const additionalWatchedPaths = assetsFolder
-    ? [ resolve(inputFile, '..', assetsFolder, '*') ]
+    ? [ resolve(inputFile, '..', assetsFolder) ]
     : [];
 
   logInfo(stoyle`Watcher started on ${inputFile}`({ nodes: [ theme.strong ] }));
@@ -78,20 +79,17 @@ export async function handler (args) {
   }
 
   const { asciidocToReveal } = await import ('../src/asciidocToReveal.mjs'); // Delay pulling all the dependencies because it's super heavy
-  watch(
-    [ inputFile, ...additionalWatchedPaths ],
-    {
-      cwd: REPOSITORY_ROOT_PATH,
-    },
-    {
-      all: (event, path) => {
-        logInfo('=====================================================================');
-        logInfo(stoyle`File ${path} received event ${event}`({ nodes: [ theme.strong, theme.strong ] }));
-        state.queue = state.queue.then(async () => {
-          const { inputHash: newInputHash } = await asciidocToReveal(inputFile, outputFile, { shouldAddLiveReload: true });
-          liveReloadServer.reload(newInputHash);
-        });
-      },
-    },
-  );
+  logInfo(_`Watcher started on ${inputFile}`({ nodes: [ theme.strong ] }));
+  const absolutePath = isAbsolute(inputFile) ? inputFile : resolve(Deno.cwd(), inputFile); // TODO: permissions for cwd?
+  const watcher = Deno.watchFs([absolutePath, ...additionalWatchedPaths], { recursive: true });
+  for await (const event of watcher) {
+    if ([ 'modify', 'create', 'delete' ].includes(event.kind)) {
+      logInfo('=====================================================================');
+      logInfo(_`File ${inputFile} received event ${event}`({ nodes: [ theme.strong, theme.strong ] }));
+      state.queue = state.queue.then(async () => {
+        const { inputHash: newInputHash } = await asciidocToReveal(inputFile, outputFile, { shouldAddLiveReload: true });
+        liveReloadServer.reload(newInputHash);
+      });
+    }
+  }
 }

@@ -1,7 +1,7 @@
 import { DIAGRAM_STYLES_FOLDER, LIB_FOLDER, NODE_MODULES_PATH } from '../folders.mjs';
 import { oklch } from '../third-party/colors/api.mjs';
 import { existsSync, readTextFileSync, writeTextFileSync } from '../third-party/fs/api.mjs';
-import { _, logInfo, logWarn, theme } from '../third-party/logger/log.mjs';
+import { _, logInfo, logWarn, theme } from '../third-party/logger/api.mjs';
 import { resolve } from '../third-party/path/api.mjs';
 import { compileStyle } from '../third-party/sass/api.mjs';
 

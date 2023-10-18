@@ -1,14 +1,14 @@
-import Processor from '@asciidoctor/core';
+import Processor from 'npm:@asciidoctor/core';
 
 import { hashString } from '../third-party/crypto/api.mjs';
 import { readTextFileSync } from '../third-party/fs/api.mjs';
-import { getParentFolderName, resolve } from '../third-party/path/api.mjs';
+import { getParentFolderName, isAbsolute, resolve } from '../third-party/path/api.mjs';
 import { parseConfiguration } from './configuration/deckConfiguration.mjs';
 import registerEmojisExtension from './emojis/asciidoctor-emojis.mjs';
 import registerGraphAnimationExtension from './graph-animations/asciidoctor-graph-animations.mjs';
 import registerGraphExtension from './graphs/asciidoctor-graphs.mjs';
 
-export default function parseDeck (inputPath, buildOptions) {
+export default async function parseDeck (inputPath, buildOptions) {
   const inputFolder = findInputFolder(inputPath);
   const cachePath = resolve(inputFolder, '.a2r-cache');
   const builtDeckJsFilePath = resolve(cachePath, 'deck.js');
@@ -51,7 +51,5 @@ export function computeDeckHash (inputPath, { customCss, customJs }) {
 
 function findInputFolder (inputPath) {
   const folderPath = getParentFolderName(inputPath);
-  return folderPath.startsWith('/') // TODO: not Windows-friendly
-    ? folderPath
-    : resolve(process.cwd(), folderPath); // TODO: not Deno-friendly
+  return isAbsolute(folderPath) ? folderPath : resolve(Deno.cwd(), folderPath); // TODO: permissions for cwd?
 }

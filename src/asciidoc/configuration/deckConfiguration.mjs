@@ -4,7 +4,7 @@ import { DEFAULT_DARK_HIGHLIGHT_THEME, DEFAULT_LIGHT_HIGHLIGHT_THEME, HIGHLIGHT_
 import { DEFAULT_COLOR, DEFAULT_THEME, THEMES } from '../../themes/applyTheme.mjs';
 import { sanitize } from '../../third-party/dom/api.mjs';
 import { existsSync } from '../../third-party/fs/api.mjs';
-import { _, logError, logWarn, theme } from '../../third-party/logger/log.mjs';
+import { _, logError, logWarn, theme } from '../../third-party/logger/api.mjs';
 import { join } from '../../third-party/path/api.mjs';
 
 export const deckConfiguration = {

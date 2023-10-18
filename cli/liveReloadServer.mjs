@@ -1,7 +1,6 @@
-import { stoyle } from 'stoyle';
-import { WebSocketServer } from 'ws';
+import { WebSocketServer } from 'npm:ws';
 
-import { logInfo, theme } from '../src/third-party/logger/log.mjs';
+import { _, logInfo, theme } from '../src/third-party/logger/api.mjs';
 import { uuid } from '../src/third-party/uuid/api.mjs';
 
 export default function startLiveReloadServer (initialHash) {
@@ -12,7 +11,7 @@ export default function startLiveReloadServer (initialHash) {
   };
   wss.on('connection', (ws) => {
     const key = uuid();
-    logInfo(stoyle`Registering client ${key}`({ nodes: [ theme.strong ] }));
+    logInfo(_`Registering client ${key}`({ nodes: [ theme.strong ] }));
     state.clients[ key ] = ws;
   });
 
@@ -39,7 +38,7 @@ export default function startLiveReloadServer (initialHash) {
       if (state.hash === hash) { return; }
 
       const clientsNumber = Object.keys(state.clients).length;
-      logInfo(stoyle`Reloading ${clientsNumber} clients for new content ${hash}`({ nodes: [ theme.strong, theme.strong ] }));
+      logInfo(_`Reloading ${clientsNumber} clients for new content ${hash}`({ nodes: [ theme.strong, theme.strong ] }));
       state.hash = hash;
       sendReloadMessages();
     },

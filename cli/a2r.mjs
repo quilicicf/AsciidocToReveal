@@ -1,13 +1,13 @@
 #!/usr/bin/env node
 
-import yargs from 'yargs';
+import yargs from 'npm:yargs';
+import { logError } from '../src/third-party/logger/api.mjs';
 
 import * as build from './build.mjs';
 import * as watch from './watch.mjs';
 
 async function main () {
-  const cliArguments = process.argv.slice(2);
-  const ignore = yargs(cliArguments)
+  const ignore = yargs(Deno.args)
     .usage('Usage: a2r <command> [options]')
     .command(build)
     .command(watch)
@@ -22,6 +22,6 @@ async function main () {
 
 main()
   .catch((error) => {
-    process.stderr.write(`Failed with error: ${error.stack}\n`);
-    process.exit(1);
+    logError(`Failed with error:\n${error.stack}`);
+    Deno.exit(1);
   });

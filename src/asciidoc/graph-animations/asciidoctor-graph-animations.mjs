@@ -1,4 +1,4 @@
-import json5 from 'json5';
+import json5 from 'npm:json5';
 
 const GRAPH_ANIMATIONS = {};
 

@@ -1,7 +1,6 @@
-import { removeFromParent, replaceInParent, toDom } from '../third-party/dom/api.mjs';
+import { insertHtml, removeFromParent, replaceInParent, toDom } from '../third-party/dom/api.mjs';
 import { existsSync, readAsBase64Sync, readTextFileSync, statSync } from '../third-party/fs/api.mjs';
-
-import { _, logError, logWarn, theme } from '../third-party/logger/log.mjs';
+import { _, logWarn,logError, theme } from '../third-party/logger/api.mjs';
 import { getBaseName, getExtension, join, resolve } from '../third-party/path/api.mjs';
 import processBlocksRecursively from './processBlocksRecursively.mjs';
 
@@ -58,8 +57,7 @@ function insertFavicon (dom, { configuration }) {
     const extension = getExtension(favicon);
     const type = extension.replace(/^\./g, '');
     const dataUri = readFileToDataUri(type, favicon);
-    dom.select('head')
-      .insertAdjacentHTML('afterbegin', `<link rel="icon" href="${dataUri}"/>`);
+    dom.insertHtml('head', `<link rel="icon" href="${dataUri}"/>`);
   }
 
   return dom;
@@ -95,8 +93,7 @@ function insertOtherSections (dom, { ast }) {
   nonTitleSectionDocs.forEach((sectionDoc) => {
     const sectionHtml = sectionDoc.convert();
     const slidesNode = dom.select('.slides');
-    slidesNode
-      .insertAdjacentHTML('beforeend', sectionHtml);
+    insertHtml(slidesNode, sectionHtml);
     if (sectionHtml.includes('sect2')) { // Has subsections
       const topLevelSectionAsDiv = dom.select('div.sect1');
       const subSectionsAsDivs = dom.selectAll('div.sect2');
@@ -170,7 +167,7 @@ function embedImages (dom, { ast, inputFolder }) {
   dom.selectAll('.image,.imageblock')
     .forEach((parentNode) => {
       const imgNode = parentNode.querySelector('img');
-      const imageName = getBaseName(imgNode.src);
+      const imageName = getBaseName(imgNode.getAttribute('src'));
       const image = images[ imageName ];
 
       if (!image) { return parentNode.innerHTML = '<span>Image "${imageName}" not found</span>'; }
@@ -227,7 +224,7 @@ async function embedEmojis (dom, { emojisRegister }) {
   dom.selectAll('.emoji')
     .forEach((parentNode) => {
       const imgNode = parentNode.querySelector('img');
-      const emojiName = imgNode.alt;
+      const emojiName = imgNode.getAttribute('alt');
 
       if (!emojis[ emojiName ]) { return; }
 
@@ -323,7 +320,7 @@ export function readFileToDataUri (type, filePath) {
     throw Error(`File not found`);
   }
 
-  if (statSync(filePath).isDirectory()) {
+  if (statSync(filePath).isDirectory) {
     throw Error(`Found folder instead of file`);
   }
 

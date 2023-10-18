@@ -1,10 +1,13 @@
-import Prism from 'prismjs';
-import loadLanguages from 'prismjs/components/index.js';
+// import { create as createRange } from 'npm:jsdom/lib/jsdom/living/generated/Range.js';
+import jsdom from 'npm:jsdom';
+import Prism from 'npm:prismjs';
+import loadLanguages from 'npm:prismjs/components/index.js';
 
 import { NODE_MODULES_PATH } from '../folders.mjs';
 import { DEFAULT_THEME } from '../themes/applyTheme.mjs';
 import { readdirSync, readTextFileSync } from '../third-party/fs/api.mjs';
-import { _, logError, logInfo, theme } from '../third-party/logger/log.mjs';
+import { _, logInfo, theme } from '../third-party/logger/api.mjs';
+import { logError } from '../third-party/logger/api.mjs';
 import { resolve } from '../third-party/path/api.mjs';
 
 const CLASSIC_PRISM_THEMES_PATH = resolve(NODE_MODULES_PATH, 'prismjs', 'themes');
@@ -14,12 +17,12 @@ const PRISM_PLUGINS = {
   'line-numbers': {
     cssPath: resolve(NODE_MODULES_PATH, 'prismjs', 'plugins', 'line-numbers', 'prism-line-numbers.css'),
     additionalCss: `pre.highlight.line-numbers code { overflow: unset; }`,
-    pluginPath: 'prismjs/plugins/line-numbers/prism-line-numbers.js',
+    pluginPath: 'https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-numbers/prism-line-numbers.min.js',
   },
   'keep-markup': {
     cssPath: undefined,
     additionalCss: '',
-    pluginPath: 'prismjs/plugins/keep-markup/prism-keep-markup.js',
+    pluginPath: 'https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/keep-markup/prism-keep-markup.min.js',
   },
 };
 
@@ -75,9 +78,23 @@ function buildHighlightStyles (themeName, highlightThemeDark, highlightThemeLigh
 }
 
 async function prepareHighlighting (dom, pluginsToActivate, highlightStyles) {
-  global.window = dom.window; // NOTE: required for Prism plugins, emulates a browser environment
-  global.document = dom.document; // NOTE: required for Prism plugins, emulates a browser environment
-  global.getComputedStyle = window.getComputedStyle; // Line-numbers plugin uses it as if in a browser => window instead of global
+  // FIXME: check that it works
+  global = {};
+  global.window = window; // NOTE: required for Prism plugins, emulates a browser environment
+  window.document = dom.document; // NOTE: required for Prism plugins, emulates a browser environment
+  window.getComputedStyle = () => ''; // Line-numbers plugin uses it as if in a browser => window instead of global
+  window.addEventListener = () => {}; // Line-numbers plugin uses it as if in a browser => window instead of global
+
+  window.document.Error = function(crap) { return Error(crap); };
+  global.Error = function(crap) { return Error(crap); };
+  window.Error = function(crap) { return Error(crap); };
+
+  const dom2 = new jsdom.JSDOM('<html></html>');
+  console.log(dom2);
+
+  document.createRange = () => {
+    return {  };
+  };
 
   const pluginsCss = await pluginsToActivate
     .reduce(
