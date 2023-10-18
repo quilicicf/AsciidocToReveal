@@ -1,6 +1,5 @@
 import { stoyle } from 'stoyle';
 
-import { $, insertInlineScript, insertInlineStyle } from '../domUtils.mjs';
 import { BUILD_AREA_PATH, DIAGRAM_STYLES_FOLDER, LIB_FOLDER, NODE_MODULES_PATH } from '../folders.mjs';
 import { logInfo, logWarn, theme } from '../log.mjs';
 import { oklch } from '../third-party/colors/api.mjs';
@@ -42,17 +41,19 @@ export default function applyTheme (dom, { graphTypes, configuration }) {
   }
 
   const builtCss = readTextFileSync(builtThemeFilePath);
-  insertInlineStyle(dom, 'REVEAL_THEME', builtCss);
+  dom.insertInlineStyle('REVEAL_THEME', builtCss);
 
   if (themeSwitchingMode === 'manual') {
-    $(dom, 'body').classList.add(`theme-${startingThemeName}`);
+    dom.select('body')
+      .classList
+      .add(`theme-${startingThemeName}`);
     const manualThemeSwitcherFilePath = resolve(LIB_FOLDER, 'manualThemeSwitcher.mjs');
     const manualThemeSwitcher = readTextFileSync(manualThemeSwitcherFilePath);
     const scriptContent = `
       ${manualThemeSwitcher}
       Reveal.on('ready', () => { toggleDisabled('${nonStartingThemeName.toUpperCase()}', true); });
     `;
-    insertInlineScript(dom, 'THEME_SWITCHER', scriptContent);
+    dom.insertInlineScript('THEME_SWITCHER', scriptContent);
   }
 
   return dom;
@@ -73,15 +74,15 @@ function insertGraphStyle (dom, graphType, themeName) {
   const styleIdPrefix = graphType.toUpperCase().replaceAll('-', '_');
   switch (themeName) {
     case THEMES.DARK:
-      insertInlineStyle(dom, `${styleIdPrefix}_DARK`, darkStyle);
+      dom.insertInlineStyle(`${styleIdPrefix}_DARK`, darkStyle);
       return;
     case THEMES.LIGHT:
-      insertInlineStyle(dom, `${styleIdPrefix}_LIGHT`, lightStyle);
+      dom.insertInlineStyle(`${styleIdPrefix}_LIGHT`, lightStyle);
       return;
     case THEMES.DARK_AND_LIGHT_MANUAL:
     case THEMES.LIGHT_AND_DARK_MANUAL:
-      insertInlineStyle(dom, `${styleIdPrefix}_DARK`, darkStyle);
-      insertInlineStyle(dom, `${styleIdPrefix}_LIGHT`, lightStyle);
+      dom.insertInlineStyle(`${styleIdPrefix}_DARK`, darkStyle);
+      dom.insertInlineStyle(`${styleIdPrefix}_LIGHT`, lightStyle);
       return;
 
     case THEMES.LIGHT_AND_DARK_AUTO:
@@ -89,7 +90,7 @@ function insertGraphStyle (dom, graphType, themeName) {
         @media (prefers-color-scheme: dark) { body { ${darkStyle} } }
         @media (prefers-color-scheme: light) { body { ${lightStyle} } }
       `;
-      insertInlineStyle(dom, `${styleIdPrefix}`, autoSwitchingStyle);
+      dom.insertInlineStyle(`${styleIdPrefix}`, autoSwitchingStyle);
       return;
 
     default:

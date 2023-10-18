@@ -1,12 +1,11 @@
 import { run } from '@mermaid-js/mermaid-cli';
-import jsdom from 'jsdom';
 import { stoyle } from 'stoyle';
+import { BUILD_AREA_PATH } from '../folders.mjs';
+import { logWarn, theme } from '../log.mjs';
 
 import { hashString } from '../third-party/crypto/api.mjs';
-import { $, removeFromParent } from '../domUtils.mjs';
-import { BUILD_AREA_PATH } from '../folders.mjs';
+import { removeFromParent, toDom } from '../third-party/dom/api.mjs';
 import { existsSync, readTextFileSync, writeTextFileSync } from '../third-party/fs/api.mjs';
-import { logWarn, theme } from '../log.mjs';
 import { resolve } from '../third-party/path/api.mjs';
 
 const MERMAID_CONFIGURATION = {
@@ -51,7 +50,7 @@ export default async function buildGraphs (dom, { graphsRegister, graphAnimation
  * Returns the graph type so the caller can add the appropriate CSS.
  */
 async function processGraph (dom, graphId, graphText, graphAnimationsRegister) {
-  const graphContainerNode = $(dom, `#graph-${graphId}`);
+  const graphContainerNode = dom.select(`#graph-${graphId}`);
   delete graphContainerNode.id;
   graphContainerNode.innerHTML = await mermaidToSvg(graphId, graphText);
   const graphNode = graphContainerNode.childNodes[ 0 ];
@@ -76,8 +75,8 @@ async function mermaidToSvg (graphId, graphCode) {
   if (!existsSync(outputFilePath)) {
     writeTextFileSync(inputFilePath, graphCode);
     await run(inputFilePath, outputFilePath, MERMAID_CONFIGURATION);
-    const dom = readTextFileSync(outputFilePath, (svg) => new jsdom.JSDOM(svg));
-    const graphNode = $(dom, 'svg');
+    const dom = readTextFileSync(outputFilePath, (svg) => toDom(svg));
+    const graphNode = dom.select('svg');
     addDiagramTweaks(graphNode, graphId);
     writeTextFileSync(outputFilePath, graphNode.outerHTML);
   }

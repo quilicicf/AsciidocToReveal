@@ -1,5 +1,3 @@
-import { $, insertInlineStyle } from '../domUtils.mjs';
-
 const LAYOUTS = {
   'layout-columns': `
     .layout-columns > .content {
@@ -21,16 +19,16 @@ const LAYOUTS = {
     .layout-columns .column-10x { grid-column: span 10; }
     .layout-columns .column-11x { grid-column: span 11; }
     .layout-columns .column-12x { grid-column: span 12; }
-  `, // FIXME: use CSS nesting when jsdom supports it
+  `, // FIXME: use CSS nesting when 3rd-party DOM lib supports it
 };
 
 export default function applyLayouts (dom) {
   const cssToInject = Object.entries(LAYOUTS)
-    .filter(([ cssClass ]) => !!$(dom, `.${cssClass}`))
+    .filter(([ cssClass ]) => !!dom.select(`.${cssClass}`))
     .reduce((seed, [ , cssContent ]) => `${seed}${cssContent}`, '');
 
   if (!cssToInject) { return dom; }
-  insertInlineStyle(dom, 'LAYOUTS', cssToInject);
+  dom.insertInlineStyle('LAYOUTS', cssToInject);
 
   return dom;
 }

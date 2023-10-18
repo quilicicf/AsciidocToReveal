@@ -1,9 +1,8 @@
-import jsdom from 'jsdom';
 import { stoyle } from 'stoyle';
 
-import { $, $$, changeElementTag, createNewElement, insertInlineStyle, readFileToDataUri, removeFromParent, replaceInParent } from '../domUtils.mjs';
 import { logWarn, theme } from '../log.mjs';
-import { existsSync, readTextFileSync } from '../third-party/fs/api.mjs';
+import { removeFromParent, replaceInParent, toDom } from '../third-party/dom/api.mjs';
+import { existsSync, readAsBase64Sync, readTextFileSync } from '../third-party/fs/api.mjs';
 import { getBaseName, getExtension, join, resolve } from '../third-party/path/api.mjs';
 import processBlocksRecursively from './processBlocksRecursively.mjs';
 
@@ -37,7 +36,7 @@ const IMAGES_CSS = `
 `;
 
 export default function deckToHtml (deck) {
-  const baseDom = new jsdom.JSDOM(BASE_HTML);
+  const baseDom = toDom(BASE_HTML);
   return [
     insertFavicon,
     insertTitleSection,
@@ -59,7 +58,7 @@ function insertFavicon (dom, { configuration }) {
   if (favicon) {
     const imageContent = readTextFileSync(favicon, (content) => encodeURIComponent(content));
     const dataUri = `data:image/svg+xml,${imageContent}`;
-    $(dom, 'head')
+    dom.select('head')
       .insertAdjacentHTML('afterbegin', `<link rel="icon" href="${dataUri}"/>`);
   }
 
@@ -71,16 +70,13 @@ function insertFavicon (dom, { configuration }) {
  */
 function insertTitleSection (dom, { ast, configuration }) {
   const titleDoc = ast.getDocumentTitle();
-  $(dom, 'h1')
-    .insertAdjacentHTML('beforeend', titleDoc);
+  dom.insertHtml('h1', titleDoc);
 
-  const titleText = configuration.pageTitle || $(dom, 'h1').textContent.trim();
-  $(dom, 'head title')
-    .insertAdjacentText('beforeend', titleText);
+  const titleText = configuration.pageTitle || dom.select('h1').textContent.trim();
+  dom.insertHtml('head title', titleText);
 
   const preambleDoc = ast.blocks[ 0 ];
-  $(dom, '#deck-title')
-    .insertAdjacentHTML('beforeend', preambleDoc.convert());
+  dom.insertHtml('#deck-title', preambleDoc.convert());
 
   return dom;
 }
@@ -96,19 +92,19 @@ function insertOtherSections (dom, { ast }) {
   const [ , ...nonTitleSectionDocs ] = ast.blocks;
   nonTitleSectionDocs.forEach((sectionDoc) => {
     const sectionHtml = sectionDoc.convert();
-    const slidesNode = $(dom, '.slides');
+    const slidesNode = dom.select('.slides');
     slidesNode
       .insertAdjacentHTML('beforeend', sectionHtml);
     if (sectionHtml.includes('sect2')) { // Has subsections
-      const topLevelSectionAsDiv = $(dom, 'div.sect1');
-      const subSectionsAsDivs = $$(dom, 'div.sect2');
+      const topLevelSectionAsDiv = dom.select('div.sect1');
+      const subSectionsAsDivs = dom.selectAll('div.sect2');
 
       // Cleanup
       slidesNode.removeChild(topLevelSectionAsDiv);
       subSectionsAsDivs.forEach((subSectionAsDiv) => removeFromParent(subSectionAsDiv));
 
       // Create wrapping section
-      const wrappingSection = createNewElement(dom, 'section');
+      const wrappingSection = dom.newElement('section');
       slidesNode.appendChild(wrappingSection);
 
       // Re-add sections
@@ -116,8 +112,8 @@ function insertOtherSections (dom, { ast }) {
       subSectionsAsDivs.forEach((subSectionAsDiv) => wrappingSection.appendChild(subSectionAsDiv));
     }
 
-    $$(dom, 'div.sect1,div.sect2')
-      .forEach((sectionAsDiv) => changeElementTag(dom, sectionAsDiv, 'section'));
+    dom.selectAll('div.sect1,div.sect2')
+      .forEach((sectionAsDiv) => dom.changeElementTag(sectionAsDiv, 'section'));
   });
 
   return dom;
@@ -163,7 +159,7 @@ function embedImages (dom, { ast, inputFolder }) {
   const css = Object.values(images)
     .reduce((seed, image) => `${seed} .${image.cssClass} { display: inline-block; background-size: cover; background-image: url('${image.dataUri}'); }`, '');
 
-  $$(dom, '.image,.imageblock')
+  dom.selectAll('.image,.imageblock')
     .forEach((parentNode) => {
       const imgNode = parentNode.querySelector('img');
       const imageName = getBaseName(imgNode.src);
@@ -172,12 +168,12 @@ function embedImages (dom, { ast, inputFolder }) {
         ...(imgNode.width ? [ `width: ${imgNode.width}px` ] : []),
         ...(imgNode.height ? [ `height: ${imgNode.height}px` ] : []),
       ].join(';');
-      const newElement = createNewElement(dom, 'span', [ image.cssClass ], { style });
+      const newElement = dom.newElement('span', [ image.cssClass ], { style });
       parentNode.innerHTML = '';
       parentNode.appendChild(newElement);
     });
 
-  insertInlineStyle(dom, 'IMAGES', `${IMAGES_CSS}${css}`);
+  dom.insertInlineStyle('IMAGES', `${IMAGES_CSS}${css}`);
 
   return dom;
 }
@@ -215,9 +211,9 @@ async function embedEmojis (dom, { emojisRegister }) {
 
   const css = Object.values(emojis)
     .reduce((seed, emoji) => `${seed} ${createEmojiCss(emoji)}`, '');
-  insertInlineStyle(dom, 'EMOJIS', css);
+  dom.insertInlineStyle('EMOJIS', css);
 
-  $$(dom, '.emoji')
+  dom.selectAll('.emoji')
     .forEach((parentNode) => {
       const imgNode = parentNode.querySelector('img');
       const emojiName = imgNode.alt;
@@ -226,7 +222,7 @@ async function embedEmojis (dom, { emojisRegister }) {
 
       const cssClass = emojis[ emojiName ].cssClass;
       const style = `width: ${imgNode.getAttribute('width')}; height: ${imgNode.getAttribute('height')}`;
-      const newImgNode = createNewElement(dom, 'span', [ cssClass ], { style, role: 'image' });
+      const newImgNode = dom.newElement('span', [ cssClass ], { style, role: 'image' });
       replaceInParent(imgNode, newImgNode);
     });
 
@@ -241,7 +237,7 @@ async function embedEmojis (dom, { emojisRegister }) {
 function fixupCodeBlocks (dom, { ast }) {
   const state = {
     codeBlockIndex: 0,
-    multilineCodeBlocks: $$(dom, '.keep-markup pre code'),
+    multilineCodeBlocks: dom.selectAll('.keep-markup pre code'),
   };
   processBlocksRecursively(
     ast,
@@ -257,8 +253,8 @@ function fixupCodeBlocks (dom, { ast }) {
 }
 
 function extractSpeakerNotes (dom) {
-  $$(dom, '.notes')
-    .forEach((notesNode) => changeElementTag(dom, notesNode, 'aside'));
+  dom.selectAll('.notes')
+    .forEach((notesNode) => dom.changeElementTag(notesNode, 'aside'));
   return dom;
 }
 
@@ -275,7 +271,7 @@ function isInNotes (node) {
 function fragmentLists (dom, { configuration }) {
   if (!configuration.shouldFragmentLists) { return dom; }
 
-  $$(dom, 'ul li')
+  dom.selectAll('ul li')
     .filter((listItemNode) => !isInNotes(listItemNode))
     .forEach((listItemNode) => {
       listItemNode.classList.add('fragment');
@@ -291,9 +287,32 @@ function fragmentLists (dom, { configuration }) {
 function fragmentTables (dom, { configuration }) {
   if (!configuration.shouldFragmentTables) { return dom; }
 
-  $$(dom, 'tbody > tr')
+  dom.selectAll('tbody > tr')
     .filter((tableRowNode) => !isInNotes(tableRowNode))
     .forEach((tableRowNode) => tableRowNode.classList.add('fragment'));
 
   return dom;
+}
+
+
+function toSvgDataUri (content) {
+  const imageText = content
+    .replaceAll(/width="[^"]+"/g, '')
+    .replaceAll(/height="[^"]+"/g, '')
+    .replaceAll('?', '%3F')
+    .replaceAll('#', '%23')
+    .replaceAll('\n', '')
+    .replaceAll(/\s+/g, ' ');
+  return `data:image/svg+xml,${imageText}`;
+}
+
+export function readFileToDataUri (type, filePath) {
+  switch (type) {
+    case 'svg':
+      return readTextFileSync(filePath, (content) => toSvgDataUri(content));
+    case 'png':
+      return `data:image/${type};base64,${readAsBase64Sync(filePath)}`;
+    default:
+      throw Error(`Unsupported image type: ${type}`);
+  }
 }

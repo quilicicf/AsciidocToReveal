@@ -2,7 +2,6 @@ import Prism from 'prismjs';
 import loadLanguages from 'prismjs/components/index.js';
 import { stoyle } from 'stoyle';
 
-import { $$, insertInlineStyle } from '../domUtils.mjs';
 import { NODE_MODULES_PATH } from '../folders.mjs';
 import { logInfo, logWarn, theme } from '../log.mjs';
 import { DEFAULT_THEME } from '../themes/applyTheme.mjs';
@@ -33,7 +32,7 @@ export default async function highlightCode (dom, { configuration }) {
   const { themeName, highlightThemeDark, highlightThemeLight, themeSwitchingMode } = configuration;
   const languages = [
     ...new Set(
-      $$(dom, 'pre code[data-lang]')
+      dom.selectAll('pre code[data-lang]')
         .map((codeNode) => codeNode.getAttribute('data-lang'))
         .sort(),
     ),
@@ -45,12 +44,12 @@ export default async function highlightCode (dom, { configuration }) {
   loadLanguages(languages);
 
   const pluginsToActivate = Object.entries(PRISM_PLUGINS)
-    .filter(([ key ]) => $$(dom, `.${key}`).length)
+    .filter(([ key ]) => dom.selectAll(`.${key}`).length)
     .map(([ , plugin ]) => plugin);
 
   const highlightStyles = buildHighlightStyles(themeName, highlightThemeDark, highlightThemeLight, themeSwitchingMode);
   const preparedDom = await prepareHighlighting(dom, pluginsToActivate, highlightStyles);
-  Prism.highlightAllUnder(preparedDom.window.document); // NOTE: MUTATES AST!
+  Prism.highlightAllUnder(preparedDom.document); // NOTE: MUTATES AST!
   return preparedDom;
 }
 
@@ -78,7 +77,7 @@ function buildHighlightStyles (themeName, highlightThemeDark, highlightThemeLigh
 
 async function prepareHighlighting (dom, pluginsToActivate, highlightStyles) {
   global.window = dom.window; // NOTE: required for Prism plugins, emulates a browser environment
-  global.document = dom.window.document; // NOTE: required for Prism plugins, emulates a browser environment
+  global.document = dom.document; // NOTE: required for Prism plugins, emulates a browser environment
   global.getComputedStyle = window.getComputedStyle; // Line-numbers plugin uses it as if in a browser => window instead of global
 
   const pluginsCss = await pluginsToActivate
@@ -91,8 +90,8 @@ async function prepareHighlighting (dom, pluginsToActivate, highlightStyles) {
       Promise.resolve(''),
     );
 
-  insertInlineStyle(dom, 'PRISM_PLUGINS', pluginsCss);
-  highlightStyles.forEach(({ id, css }) => { insertInlineStyle(dom, id, css); });
+  dom.insertInlineStyle('PRISM_PLUGINS', pluginsCss);
+  highlightStyles.forEach(({ id, css }) => { dom.insertInlineStyle(id, css); });
   return dom;
 }
 

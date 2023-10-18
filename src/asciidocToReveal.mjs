@@ -2,13 +2,13 @@ import deckToHtml from './asciidoc/deckToHtml.mjs';
 import parseDeck from './asciidoc/parseDeck.mjs';
 import highlightCode from './code/highlightCode.mjs';
 import insertCustomFiles from './custom-files/insertCustomFiles.mjs';
-import { insertInlineScript, insertInlineStyle } from './domUtils.mjs';
 import { BUILD_AREA_PATH, DIST_FOLDER_PATH, LIB_FOLDER, REPOSITORY_ROOT_PATH } from './folders.mjs';
 import buildGraphs from './graphs/buildGraphs.mjs';
 import applyLayouts from './layouts/applyLayouts.mjs';
 import { logInfo } from './log.mjs';
 import applyTheme from './themes/applyTheme.mjs';
 import { bundle } from './third-party/bundler/api.mjs';
+import { INSERT_POSITIONS } from './third-party/dom/api.mjs';
 import { existsSync, readTextFileSync, writeTextFileSync } from './third-party/fs/api.mjs';
 import { minify } from './third-party/minifier/api.mjs';
 import { resolve } from './third-party/path/api.mjs';
@@ -39,7 +39,7 @@ export async function asciidocToReveal (inputPath, outputPath = OUTPUT_FILE_PATH
     addRevealJs,
   ].reduce((promise, operation) => promise.then(async (dom) => operation(dom, deck)), Promise.resolve(baseDom));
 
-  const unMinified = finalDom.serialize();
+  const unMinified = finalDom.toHtml();
   const minified = minify(unMinified);
   writeTextFileSync(outputPath, minified);
 }
@@ -53,19 +53,19 @@ function insertLiveReloadScript (dom, { inputHash, buildOptions }) {
     (template) => template.replace('$$HASH$$', inputHash),
   );
 
-  insertInlineScript(dom, 'LIVE_RELOAD', liveReloadScript);
+  dom.insertInlineScript('LIVE_RELOAD', liveReloadScript);
 
   return dom;
 }
 
 function addRevealJs (dom) {
   const style = readTextFileSync(BUILT_DECK_CSS_FILE_PATH);
-  insertInlineStyle(dom, 'REVEAL', style, 'afterbegin');
+  dom.insertInlineStyle('REVEAL', style, INSERT_POSITIONS.AFTER_BEGIN);
 
   const script = readTextFileSync(BUILT_DECK_JS_FILE_PATH)
     .replaceAll('<script>', '<"+"script>')
     .replaceAll('</script>', '</"+"script>');
-  insertInlineScript(dom, 'REVEAL', script, 'afterbegin');
+  dom.insertInlineScript('REVEAL', script, INSERT_POSITIONS.AFTER_BEGIN);
 
   return dom;
 }

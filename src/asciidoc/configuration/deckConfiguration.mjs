@@ -1,7 +1,9 @@
+// noinspection JSUnusedGlobalSymbols
+
 import { stoyle } from 'stoyle';
 
 import { DEFAULT_DARK_HIGHLIGHT_THEME, DEFAULT_LIGHT_HIGHLIGHT_THEME, HIGHLIGHT_THEMES } from '../../code/highlightCode.mjs';
-import { sanitize } from '../../domUtils.mjs';
+import { sanitize } from '../../third-party/dom/api.mjs';
 import { existsSync } from '../../third-party/fs/api.mjs';
 import { logError, logWarn, theme } from '../../log.mjs';
 import { CHROMA_LEVELS, DEFAULT_CHROMA_LEVEL, DEFAULT_HUE, DEFAULT_THEME, THEMES } from '../../themes/applyTheme.mjs';
