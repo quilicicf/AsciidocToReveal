@@ -27,7 +27,7 @@ function emojiInlineMacro () {
   self.named('emoji');
   self.positionalAttributes([ 'size', 'unit' ]);
 
-  const defaultSize = '1em';
+  const defaultSize = [ 1, 'em' ];
 
   function getEmojiFetcher (emojiFilePath, emojiName, emojiUnicode) {
     if (existsSync(emojiFilePath)) {
@@ -40,11 +40,9 @@ function emojiInlineMacro () {
   }
 
   self.process(function process (parent, emojiName, attributes) {
-    const sizeAttribute = castSizeOrThrow(attributes.size);
-    const unitAttribute = checkUnitOrThrow(attributes.unit);
-    const size = sizeAttribute && unitAttribute
-      ? `${sizeAttribute}${unitAttribute}`
-      : defaultSize;
+    const [ size, unit ] = validateSizeAndUnit(attributes.size, attributes.unit) || defaultSize;
+
+    const cssSize = `${size}${unit}`;
     const emojiUnicode = twemojiMap[ emojiName ];
     if (emojiUnicode) {
       const emojiFilePath = resolve(BUILD_AREA_PATH, `emoji_${emojiName}.svg`);
@@ -60,8 +58,8 @@ function emojiInlineMacro () {
         type: 'emoji',
         attributes: {
           alt: emojiName,
-          height: size,
-          width: size,
+          height: cssSize,
+          width: cssSize,
         },
       });
     }
@@ -70,14 +68,16 @@ function emojiInlineMacro () {
   });
 }
 
-function castSizeOrThrow (size) {
-  if (!size) { return undefined; }
-  if (isNaN(size)) { throw Error(`Expected a number for emoji size attribute, got: ${size}`); }
-  return size;
-}
+function validateSizeAndUnit (inputSize, inputUnit) {
+  if (!inputSize || !inputUnit) { return undefined; }
+  if (isNaN(inputSize)) {
+    logError(_`Expected a number for emoji size attribute, got: ${inputSize}`({ nodes: [ theme.error ] }));
+    return undefined;
+  }
+  if (!UNITS.includes(inputUnit)) {
+    logError(_`Expected a valid unit from [ ${UNITS} ], got: ${inputUnit}`({ nodes: [ theme.success, theme.error ] }));
+    return undefined;
+  }
 
-function checkUnitOrThrow (unit) {
-  if (!unit) { return undefined; }
-  if (!UNITS.includes(unit)) { throw Error(`Expected a valid unit from [ ${UNITS} ], got: ${unit}`); }
-  return unit;
+  return [ parseInt(inputSize), inputUnit ];
 }

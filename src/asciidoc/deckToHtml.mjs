@@ -1,8 +1,7 @@
-import { stoyle } from 'stoyle';
-
-import { _, logWarn, theme } from '../third-party/logger/log.mjs';
 import { removeFromParent, replaceInParent, toDom } from '../third-party/dom/api.mjs';
-import { existsSync, readAsBase64Sync, readTextFileSync } from '../third-party/fs/api.mjs';
+import { existsSync, readAsBase64Sync, readTextFileSync, statSync } from '../third-party/fs/api.mjs';
+
+import { _, logError, logWarn, theme } from '../third-party/logger/log.mjs';
 import { getBaseName, getExtension, join, resolve } from '../third-party/path/api.mjs';
 import processBlocksRecursively from './processBlocksRecursively.mjs';
 
@@ -131,17 +130,23 @@ function embedImages (dom, { ast, inputFolder }) {
     .reduce(
       (seed, image) => {
         const name = image.getTarget();
-        const extension = getExtension(name);
-        const type = extension.replace(/^\./g, '');
-        const id = getBaseName(name, extension);
-        const cssClass = `img-${id}`;
         const imageRelativePath = join(image.getImagesDirectory(), name);
         const imageAbsolutePath = resolve(inputFolder, imageRelativePath);
-        const dataUri = readFileToDataUri(type, imageAbsolutePath);
-        return {
-          ...seed,
-          [ name ]: { id, cssClass, name, type, dataUri },
-        };
+
+        try {
+          const extension = getExtension(name);
+          const type = extension.replace(/^\./g, '');
+          const dataUri = readFileToDataUri(type, imageAbsolutePath);
+          const id = getBaseName(name, extension);
+          const cssClass = `img-${id}`;
+          return {
+            ...seed,
+            [ name ]: { id, cssClass, name, type, dataUri },
+          };
+        } catch (error) {
+          logError(_`Cannot embed image ${name} at ${imageAbsolutePath} >> ${error.message}`({ nodes: [ theme.strong, theme.strong, undefined ] }));
+          return seed;
+        }
       },
       {},
     );
@@ -164,6 +169,9 @@ function embedImages (dom, { ast, inputFolder }) {
       const imgNode = parentNode.querySelector('img');
       const imageName = getBaseName(imgNode.src);
       const image = images[ imageName ];
+
+      if (!image) { return parentNode.innerHTML = '<span>Image "${imageName}" not found</span>'; }
+
       const style = [
         ...(imgNode.width ? [ `width: ${imgNode.width}px` ] : []),
         ...(imgNode.height ? [ `height: ${imgNode.height}px` ] : []),
@@ -307,12 +315,20 @@ function toSvgDataUri (content) {
 }
 
 export function readFileToDataUri (type, filePath) {
+  if (!existsSync(filePath)) {
+    throw Error(`File not found`);
+  }
+
+  if (statSync(filePath).isDirectory()) {
+    throw Error(`Found folder instead of file`);
+  }
+
   switch (type) {
     case 'svg':
       return readTextFileSync(filePath, (content) => toSvgDataUri(content));
     case 'png':
       return `data:image/${type};base64,${readAsBase64Sync(filePath)}`;
     default:
-      throw Error(`Unsupported image type: ${type}`);
+      throw Error(_`Unsupported image type: ${type}`({ nodes: [ theme.error ] }));
   }
 }

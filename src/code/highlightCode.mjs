@@ -4,7 +4,7 @@ import loadLanguages from 'prismjs/components/index.js';
 import { NODE_MODULES_PATH } from '../folders.mjs';
 import { DEFAULT_THEME } from '../themes/applyTheme.mjs';
 import { readdirSync, readTextFileSync } from '../third-party/fs/api.mjs';
-import { _, logInfo, logWarn, theme } from '../third-party/logger/log.mjs';
+import { _, logError, logInfo, theme } from '../third-party/logger/log.mjs';
 import { resolve } from '../third-party/path/api.mjs';
 
 const CLASSIC_PRISM_THEMES_PATH = resolve(NODE_MODULES_PATH, 'prismjs', 'themes');
@@ -113,12 +113,12 @@ function findAllThemes () {
 }
 
 function findThemeCssPath (themeName) {
-  const themes = findAllThemes();
-  if (!themes[ themeName ]) {
-    logWarn(_`Unknown theme ${themeName}, using default theme (${DEFAULT_THEME}). Available themes are: [ ${Object.keys(themes).join(', ')} ]`(
+  if (!HIGHLIGHT_THEMES[ themeName ]) {
+    const availableThemes = Object.keys(HIGHLIGHT_THEMES).join(', ');
+    logError(_`Unknown theme ${themeName}, using default theme (${DEFAULT_THEME}). Available themes are: [ ${availableThemes} ]`(
       { nodes: [ theme.error, theme.success, theme.strong ] },
     ));
-    throw Error(`Oopsie, unknown theme ${themeName}`); // TODO: won't be possible once configuration is validated first
+    return DEFAULT_THEME;
   }
-  return themes[ themeName ];
+  return HIGHLIGHT_THEMES[ themeName ];
 }

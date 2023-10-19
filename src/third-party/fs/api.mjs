@@ -1,5 +1,7 @@
 import { watch as _watch } from 'chokidar';
-import { existsSync as _existsSync, readdirSync as _readdirSync, readFileSync, writeFileSync } from 'fs';
+import { existsSync as _existsSync, readdirSync as _readdirSync, readFileSync, statSync as _statSync, writeFileSync } from 'fs';
+
+export const statSync = _statSync;
 
 export function readdirSync (filePath) {
   return _readdirSync(filePath);
