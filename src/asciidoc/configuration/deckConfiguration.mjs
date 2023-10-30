@@ -124,12 +124,14 @@ export const deckConfiguration = {
 export function parseConfiguration (ast, inputFolder) {
   const baseConfiguration = Object.entries(deckConfiguration)
     .reduce((seed, [ optionName, optionConfiguration ]) => {
-      const value = ast.getAttribute(optionConfiguration.id);
-      return {
-        ...seed,
-        [ optionName ]: optionConfiguration.validate(value, inputFolder),
-      };
-    });
+        const value = ast.getAttribute(optionConfiguration.id);
+        return {
+          ...seed,
+          [ optionName ]: optionConfiguration.validate(value, inputFolder),
+        };
+      },
+      {},
+    );
 
   const themeSwitchingMode = baseConfiguration.themeName.endsWith(('-manual')) ? 'manual' : 'auto';
   const startingThemeName = baseConfiguration.themeName.split('-')[ 0 ];
