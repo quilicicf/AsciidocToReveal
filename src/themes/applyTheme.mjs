@@ -81,8 +81,8 @@ function insertGraphStyle (dom, graphType, themeName) {
 
     case THEMES.LIGHT_AND_DARK_AUTO:
       const autoSwitchingStyle = `
-        @media (prefers-color-scheme: dark) { body { ${darkStyle} } }
-        @media (prefers-color-scheme: light) { body { ${lightStyle} } }
+        @media (prefers-color-scheme: dark) { ${darkStyle} }
+        @media (prefers-color-scheme: light) { ${lightStyle} }
       `;
       dom.insertInlineStyle(`${styleIdPrefix}`, autoSwitchingStyle);
       return;
@@ -212,8 +212,8 @@ function prepareColorExports (themeName, themeColor) {
       return `body { ${prepareLightColorExport(theme)} }`;
     case THEMES.LIGHT_AND_DARK_AUTO:
       return `
-        @media (prefers-color-scheme: dark) { body { ${prepareDarkColorExport(theme)} } }
-        @media (prefers-color-scheme: light) { body { ${prepareLightColorExport(theme)} } }
+        @media (prefers-color-scheme: dark) { ${prepareDarkColorExport(theme)} }
+        @media (prefers-color-scheme: light) { ${prepareLightColorExport(theme)} }
       `;
     case THEMES.DARK_AND_LIGHT_MANUAL:
     case THEMES.LIGHT_AND_DARK_MANUAL:
