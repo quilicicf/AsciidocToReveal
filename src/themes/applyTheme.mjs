@@ -212,8 +212,8 @@ function prepareColorExports (themeName, themeColor) {
       return `body { ${prepareLightColorExport(theme)} }`;
     case THEMES.LIGHT_AND_DARK_AUTO:
       return `
-        @media (prefers-color-scheme: dark) { ${prepareDarkColorExport(theme)} }
-        @media (prefers-color-scheme: light) { ${prepareLightColorExport(theme)} }
+        @media (prefers-color-scheme: dark) { body { ${prepareDarkColorExport(theme)} } }
+        @media (prefers-color-scheme: light) { body { ${prepareLightColorExport(theme)} } }
       `;
     case THEMES.DARK_AND_LIGHT_MANUAL:
     case THEMES.LIGHT_AND_DARK_MANUAL:
