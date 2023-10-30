@@ -1,6 +1,6 @@
 # Build files
 .parcel-cache/
-build-area/
+.a2r-cache/
 dist/
 
 # Logs

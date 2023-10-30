@@ -1,5 +1,4 @@
 import { run } from '@mermaid-js/mermaid-cli';
-import { BUILD_AREA_PATH } from '../folders.mjs';
 
 import { hashString } from '../third-party/crypto/api.mjs';
 import { removeFromParent, toDom } from '../third-party/dom/api.mjs';
@@ -25,13 +24,14 @@ const MERMAID_CONFIGURATION = {
   },
 };
 
-export default async function buildGraphs (dom, { graphsRegister, graphAnimationsRegister, graphTypes }) {
+export default async function buildGraphs (dom, deck) {
+  const { graphsRegister, graphAnimationsRegister, graphTypes } = deck;
   const graphEntries = Object.entries(graphsRegister);
   if (!graphEntries.length) { return dom; }
 
   const graphTypesWithPotentialDuplicates = await Promise.all(
     graphEntries
-      .map(([ graphId, graphText ]) => processGraph(dom, graphId, graphText, graphAnimationsRegister)),
+      .map(([ graphId, graphText ]) => processGraph(dom, graphId, graphText, deck)),
   );
   [ ...new Set(graphTypesWithPotentialDuplicates) ].forEach((graphType) => graphTypes.push(graphType));
 
@@ -48,14 +48,14 @@ export default async function buildGraphs (dom, { graphsRegister, graphAnimation
  * Generates the SVG definition of a graph, and substitutes the corresponding code block for the graph.
  * Returns the graph type so the caller can add the appropriate CSS.
  */
-async function processGraph (dom, graphId, graphText, graphAnimationsRegister) {
+async function processGraph (dom, graphId, graphText, deck) {
   const graphContainerNode = dom.select(`#graph-${graphId}`);
   delete graphContainerNode.id;
-  graphContainerNode.innerHTML = await mermaidToSvg(graphId, graphText);
+  graphContainerNode.innerHTML = await mermaidToSvg(graphId, graphText, deck);
   const graphNode = graphContainerNode.childNodes[ 0 ];
   const graphType = graphNode.getAttribute('aria-roledescription');
 
-  (graphAnimationsRegister[ graphId ] || [])
+  (deck.graphAnimationsRegister[ graphId ] || [])
     .forEach((animation) => animateNodes(graphId, graphNode, animation));
 
   return graphType;
@@ -66,10 +66,10 @@ async function processGraph (dom, graphId, graphText, graphAnimationsRegister) {
  * SVG files are built in the build-area and IDed with a hash of the mermaid code.
  * This pollutes the build area a bit, but allows the builder to skip rebuilds when the mermaid code doesn't change.
  */
-async function mermaidToSvg (graphId, graphCode) {
+async function mermaidToSvg (graphId, graphCode, { cachePath }) {
   const graphCodeHash = hashString(graphCode);
-  const inputFilePath = resolve(BUILD_AREA_PATH, `${graphId}.mermaid`);
-  const outputFilePath = resolve(BUILD_AREA_PATH, `${graphId}_${graphCodeHash}.svg`);
+  const inputFilePath = resolve(cachePath, `${graphId}.mermaid`);
+  const outputFilePath = resolve(cachePath, `${graphId}_${graphCodeHash}.svg`);
 
   if (!existsSync(outputFilePath)) {
     writeTextFileSync(inputFilePath, graphCode);

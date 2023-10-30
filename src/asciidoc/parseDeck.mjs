@@ -10,14 +10,19 @@ import registerGraphExtension from './graphs/asciidoctor-graphs.mjs';
 
 export default function parseDeck (inputPath, buildOptions) {
   const inputFolder = findInputFolder(inputPath);
+  const cachePath = resolve(inputFolder, '.a2r-cache');
+  const builtDeckJsFilePath = resolve(cachePath, 'deck.js');
+  const builtDeckCssFilePath = resolve(cachePath, 'deck.css');
+
   const processor = new Processor();
-  const emojisRegister = registerEmojisExtension(processor.Extensions);
+  const emojisRegister = registerEmojisExtension(processor.Extensions, cachePath);
   const graphsRegister = registerGraphExtension(processor.Extensions);
   const graphAnimationsRegister = registerGraphAnimationExtension(processor.Extensions);
-  const graphTypes = []; // Added when graphs are converted because mermaid detects the type, we rely on it
+
   const ast = processor.loadFile(inputPath, { catalog_assets: true });
   const configuration = parseConfiguration(ast, inputFolder);
   const inputHash = computeDeckHash(inputPath, configuration);
+
   return {
     ast,
     emojisRegister,
@@ -25,8 +30,11 @@ export default function parseDeck (inputPath, buildOptions) {
     graphAnimationsRegister,
     inputHash,
     inputFolder,
+    cachePath,
+    builtDeckJsFilePath,
+    builtDeckCssFilePath,
     configuration,
-    graphTypes,
+    graphTypes: [], // Added when graphs are converted because mermaid detects the type, we rely on it
     buildOptions,
   };
 }

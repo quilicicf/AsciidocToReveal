@@ -1,4 +1,4 @@
-import { BUILD_AREA_PATH, DIAGRAM_STYLES_FOLDER, LIB_FOLDER, NODE_MODULES_PATH } from '../folders.mjs';
+import { DIAGRAM_STYLES_FOLDER, LIB_FOLDER, NODE_MODULES_PATH } from '../folders.mjs';
 import { oklch } from '../third-party/colors/api.mjs';
 import { existsSync, readTextFileSync, writeTextFileSync } from '../third-party/fs/api.mjs';
 import { _, logInfo, logWarn, theme } from '../third-party/logger/log.mjs';
@@ -18,12 +18,12 @@ export const THEMES = {
 export const DEFAULT_COLOR = [ .6, .1, 170 ];
 export const DEFAULT_THEME = THEMES.DARK;
 
-export default function applyTheme (dom, { graphTypes, configuration }) {
+export default function applyTheme (dom, { cachePath, graphTypes, configuration }) {
   const { themeName, themeColor, startingThemeName, nonStartingThemeName, themeSwitchingMode } = configuration;
 
   const [ light, chroma, hue ] = themeColor;
   const stringColor = `oklch-${light}-${chroma}-${hue}`;
-  const builtThemeFilePath = resolve(BUILD_AREA_PATH, `${themeName}-${stringColor}.css`);
+  const builtThemeFilePath = resolve(cachePath, `${themeName}-${stringColor}.css`);
   if (!existsSync(builtThemeFilePath)) {
     const css = buildThemeStyle(themeName, themeColor);
     writeTextFileSync(builtThemeFilePath, css);
