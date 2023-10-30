@@ -1,5 +1,4 @@
 import { existsSync } from '../src/third-party/fs/api.mjs';
-import { asciidocToReveal } from '../src/asciidocToReveal.mjs';
 
 export const command = 'build';
 export const aliases = [ 'b' ];
@@ -34,5 +33,7 @@ export function builder (yargs) {
 
 export async function handler (args) {
   const { inputFile, outputFile } = args;
+
+  const { asciidocToReveal } = await import ('../src/asciidocToReveal.mjs'); // Delay pulling all the dependencies because it's super heavy
   await asciidocToReveal(inputFile, outputFile);
 }

@@ -1,6 +1,5 @@
 import { stoyle } from 'stoyle';
 
-import { asciidocToReveal } from '../src/asciidocToReveal.mjs';
 import { REPOSITORY_ROOT_PATH } from '../src/folders.mjs';
 import { hashString } from '../src/third-party/crypto/api.mjs';
 import { existsSync, readTextFileSync, watch } from '../src/third-party/fs/api.mjs';
@@ -75,6 +74,7 @@ export async function handler (args) {
     logInfo(stoyle`Also watching [ ${additionalWatchedPaths} ]`({ nodes: [ theme.strong ] }));
   }
 
+  const { asciidocToReveal } = await import ('../src/asciidocToReveal.mjs'); // Delay pulling all the dependencies because it's super heavy
   watch(
     [ inputFile, ...additionalWatchedPaths ],
     {
