@@ -55,8 +55,9 @@ export default function deckToHtml (deck) {
 function insertFavicon (dom, { configuration }) {
   const { favicon } = configuration;
   if (favicon) {
-    const imageContent = readTextFileSync(favicon, (content) => encodeURIComponent(content));
-    const dataUri = `data:image/svg+xml,${imageContent}`;
+    const extension = getExtension(favicon);
+    const type = extension.replace(/^\./g, '');
+    const dataUri = readFileToDataUri(type, favicon);
     dom.select('head')
       .insertAdjacentHTML('afterbegin', `<link rel="icon" href="${dataUri}"/>`);
   }
@@ -74,8 +75,10 @@ function insertTitleSection (dom, { ast, configuration }) {
   const titleText = configuration.pageTitle || dom.select('h1').textContent.trim();
   dom.insertHtml('head title', titleText);
 
-  const preambleDoc = ast.blocks[ 0 ];
-  dom.insertHtml('#deck-title', preambleDoc.convert());
+  const preambleDoc = ast.blocks?.[ 0 ];
+  if (preambleDoc?.context === 'preamble') {
+    dom.insertHtml('#deck-title', preambleDoc.convert());
+  }
 
   return dom;
 }
@@ -308,6 +311,7 @@ function toSvgDataUri (content) {
     .replaceAll(/width="[^"]+"/g, '')
     .replaceAll(/height="[^"]+"/g, '')
     .replaceAll('?', '%3F')
+    .replaceAll('"', '%22')
     .replaceAll('#', '%23')
     .replaceAll('\n', '')
     .replaceAll(/\s+/g, ' ');
@@ -327,6 +331,9 @@ export function readFileToDataUri (type, filePath) {
     case 'svg':
       return readTextFileSync(filePath, (content) => toSvgDataUri(content));
     case 'png':
+    case 'jxl':
+    case 'avif':
+    case 'webp':
       return `data:image/${type};base64,${readAsBase64Sync(filePath)}`;
     default:
       throw Error(_`Unsupported image type: ${type}`({ nodes: [ theme.error ] }));
