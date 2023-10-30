@@ -42,6 +42,8 @@ export async function asciidocToReveal (inputPath, outputPath = OUTPUT_FILE_PATH
   const unMinified = finalDom.toHtml();
   const minified = minify(unMinified);
   writeTextFileSync(outputPath, minified);
+
+  return deck;
 }
 
 function insertLiveReloadScript (dom, { inputHash, buildOptions }) {

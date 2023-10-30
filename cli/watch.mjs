@@ -2,9 +2,10 @@ import { stoyle } from 'stoyle';
 
 import { asciidocToReveal } from '../src/asciidocToReveal.mjs';
 import { REPOSITORY_ROOT_PATH } from '../src/folders.mjs';
-import { logInfo, theme } from '../src/third-party/logger/log.mjs';
 import { hashString } from '../src/third-party/crypto/api.mjs';
 import { existsSync, readTextFileSync, watch } from '../src/third-party/fs/api.mjs';
+import { logInfo, theme } from '../src/third-party/logger/log.mjs';
+import { resolve } from '../src/third-party/path/api.mjs';
 import startLiveReloadServer from './liveReloadServer.mjs';
 
 export const command = 'watch';
@@ -34,12 +35,29 @@ export function builder (yargs) {
       requiresArg: true,
       demandOption: true,
     })
+    .option('assets-folder', {
+      alias: 'a',
+      type: 'string',
+      describe: 'The relative path from the asciidoc deck to the assets folder. Will trigger a re-build for changes inside the assets folder too',
+      requiresArg: true,
+      demandOption: false,
+    })
+    .check(function checker (argv, currentArgs) {
+      const assetsFolder = currentArgs?.assetsFolder;
+      if (assetsFolder) {
+        const assetsFolderAbsolutePath = resolve(currentArgs.inputFile, '..', assetsFolder);
+        if (!existsSync(assetsFolderAbsolutePath)) {
+          throw Error(`Cannot find assets folder, does it exist?`);
+        }
+      }
+      return true;
+    })
     .help()
     .wrap(null);
 }
 
 export async function handler (args) {
-  const { inputFile, outputFile } = args;
+  const { inputFile, outputFile, assetsFolder } = args;
 
   const state = {
     queue: Promise.resolve(),
@@ -48,9 +66,17 @@ export async function handler (args) {
   const initialInputHash = readTextFileSync(inputFile, hashString);
   const liveReloadServer = startLiveReloadServer(initialInputHash);
 
+  const additionalWatchedPaths = assetsFolder
+    ? [ resolve(inputFile, '..', assetsFolder, '*') ]
+    : [];
+
   logInfo(stoyle`Watcher started on ${inputFile}`({ nodes: [ theme.strong ] }));
+  if (additionalWatchedPaths.length) {
+    logInfo(stoyle`Also watching [ ${additionalWatchedPaths} ]`({ nodes: [ theme.strong ] }));
+  }
+
   watch(
-    [ inputFile ],
+    [ inputFile, ...additionalWatchedPaths ],
     {
       cwd: REPOSITORY_ROOT_PATH,
     },
@@ -59,8 +85,7 @@ export async function handler (args) {
         logInfo('=====================================================================');
         logInfo(stoyle`File ${path} received event ${event}`({ nodes: [ theme.strong, theme.strong ] }));
         state.queue = state.queue.then(async () => {
-          const newInputHash = readTextFileSync(inputFile, hashString);
-          await asciidocToReveal(inputFile, outputFile, { shouldAddLiveReload: true });
+          const { inputHash: newInputHash } = await asciidocToReveal(inputFile, outputFile, { shouldAddLiveReload: true });
           liveReloadServer.reload(newInputHash);
         });
       },

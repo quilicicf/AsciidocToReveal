@@ -17,7 +17,7 @@ export default function parseDeck (inputPath, buildOptions) {
   const graphTypes = []; // Added when graphs are converted because mermaid detects the type, we rely on it
   const ast = processor.loadFile(inputPath, { catalog_assets: true });
   const configuration = parseConfiguration(ast, inputFolder);
-  const inputHash = readTextFileSync(inputPath, hashString);
+  const inputHash = computeDeckHash(inputPath, configuration);
   return {
     ast,
     emojisRegister,
@@ -29,6 +29,16 @@ export default function parseDeck (inputPath, buildOptions) {
     graphTypes,
     buildOptions,
   };
+}
+
+// FIXME: this will need a revamp, as ideally all the assets should be inputs for the hashing
+export function computeDeckHash (inputPath, { customCss, customJs }) {
+  const input = [ inputPath, customCss, customJs ]
+    .filter(Boolean)
+    .map((filePath) => readTextFileSync(filePath))
+    .join('');
+
+  return hashString(input);
 }
 
 function findInputFolder (inputPath) {
