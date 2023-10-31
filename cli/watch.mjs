@@ -2,9 +2,9 @@ import { stoyle } from 'stoyle';
 
 import { REPOSITORY_ROOT_PATH } from '../src/folders.mjs';
 import { hashString } from '../src/third-party/crypto/api.mjs';
-import { existsSync, readTextFileSync, watch } from '../src/third-party/fs/api.mjs';
+import { existsSync, mkdirSync, readTextFileSync, watch } from '../src/third-party/fs/api.mjs';
 import { logInfo, theme } from '../src/third-party/logger/log.mjs';
-import { resolve } from '../src/third-party/path/api.mjs';
+import { getBaseName, resolve } from '../src/third-party/path/api.mjs';
 import startLiveReloadServer from './liveReloadServer.mjs';
 
 export const command = 'watch';
@@ -57,6 +57,9 @@ export function builder (yargs) {
 
 export async function handler (args) {
   const { inputFile, outputFile, assetsFolder } = args;
+
+  const outputFolder = getBaseName(outputFile);
+  mkdirSync(outputFolder, { recursive: true });
 
   const state = {
     queue: Promise.resolve(),

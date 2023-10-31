@@ -1,4 +1,5 @@
-import { existsSync } from '../src/third-party/fs/api.mjs';
+import { existsSync, mkdirSync } from '../src/third-party/fs/api.mjs';
+import { getParentFolderName } from '../src/third-party/path/api.mjs';
 
 export const command = 'build';
 export const aliases = [ 'b' ];
@@ -33,6 +34,9 @@ export function builder (yargs) {
 
 export async function handler (args) {
   const { inputFile, outputFile } = args;
+
+  const outputFolder = getParentFolderName(outputFile);
+  mkdirSync(outputFolder, { recursive: true });
 
   const { asciidocToReveal } = await import ('../src/asciidocToReveal.mjs'); // Delay pulling all the dependencies because it's super heavy
   await asciidocToReveal(inputFile, outputFile);
