@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 
 import { run } from '@mermaid-js/mermaid-cli';
-import jsdom from 'jsdom';
 import { stoyle } from 'stoyle';
-import { $ } from '../src/domUtils.mjs';
+
 import { LIB_FOLDER } from '../src/folders.mjs';
+import { toDom } from '../src/third-party/dom/api.mjs';
 import { readTextFileSync, writeTextFileSync } from '../src/third-party/fs/api.mjs';
 import { logInfo, theme } from '../src/third-party/logger/log.mjs';
 import { resolve } from '../src/third-party/path/api.mjs';
@@ -62,6 +62,7 @@ const DIAGRAMS_TO_BUILD = {
     erDiagram
       CUSTOMER ||--o{ ORDER : places
   `,
+  error: 'error',
   'flowchart-v2': stripIndent`
     flowchart LR
       id
@@ -136,9 +137,9 @@ async function main () {
 async function processDiagram (inputFilePath, svgFilePath, outputFilePath, mermaidConfiguration) {
   await run(inputFilePath, svgFilePath, mermaidConfiguration);
   const svg = readTextFileSync(svgFilePath);
-  const dom = new jsdom.JSDOM(svg);
-  const style = $(dom, 'style').innerHTML;
-  const diagramType = $(dom, 'svg').getAttribute('aria-roledescription');
+  const dom = toDom(svg);
+  const style = dom.select('style').innerHTML;
+  const diagramType = dom.select('svg').getAttribute('aria-roledescription');
   const updatedStyle = style.replaceAll('#my-svg', `svg.${diagramType}`);
   writeTextFileSync(outputFilePath, updatedStyle);
 }
