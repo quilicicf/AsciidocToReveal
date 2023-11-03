@@ -78,6 +78,7 @@ export async function handler (args) {
   }
 
   const { asciidocToReveal } = await import ('../src/asciidocToReveal.mjs'); // Delay pulling all the dependencies because it's super heavy
+  await asciidocToReveal(inputFile, outputFile, { shouldAddLiveReload: true });
   watch(
     [ inputFile, ...additionalWatchedPaths ],
     {
