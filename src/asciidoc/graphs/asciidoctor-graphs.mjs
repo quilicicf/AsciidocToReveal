@@ -14,6 +14,6 @@ function graphBlock () {
   self.process(function process (parent, reader, attributes) {
     const graphId = attributes.graphId;
     GRAPHS[ graphId ] = reader.getLines().join('\n');
-    return self.createBlock(parent, 'listing', 'GRAPH WAITING FOR BUILD', { id: `graph-${attributes.graphId}` });
+    return self.createBlock(parent, 'listing', 'GRAPH WAITING FOR BUILD', { id: `graph-${attributes.graphId}`, role: attributes.role });
   });
 }
