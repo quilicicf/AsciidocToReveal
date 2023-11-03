@@ -3,6 +3,7 @@ import parseDeck from './asciidoc/parseDeck.mjs';
 import highlightCode from './code/highlightCode.mjs';
 import insertCustomFiles from './custom-files/insertCustomFiles.mjs';
 import { DIST_FOLDER_PATH, LIB_FOLDER, REPOSITORY_ROOT_PATH } from './folders.mjs';
+import processFragments from './fragments/processFragments.mjs';
 import buildGraphs from './graphs/buildGraphs.mjs';
 import applyLayouts from './layouts/applyLayouts.mjs';
 import applyTheme from './themes/applyTheme.mjs';
@@ -34,6 +35,7 @@ export async function asciidocToReveal (inputPath, outputPath = OUTPUT_FILE_PATH
     applyTheme,
     insertCustomFiles,
     insertLiveReloadScript,
+    processFragments,
     addRevealJs,
   ].reduce((promise, operation) => promise.then(async (dom) => operation(dom, deck)), Promise.resolve(baseDom));
 

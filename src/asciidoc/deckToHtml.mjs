@@ -44,8 +44,6 @@ export default function deckToHtml (deck) {
     embedEmojis,
     fixupCodeBlocks,
     extractSpeakerNotes,
-    fragmentLists,
-    fragmentTables,
   ].reduce(
     (promise, operation) => promise.then(async (dom) => operation(dom, deck)),
     Promise.resolve(baseDom),
@@ -268,43 +266,6 @@ function extractSpeakerNotes (dom) {
     .forEach((notesNode) => dom.changeElementTag(notesNode, 'aside'));
   return dom;
 }
-
-function isInNotes (node) {
-  if (node.tagName === 'SECTION') {
-    return false;
-  } else if (node.tagName === 'ASIDE' && node.classList.contains('notes')) {
-    return true;
-  } else {
-    return isInNotes(node.parentNode);
-  }
-}
-
-function fragmentLists (dom, { configuration }) {
-  if (!configuration.shouldFragmentLists) { return dom; }
-
-  dom.selectAll('ul li')
-    .filter((listItemNode) => !isInNotes(listItemNode))
-    .forEach((listItemNode) => {
-      listItemNode.classList.add('fragment');
-      const hasChildrenItems = [ ...listItemNode.querySelectorAll('li') ].length;
-      if (hasChildrenItems) {
-        listItemNode.classList.add('list-item-with-children');
-      }
-    });
-
-  return dom;
-}
-
-function fragmentTables (dom, { configuration }) {
-  if (!configuration.shouldFragmentTables) { return dom; }
-
-  dom.selectAll('tbody > tr')
-    .filter((tableRowNode) => !isInNotes(tableRowNode))
-    .forEach((tableRowNode) => tableRowNode.classList.add('fragment'));
-
-  return dom;
-}
-
 
 function toSvgDataUri (content) {
   const imageText = content
