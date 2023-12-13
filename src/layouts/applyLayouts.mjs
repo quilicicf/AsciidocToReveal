@@ -5,6 +5,7 @@ const LAYOUTS = {
       grid-template-columns: repeat(12, 1fr);
       grid-column-gap: 1em;
       grid-row-gap: 1em;
+      align-items: center;
     }
       
     .layout-columns .column-1x  { grid-column: span 1;  }
