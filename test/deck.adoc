@@ -574,6 +574,7 @@ Allows to add specific styles & behaviors for each deck using CSS/JS(Reveal) dir
 * CLI tool should be configurable
 * Better cache
 * Images compression
+* Select available port for watcher
 * Deno-ify?
 * Release
 
@@ -584,6 +585,7 @@ Allows to add specific styles & behaviors for each deck using CSS/JS(Reveal) dir
 * For example, it should be possible to provide another path to watch for changes in watch to include assets, or to specify other browser targets for the JS, image compression target maybe later? etc...
 * For example, re-write graph SVGs when graph animation changes, and maybe cleanup the build area a bit?
 * Try JPEG XL or AVIF, and re-size according to size of biggest usage
+* Avoids getting blocked if the port is already used (and the hassle of choosing a good static port number)
 * I may try to deno-ify it to get native TS support and better security
 * I'll have to release it when it's ready, which at least means making the code public
 ====
