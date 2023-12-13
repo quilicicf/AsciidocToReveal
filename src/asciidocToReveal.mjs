@@ -20,7 +20,9 @@ const OUTPUT_FILE_PATH = resolve(DIST_FOLDER_PATH, 'deck.html');
 
 export async function asciidocToReveal (inputPath, outputPath = OUTPUT_FILE_PATH, buildOptions = {}) {
   const deck = parseDeck(inputPath, buildOptions);
-  mkdirSync(deck.cachePath);
+  if (!existsSync(deck.cachePath)) {
+    mkdirSync(deck.cachePath);
+  }
   if (!existsSync(deck.builtDeckJsFilePath) || !existsSync(deck.builtDeckCssFilePath)) {
     // TODO: Rethink this.
     //       * Either the version of Reveal is fixed and these files can be pre-compiled
