@@ -13,7 +13,7 @@ function fragmentLists (dom, { configuration }) {
     .filter((listItemNode) => !isInNotes(listItemNode))
     .forEach((listItemNode) => {
       listItemNode.classList.add('fragment');
-      const hasChildrenItems = [ ...listItemNode.querySelectorAll('li') ].length;
+      const hasChildrenItems = !![ ...listItemNode.querySelectorAll('li') ].length;
       if (hasChildrenItems) {
         listItemNode.classList.add('list-item-with-children');
       }
