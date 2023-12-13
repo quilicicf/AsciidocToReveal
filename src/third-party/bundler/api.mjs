@@ -1,7 +1,7 @@
 import { Parcel } from '@parcel/core';
 
 export async function bundle (inputFilePath, outputFolderPath, resolveFrom) {
-  await new Parcel({
+  return await new Parcel({
     entries: [ inputFilePath ],
     mode: 'production',
     defaultConfig: '@parcel/config-default',
