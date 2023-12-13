@@ -29,7 +29,7 @@ export function writeTextFileSync (filePath, content) {
 }
 
 export function watch (globs, { cwd }, listeners) {
-  const watcher = _watch(globs, { cwd, disableGlobbing: false, depth: 10 });
+  const watcher = _watch(globs, { cwd, disableGlobbing: false, depth: 10, ignoreInitial: true });
   Object.entries(listeners)
     .forEach(([ messageType, listener ]) => watcher.on(messageType, listener));
 }
