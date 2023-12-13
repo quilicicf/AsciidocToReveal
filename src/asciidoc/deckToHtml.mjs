@@ -171,7 +171,7 @@ function embedImages (dom, { ast, inputFolder }) {
       const imageName = getBaseName(imgNode.src);
       const image = images[ imageName ];
 
-      if (!image) { return parentNode.innerHTML = '<span>Image "${imageName}" not found</span>'; }
+      if (!image) { return parentNode.innerHTML = `<span>Image "${imageName}" not found</span>`; }
 
       const style = [
         ...(imgNode.width ? [ `width: ${imgNode.width}px` ] : []),
