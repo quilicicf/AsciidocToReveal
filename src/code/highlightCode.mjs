@@ -90,7 +90,8 @@ async function prepareHighlighting (dom, pluginsToActivate, highlightStyles) {
     );
 
   dom.insertInlineStyle('PRISM_PLUGINS', pluginsCss);
-  highlightStyles.forEach(({ id, css }) => { dom.insertInlineStyle(id, css); });
+  Object.entries(highlightStyles)
+    .forEach(([ id, css ]) => { dom.insertInlineStyle(id, css); });
   return dom;
 }
 
