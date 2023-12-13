@@ -3,7 +3,7 @@ import { run } from '@mermaid-js/mermaid-cli';
 import { hashString } from '../third-party/crypto/api.mjs';
 import { removeFromParent, toDom } from '../third-party/dom/api.mjs';
 import { existsSync, readTextFileSync, writeTextFileSync } from '../third-party/fs/api.mjs';
-import { _, logWarn, theme } from '../third-party/logger/log.mjs';
+import { _, logError, logWarn, theme } from '../third-party/logger/log.mjs';
 import { resolve } from '../third-party/path/api.mjs';
 
 const MERMAID_CONFIGURATION = {
@@ -73,21 +73,64 @@ async function mermaidToSvg (graphId, graphCode, { cachePath }) {
 
   if (!existsSync(outputFilePath)) {
     writeTextFileSync(inputFilePath, graphCode);
-    await run(inputFilePath, outputFilePath, MERMAID_CONFIGURATION);
+    try {
+      await run(inputFilePath, outputFilePath, MERMAID_CONFIGURATION);
+    } catch (error) {
+      logError(_`Failed processing graph ${graphId}: ${error.message}`({ nodes: [ theme.strong, theme.error ] }));
+      return writeErrorGraph(cachePath);
+    }
+
     const dom = readTextFileSync(outputFilePath, (svg) => toDom(svg));
     const graphNode = dom.select('svg');
-    addDiagramTweaks(graphNode, graphId);
+    addDiagramTweaks(graphNode, dom, graphId);
     writeTextFileSync(outputFilePath, graphNode.outerHTML);
   }
 
   return readTextFileSync(outputFilePath);
 }
 
-function addDiagramTweaks (graphNode, graphId) {
+async function writeErrorGraph (cachePath) {
+  const inputFilePath = resolve(cachePath, 'error.mermaid');
+  const outputFilePath = resolve(cachePath, 'error.svg');
+
+  if (existsSync(outputFilePath)) {
+    return readTextFileSync(outputFilePath);
+  }
+
+  writeTextFileSync(inputFilePath, 'error');
+  await run(inputFilePath, outputFilePath, MERMAID_CONFIGURATION);
+  return readTextFileSync(outputFilePath);
+}
+
+function addDiagramTweaks (graphNode, dom, graphId) {
   const graphType = graphNode.getAttribute('aria-roledescription');
   graphNode.id = `graph-${graphId}`;
   graphNode.classList.add(graphType);
   removeFromParent(graphNode.querySelector('style')); // Added globally to avoid duplication
+
+  dom.selectAll('marker > path')
+    .forEach((markerPath) => markerPath.setAttribute('fill', 'context-stroke'));
+
+  dom.selectAll('svg[data-inject]')
+    .forEach((node) => node.innerHTML = `<use href="#${node.getAttribute('data-inject')}"/>`);
+
+  dom.selectAll('svg[data-icon-label]')
+    .forEach((node) => {
+      const iconName = node.getAttribute('data-icon-label');
+      const requestedIconSize = parseInt(node.getAttribute('height'), 10);
+      const iconSize = Math.round(requestedIconSize / 1.4); // Leave vertical padding
+      node.outerHTML = `
+        <div class="icon-label">
+          <svg height="${requestedIconSize}" width="1"/>
+          <svg width="${iconSize}" height="${iconSize}">
+            <use href="#${iconName}-icon"/>            
+          </svg>
+          &nbsp;&nbsp;
+          <span style="font-size:${Math.round(iconSize / 1.7)}px">${node.textContent}</span>
+          &nbsp;&nbsp;
+        </div>
+      `;
+    });
 
   switch (graphType) {
     case 'flowchart-v2':

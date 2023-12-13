@@ -3,42 +3,68 @@
 import { DEFAULT_DARK_HIGHLIGHT_THEME, DEFAULT_LIGHT_HIGHLIGHT_THEME, HIGHLIGHT_THEMES } from '../../code/highlightCode.mjs';
 import { DEFAULT_COLOR, DEFAULT_THEME, THEMES } from '../../themes/applyTheme.mjs';
 import { sanitize } from '../../third-party/dom/api.mjs';
-import { existsSync } from '../../third-party/fs/api.mjs';
+import { existsSync, statSync } from '../../third-party/fs/api.mjs';
 import { _, logError, logWarn, theme } from '../../third-party/logger/log.mjs';
 import { join } from '../../third-party/path/api.mjs';
+
+const PATH_VALIDATORS = {
+  FILE (absolutePath, name) {
+    if (!statSync(absolutePath).isFile()) {
+      logWarn(_`Expected a file for ${name}, got a folder instead`({ nodes: [ theme.strong ] }));
+      return undefined;
+    }
+    return absolutePath;
+  },
+  FOLDER (absolutePath, name) {
+    if (!statSync(absolutePath).isDirectory()) {
+      logWarn(_`Expected a folder for ${name}, got a file instead`({ nodes: [ theme.strong ] }));
+      return undefined;
+    }
+    return absolutePath;
+  },
+};
 
 export const deckConfiguration = {
   customJs: {
     id: 'a2r-js',
     documentation: `Specify a path to a custom JS file that will be the last loaded script in the final deck`,
     defaultValue: '',
-    acceptedValues: 'Path relative to the deck\'s input file',
+    acceptedValues: `Path relative to the deck's input file`,
     validate (value, inputFolder) {
-      return validateCustomFilePath(value, 'custom JS', inputFolder);
+      return validateCustomPath(value, 'custom JS', inputFolder, PATH_VALIDATORS.FILE);
     },
   },
   customCss: {
     id: 'a2r-css',
     documentation: `Specify a path to a custom CSS file that will be the last loaded style in the final deck`,
     defaultValue: '',
-    acceptedValues: 'Path relative to the deck\'s input file',
+    acceptedValues: `Path relative to the deck's input file`,
     validate (value, inputFolder) {
-      return validateCustomFilePath(value, 'custom CSS', inputFolder);
+      return validateCustomPath(value, 'custom CSS', inputFolder, PATH_VALIDATORS.FILE);
     },
   },
   favicon: {
     id: 'a2r-favicon',
     documentation: `Specify a path to the file containing your favicon`,
     defaultValue: '',
-    acceptedValues: 'Path relative to the deck\'s input file',
+    acceptedValues: `Path relative to the deck's input file`,
     validate (value, inputFolder) {
-      return validateCustomFilePath(value, 'favicon', inputFolder);
+      return validateCustomPath(value, 'favicon', inputFolder, PATH_VALIDATORS.FILE);
+    },
+  },
+  svgIconsFolder: {
+    id: 'a2r-svg-icons-dir',
+    documentation: `Specify the location of the folder containing your SVG icons`,
+    defaultValue: '',
+    acceptedValues: `Path relative to the deck's input file`,
+    validate (value, inputFolder) {
+      return validateCustomPath(value, 'SVG icons directory', inputFolder, PATH_VALIDATORS.FOLDER);
     },
   },
   pageTitle: {
     id: 'a2r-page-title',
     documentation: `Specify the HTML title for the deck`,
-    defaultValue: 'First slide\'s title',
+    defaultValue: `First slide's title`,
     acceptedValues: 'Any string',
     validate (value) {
       return value === undefined ? undefined : sanitize(value);
@@ -146,7 +172,7 @@ export function parseConfiguration (ast, inputFolder) {
   };
 }
 
-function validateCustomFilePath (value, name, inputFolder) {
+function validateCustomPath (value, name, inputFolder, typeValidator) {
   if (value === undefined) { return undefined; }
   if (value.includes('..')) {
     logError(_`Cannot load ${name} ${value}, path must be relative to the deck's location without back-tracking`({
@@ -161,7 +187,7 @@ function validateCustomFilePath (value, name, inputFolder) {
     return undefined;
   }
 
-  return absolutePath;
+  return typeValidator(absolutePath, name);
 }
 
 function validateEnumValue (value, name, acceptedValues, defaultValue) {

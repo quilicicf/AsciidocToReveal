@@ -7,6 +7,7 @@ import { parseConfiguration } from './configuration/deckConfiguration.mjs';
 import registerEmojisExtension from './emojis/asciidoctor-emojis.mjs';
 import registerGraphAnimationExtension from './graph-animations/asciidoctor-graph-animations.mjs';
 import registerGraphExtension from './graphs/asciidoctor-graphs.mjs';
+import registerInlineSvgIconsExtension from './inline-svg-icons/asciidoctor-inline-svg-icons.mjs';
 
 export default function parseDeck (inputPath, buildOptions) {
   const inputFolder = findInputFolder(inputPath);
@@ -15,6 +16,7 @@ export default function parseDeck (inputPath, buildOptions) {
   const builtDeckCssFilePath = resolve(cachePath, 'deck.css');
 
   const processor = new Processor();
+  registerInlineSvgIconsExtension(processor.Extensions);
   const emojisRegister = registerEmojisExtension(processor.Extensions, cachePath);
   const graphsRegister = registerGraphExtension(processor.Extensions);
   const graphAnimationsRegister = registerGraphAnimationExtension(processor.Extensions);
