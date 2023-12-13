@@ -71,3 +71,7 @@ em {
 .fragment.list-item-with-children.visible:not(.current-fragment) > p, ::marker {
   color: color-mix(in srgb, var(--r-main-color) 50%, transparent); /* For some reason, opacity does not apply to the marker */
 }
+
+g[id^=flowchart-hidden] { /* Hide Mermaid flowchart positioning blocks */
+  display: none;
+}
