@@ -173,11 +173,7 @@ function embedImages (dom, { ast, inputFolder }) {
 
       if (!image) { return parentNode.innerHTML = `<span>Image "${imageName}" not found</span>`; }
 
-      const style = [
-        ...(imgNode.width ? [ `width: ${imgNode.width}px` ] : []),
-        ...(imgNode.height ? [ `height: ${imgNode.height}px` ] : []),
-      ].join(';');
-      const newElement = dom.newElement('span', [ image.cssClass ], { style });
+      const newElement = dom.newElement('img', [ image.cssClass ], { width: imgNode.width, height: imgNode.height });
       parentNode.innerHTML = '';
       parentNode.appendChild(newElement);
     });
