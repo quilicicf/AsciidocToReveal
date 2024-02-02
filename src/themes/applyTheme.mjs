@@ -119,8 +119,9 @@ function prepareDarkColorExport (theme) {
     --color-primary-darker: ${primaryColorDarker};
     --color-primary-darkest: ${primaryColorDarkest};
   
-    --r-background-color: ${primaryColorDarkest};
-    --a2r-color-code-background: ${primaryColorDarker};
+    --r-background-color: #191919;
+    --a2r-color-border: #545454;
+    --a2r-color-code-background: #303030;
   
     --r-heading1-text-shadow: 2px 2px 2px ${primaryColorDarkest};
   
@@ -164,8 +165,9 @@ function prepareLightColorExport (theme) {
     --color-primary-darker: ${primaryColorDarker};
     --color-primary-darkest: ${primaryColorDarkest};
   
-    --r-background-color: ${primaryColorLightest};
-    --a2r-color-code-background: ${primaryColorLighter};
+    --r-background-color: #f5f5f5;
+    --a2r-color-border: #c9c9c9;
+    --a2r-color-code-background: #e1e1e1;
   
     --r-heading1-text-shadow: 2px 2px 2px ${primaryColorLightest};
   

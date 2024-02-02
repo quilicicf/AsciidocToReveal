@@ -174,7 +174,8 @@ function embedImages (dom, { ast, inputFolder }) {
       if (!image) { return parentNode.innerHTML = `<span>Image "${imageName}" not found</span>`; }
 
       const style = `width: ${imgNode.width}px; height: ${imgNode.height}px`;
-      const newElement = dom.newElement('span', [ image.cssClass ], { style, role: 'image' });
+      const additionalClasses = [ ...parentNode.classList ];
+      const newElement = dom.newElement('span', [ image.cssClass, ...additionalClasses ], { style, role: 'image' });
       const grandParentNode = parentNode.parentNode;
       grandParentNode.replaceChild(newElement, parentNode);
     });

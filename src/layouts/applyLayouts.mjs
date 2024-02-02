@@ -3,9 +3,20 @@ const LAYOUTS = {
     .layout-columns > .content {
       display: grid;
       grid-template-columns: repeat(12, 1fr);
-      grid-column-gap: 1em;
-      grid-row-gap: 1em;
       align-items: center;
+    }
+    
+    .layout-columns div[class*='column-'] {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    
+    .layout-columns div[class*='column-']:not(:last-child) {
+      padding-right: 1rem;
+      border-radius: .1rem;
+      border-right: calc(var(--a2r-border-size) / 1.5) solid var(--a2r-color-border);
     }
       
     .layout-columns .column-1x  { grid-column: span 1;  }

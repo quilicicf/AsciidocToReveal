@@ -5,6 +5,10 @@
 
 // Variables export ----------------------------
 // EXPORT_PART //
+:root {
+  --a2r-border-size: .35rem;
+}
+
 // ---------------------------------------------
 
 // Change text colors against dark slide backgrounds
@@ -47,6 +51,12 @@ section.has-light-background {
   display: inline-block;
   border: 1px solid var(--color-primary);
   border-radius: 7px;
+}
+
+.reveal pre, .imageblock {
+  box-shadow: unset;
+  border-radius: .5rem;
+  border: var(--a2r-border-size) solid var(--a2r-color-border);
 }
 
 .speaker-notes {
