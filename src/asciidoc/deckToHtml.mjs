@@ -173,9 +173,10 @@ function embedImages (dom, { ast, inputFolder }) {
 
       if (!image) { return parentNode.innerHTML = `<span>Image "${imageName}" not found</span>`; }
 
-      const newElement = dom.newElement('img', [ image.cssClass ], { width: imgNode.width, height: imgNode.height });
-      parentNode.innerHTML = '';
-      parentNode.appendChild(newElement);
+      const style = `width: ${imgNode.width}px; height: ${imgNode.height}px`;
+      const newElement = dom.newElement('span', [ image.cssClass ], { style, role: 'image' });
+      const grandParentNode = parentNode.parentNode;
+      grandParentNode.replaceChild(newElement, parentNode);
     });
 
   dom.insertInlineStyle('IMAGES', `${IMAGES_CSS}${css}`);
