@@ -10,19 +10,18 @@ import embedSvgIcons from './svg-icons/embedSvgIcons.mjs';
 import applyTheme from './themes/applyTheme.mjs';
 import { bundle } from './third-party/bundler/api.mjs';
 import { INSERT_POSITIONS } from './third-party/dom/api.mjs';
-import { existsSync, mkdirSync, readTextFileSync, writeTextFileSync } from './third-party/fs/api.mjs';
+import { existsSync, mkdirIfNotExistsSync, readTextFileSync, writeTextFileSync } from './third-party/fs/api.mjs';
 import { logInfo } from './third-party/logger/log.mjs';
 import { minify } from './third-party/minifier/api.mjs';
-import { resolve } from './third-party/path/api.mjs';
+import { getParentFolderName, resolve } from './third-party/path/api.mjs';
 
 const DECK_JS_FILE_PATH = resolve(LIB_FOLDER, 'deck.mjs');
 const OUTPUT_FILE_PATH = resolve(DIST_FOLDER_PATH, 'deck.html');
 
 export async function asciidocToReveal (inputPath, outputPath = OUTPUT_FILE_PATH, buildOptions = {}) {
   const deck = parseDeck(inputPath, buildOptions);
-  if (!existsSync(deck.cachePath)) {
-    mkdirSync(deck.cachePath);
-  }
+  mkdirIfNotExistsSync(deck.cachePath);
+  mkdirIfNotExistsSync(getParentFolderName(outputPath));
   if (!existsSync(deck.builtDeckJsFilePath) || !existsSync(deck.builtDeckCssFilePath)) {
     // TODO: Rethink this.
     //       * Either the version of Reveal is fixed and these files can be pre-compiled

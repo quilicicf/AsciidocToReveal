@@ -4,6 +4,12 @@ import { existsSync as _existsSync, mkdirSync as _mkdirSync, readdirSync as _rea
 export const statSync = _statSync;
 export const mkdirSync = _mkdirSync;
 
+export function mkdirIfNotExistsSync (path) {
+  if (!existsSync(path)) {
+    mkdirSync(path);
+  }
+}
+
 export function readdirSync (filePath) {
   return _readdirSync(filePath);
 }
