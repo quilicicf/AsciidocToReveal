@@ -479,6 +479,11 @@ emoji:muscle[]emoji:muscle[1.4,em]emoji:muscle[]
 | Path relative to the deck's input file
 | Specify a path to the file containing your favicon
 
+| `a2r-svg-icons-dir`
+| 
+| Path relative to the deck's input file
+| Specify the location of the folder containing your SVG icons
+
 | `a2r-page-title`
 | First slide's title
 | Any string
