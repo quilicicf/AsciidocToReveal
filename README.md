@@ -27,3 +27,17 @@ A tool ain't opinionated without opinions, here goes:
 ## Targeted audience
 
 Basically, this is a personal tool, you are free to use it (it's licensed under Apache 2.0) but don't expect changes that don't fit my needs. This is a personal project and I don't intend to spend any time on it if I'm not gaining enough value for the time I put in.
+
+## Usage
+
+If after reading all of the above, you still want to use the tool, here's how:
+
+```shell
+npm install --global '@quilicicf/asciidoc-2-reveal' # Install globally
+a2r --help                                          # Display general help
+a2r build --help                                    # Display help for command build
+a2r watch \
+  --input-file '/path/to/deck.adoc' \
+  --output-file '/path/to/deck.html' \
+  --assets-folder 'assets'                          # Watch for changes in deck/assets & live-reload open decks
+```
