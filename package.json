@@ -14,9 +14,10 @@
   "keywords": [
     "asciidoc",
     "reveal.js",
-    "transformer",
     "html",
-    "presentation"
+    "presentation",
+    "deck",
+    "single-file"
   ],
   "author": "quilicicf <quilicicf@gmail.com> (https://github.com/quilicicf)",
   "license": "Apache-2.0",
