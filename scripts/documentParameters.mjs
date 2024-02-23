@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import { deckConfiguration } from '../src/asciidoc/configuration/deckConfiguration.mjs';
-import { TEST_FOLDER } from '../src/folders.mjs';
+import { TEST_FOLDER } from '../src/paths.mjs';
 import { readTextFileSync, writeTextFileSync } from '../src/third-party/fs/api.mjs';
 import { resolve } from '../src/third-party/path/api.mjs';
 

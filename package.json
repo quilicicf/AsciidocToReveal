@@ -8,6 +8,7 @@
   "scripts": {
     "build": "node cli/a2r.mjs build --input-file test/deck.adoc --output-file dist/deck.html",
     "start": "node cli/a2r.mjs watch --input-file test/deck.adoc --output-file dist/deck.html",
+    "bundle-deck-base": "node scripts/bundleDeckBase.mjs",
     "update-doc": "node scripts/documentParameters.mjs",
     "update-diagram-styles": "node scripts/writeDiagramStyles.mjs"
   },
@@ -29,7 +30,6 @@
     "jsdom": "24.0.0",
     "json5": "2.2.3",
     "mermaid": "10.8.0",
-    "parcel": "2.11.0",
     "prism-themes": "1.9.0",
     "prismjs": "1.29.0",
     "reveal.js": "5.0.4",
@@ -40,6 +40,7 @@
     "yargs": "17.7.2"
   },
   "devDependencies": {
-    "chokidar": "3.5.3"
+    "chokidar": "3.5.3",
+    "parcel": "2.11.0"
   }
 }

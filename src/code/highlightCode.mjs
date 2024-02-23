@@ -1,7 +1,7 @@
 import Prism from 'prismjs';
 import loadLanguages from 'prismjs/components/index.js';
 
-import { NODE_MODULES_PATH } from '../folders.mjs';
+import { NODE_MODULES_PATH } from '../paths.mjs';
 import { DEFAULT_THEME } from '../themes/applyTheme.mjs';
 import { readdirSync, readTextFileSync } from '../third-party/fs/api.mjs';
 import { _, logError, logInfo, theme } from '../third-party/logger/log.mjs';

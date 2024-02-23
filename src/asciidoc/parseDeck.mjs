@@ -12,8 +12,6 @@ import registerInlineSvgIconsExtension from './inline-svg-icons/asciidoctor-inli
 export default function parseDeck (inputPath, buildOptions) {
   const inputFolder = findInputFolder(inputPath);
   const cachePath = resolve(inputFolder, '.a2r-cache');
-  const builtDeckJsFilePath = resolve(cachePath, 'deck.js');
-  const builtDeckCssFilePath = resolve(cachePath, 'deck.css');
 
   const processor = new Processor();
   registerInlineSvgIconsExtension(processor.Extensions);
@@ -33,8 +31,6 @@ export default function parseDeck (inputPath, buildOptions) {
     inputHash,
     inputFolder,
     cachePath,
-    builtDeckJsFilePath,
-    builtDeckCssFilePath,
     configuration,
     graphTypes: [], // Added when graphs are converted because mermaid detects the type, we rely on it
     buildOptions,

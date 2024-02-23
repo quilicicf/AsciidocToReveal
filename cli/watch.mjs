@@ -1,6 +1,6 @@
 import { stoyle } from 'stoyle';
 
-import { REPOSITORY_ROOT_PATH } from '../src/folders.mjs';
+import { REPOSITORY_ROOT_PATH } from '../src/paths.mjs';
 import { hashString } from '../src/third-party/crypto/api.mjs';
 import { existsSync, mkdirSync, readTextFileSync, watch } from '../src/third-party/fs/api.mjs';
 import { logInfo, theme } from '../src/third-party/logger/log.mjs';

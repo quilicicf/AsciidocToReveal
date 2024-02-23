@@ -3,7 +3,7 @@
 import { run } from '@mermaid-js/mermaid-cli';
 import { stoyle } from 'stoyle';
 
-import { LIB_FOLDER } from '../src/folders.mjs';
+import { LIB_FOLDER } from '../src/paths.mjs';
 import { toDom } from '../src/third-party/dom/api.mjs';
 import { readTextFileSync, writeTextFileSync } from '../src/third-party/fs/api.mjs';
 import { logInfo, theme } from '../src/third-party/logger/log.mjs';

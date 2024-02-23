@@ -18,15 +18,18 @@ I plan to generate GitHub pages for it once I publish the repository and CLI too
 
 A tool ain't opinionated without opinions, here goes:
 
-* Presentation decks should rely on open standards
-* Nobody has the time or will to write pure HTML
-* Developers want hackable solutions with sane defaults
-* 1MB is too heavy for a deck aimed at a technical audience (HD images are superfluous)
-* A deck should be a double-clickable single-file and work everywhere
+* **Presentation decks should rely on open standards:** a2r builds HTML
+* **Nobody has the time or will to write pure HTML:** a2r uses Asciidoc
+* **Developers want hackable solutions with sane defaults:** a2r is hackable, defaults are designed for the targeted audience, devs
+* **1MB is too heavy for a deck aimed at a technical audience:** a2r has a relatively raw size (200kB) and encourages use of light image formats
+* **A deck should be a double-clickable single-file and work everywhere:** a2r creates an auto-contained HTML file
+* **Chrome is an unwanted monopoly:** a2r build target is Firefox, one of the very few alternatives that devs actually use. I might add other targets in the future, this part is still to be defined
 
 ## Targeted audience
 
-Basically, this is a personal tool, you are free to use it (it's licensed under Apache 2.0) but don't expect changes that don't fit my needs. This is a personal project and I don't intend to spend any time on it if I'm not gaining enough value for the time I put in.
+Basically, this is a personal tool, you are free to use it (it's licensed under Apache 2.0) but don't expect changes that don't fit my needs. 
+
+This is a personal project and I don't intend to spend any time on it if I'm not gaining enough value for the time I put in.
 
 ## Usage
 
