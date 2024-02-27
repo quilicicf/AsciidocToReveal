@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.1.0
+
+* :art: Add `fit-content` class in CSS boilerplate file. Allows shrinking code blocks to the minimum width that fits the text
+* :bug: Fix CSS
+  * Use lighter color for link hover in dark mode
+  * Use outline instead of border to avoid shrinking images (makes text in screenshots blurry)
+
 ## 1.0.2
 
 * :bug: Fix watcher for relative paths
