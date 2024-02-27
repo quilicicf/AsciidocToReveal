@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.2
+
+* :bug: Fix watcher for relative paths
+  * The first build was working, only the watcher needed an absolute path
+* :art: The path resolution for watcher logs is now done from the process' `cwd`
+
 ## 1.0.1
 
 * :triangular_ruler: Include the bundled deck base in the source code
