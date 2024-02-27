@@ -126,8 +126,8 @@ function prepareDarkColorExport (theme) {
     --r-heading1-text-shadow: 2px 2px 2px ${primaryColorDarkest};
   
     --r-link-color: ${primaryColor};
-    --r-link-color-dark: ${primaryColorDark};
-    --r-link-color-hover: ${primaryColorDark};
+    --r-link-color-dark: ${primaryColorLight};
+    --r-link-color-hover: ${primaryColorLight};
   
     --r-selection-color: ${primaryColorDarkest};
     --r-selection-background-color: ${primaryColorLight};

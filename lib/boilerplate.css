@@ -59,6 +59,10 @@ em {
   color: var(--color-gray);
 }
 
+.fit-content pre {
+  width: fit-content;
+}
+
 /* Animate nested lists without fading out nested items twice  */
 .fragment.list-item-with-children > p, ::marker {
   visibility: hidden;

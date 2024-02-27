@@ -56,7 +56,7 @@ section.has-light-background {
 .reveal pre, .imageblock {
   box-shadow: unset;
   border-radius: .5rem;
-  border: var(--a2r-border-size) solid var(--a2r-color-border);
+  outline: var(--a2r-border-size) solid var(--a2r-color-border);
 }
 
 .speaker-notes {
