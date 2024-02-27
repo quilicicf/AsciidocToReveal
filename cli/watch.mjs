@@ -1,6 +1,5 @@
 import { stoyle } from 'stoyle';
 
-import { REPOSITORY_ROOT_PATH } from '../src/paths.mjs';
 import { hashString } from '../src/third-party/crypto/api.mjs';
 import { existsSync, mkdirSync, readTextFileSync, watch } from '../src/third-party/fs/api.mjs';
 import { logInfo, theme } from '../src/third-party/logger/log.mjs';
@@ -24,7 +23,7 @@ export function builder (yargs) {
         if (!existsSync(filePath)) {
           throw Error(`The input file was not found`);
         }
-        return filePath;
+        return resolve(filePath);
       },
     })
     .option('output-file', {
@@ -81,9 +80,7 @@ export async function handler (args) {
   await asciidocToReveal(inputFile, outputFile, { shouldAddLiveReload: true });
   watch(
     [ inputFile, ...additionalWatchedPaths ],
-    {
-      cwd: REPOSITORY_ROOT_PATH,
-    },
+    { cwd: process.cwd() },
     {
       all: (event, path) => {
         logInfo('=====================================================================');
