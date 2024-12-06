@@ -5,6 +5,20 @@ import { _, logError, logWarn, theme } from '../third-party/logger/log.mjs';
 import { getBaseName, getExtension, join, resolve } from '../third-party/path/api.mjs';
 import processBlocksRecursively from './processBlocksRecursively.mjs';
 
+const PREFERRED_IMAGE_TYPES = {
+  SVG: 'svg',
+  JXL: 'jxl',
+  AVIF: 'avif',
+  WEBP: 'webp',
+};
+
+const SUPPORTED_IMAGE_TYPES = {
+  ...PREFERRED_IMAGE_TYPES,
+  PNG: 'png',
+  JPG: 'jpg',
+  JPEG: 'jpeg',
+};
+
 const BASE_HTML = `
   <!DOCTYPE html>
   <html lang="en">
@@ -24,14 +38,6 @@ const BASE_HTML = `
   
   </body>
   </html>
-`;
-
-const IMAGES_CSS = `
-  .image.thumb span[class^=img-] { 
-    width: 1em; 
-    height: 1em; 
-    vertical-align: text-bottom; 
-  }
 `;
 
 export default function deckToHtml (deck) {
@@ -152,13 +158,12 @@ function embedImages (dom, { ast, inputFolder }) {
       {},
     );
 
-  const preferredImageTypes = [ 'svg', 'webp', 'avif', 'jxl' ];
   const badImageTypes = Object.values(images)
     .map(({ type }) => type)
-    .filter((type) => !preferredImageTypes.includes(type));
+    .filter((type) => !Object.values(PREFERRED_IMAGE_TYPES).includes(type));
   if (badImageTypes.length) {
     const bad = badImageTypes.join(', ');
-    const good = preferredImageTypes.join(', ');
+    const good = PREFERRED_IMAGE_TYPES.join(', ');
     logWarn(_`Your deck contains inefficient image types [ ${bad} ], consider using [ ${good} ] instead`({ nodes: [ theme.error, theme.success ] }));
   }
 
@@ -173,14 +178,16 @@ function embedImages (dom, { ast, inputFolder }) {
 
       if (!image) { return parentNode.innerHTML = `<span>Image "${imageName}" not found</span>`; }
 
-      const style = `width: ${imgNode.width}px; height: ${imgNode.height}px`;
+      const style = parentNode.classList.contains('thumb')
+        ? 'width: 1em; height: 1em; vertical-align: text-bottom;'
+        : `width: ${imgNode.width}px; height: ${imgNode.height}px`;
       const additionalClasses = [ ...parentNode.classList ];
       const newElement = dom.newElement('span', [ image.cssClass, ...additionalClasses ], { style, role: 'image' });
       const grandParentNode = parentNode.parentNode;
       grandParentNode.replaceChild(newElement, parentNode);
     });
 
-  dom.insertInlineStyle('IMAGES', `${IMAGES_CSS}${css}`);
+  dom.insertInlineStyle('IMAGES', css);
 
   return dom;
 }
@@ -287,14 +294,15 @@ export function readFileToDataUri (type, filePath) {
   }
 
   switch (type) {
-    case 'svg':
+    case SUPPORTED_IMAGE_TYPES.SVG:
       return readTextFileSync(filePath, (content) => toSvgDataUri(content));
-    case 'png':
-    case 'jxl':
-    case 'avif':
-    case 'webp':
+    case SUPPORTED_IMAGE_TYPES.PNG:
+    case SUPPORTED_IMAGE_TYPES.JXL:
+    case SUPPORTED_IMAGE_TYPES.AVIF:
+    case SUPPORTED_IMAGE_TYPES.WEBP:
       return `data:image/${type};base64,${readAsBase64Sync(filePath)}`;
     default:
-      throw Error(_`Unsupported image type: ${type}`({ nodes: [ theme.error ] }));
+      const supportedFileTypesMessage = Object.values(SUPPORTED_IMAGE_TYPES).join(', ');
+      throw Error(_`Unsupported image type: ${type}, try any of [${supportedFileTypesMessage}]`({ nodes: [ theme.error ] }));
   }
 }

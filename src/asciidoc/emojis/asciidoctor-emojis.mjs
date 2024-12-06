@@ -6,6 +6,7 @@ import twemojiMap from './twemojis.mjs';
 
 const UNITS = [ 'px', 'em' ];
 const EMOJIS = {};
+const TWEMOJI_URL = 'https://twemoji-cheatsheet.vercel.app';
 
 export default function register (registry, cachePath) {
   registry.register(function setInlineMacro () {
@@ -50,7 +51,7 @@ export default function register (registry, cachePath) {
             },
           });
         }
-        logError(_`Skipping emoji inline macro, ${emojiName} not found`({ nodes: [ theme.strong ] }));
+        logError(_`Skipping emoji inline macro, ${emojiName} not found. Search for available emojis here ${TWEMOJI_URL}`({ nodes: [ theme.strong ] }));
         return self.createInline(parent, 'quoted', `[emoji ${emojiName} not found]`, attributes);
       });
     });
