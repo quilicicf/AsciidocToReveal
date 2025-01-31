@@ -163,7 +163,7 @@ function embedImages (dom, { ast, inputFolder }) {
     .filter((type) => !Object.values(PREFERRED_IMAGE_TYPES).includes(type));
   if (badImageTypes.length) {
     const bad = badImageTypes.join(', ');
-    const good = PREFERRED_IMAGE_TYPES.join(', ');
+    const good = Object.values(PREFERRED_IMAGE_TYPES).join(', ');
     logWarn(_`Your deck contains inefficient image types [ ${bad} ], consider using [ ${good} ] instead`({ nodes: [ theme.error, theme.success ] }));
   }
 
