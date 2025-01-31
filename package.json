@@ -23,24 +23,24 @@
   "author": "quilicicf <quilicicf@gmail.com> (https://github.com/quilicicf)",
   "license": "Apache-2.0",
   "dependencies": {
-    "@asciidoctor/core": "3.0.3",
-    "@mermaid-js/mermaid-cli": "10.7.0",
-    "@minify-html/node": "0.11.1",
-    "chroma-js": "2.4.2",
-    "jsdom": "24.0.0",
+    "@asciidoctor/core": "3.0.4",
+    "@mermaid-js/mermaid-cli": "11.4.2",
+    "@minify-html/node": "0.11.2",
+    "chroma-js": "3.1.2",
+    "jsdom": "26.0.0",
     "json5": "2.2.3",
-    "mermaid": "10.9.3",
+    "mermaid": "11.4.1",
     "prism-themes": "1.9.0",
     "prismjs": "1.29.0",
-    "reveal.js": "5.0.4",
-    "sass": "1.70.0",
+    "reveal.js": "5.1.0",
+    "sass": "1.83.4",
     "stoyle": "1.0.0",
-    "uuid": "9.0.1",
-    "ws": "8.17.1",
+    "uuid": "11.0.5",
+    "ws": "8.18.0",
     "yargs": "17.7.2"
   },
   "devDependencies": {
-    "chokidar": "3.5.3",
-    "parcel": "2.11.0"
+    "chokidar": "4.0.3",
+    "parcel": "2.13.3"
   }
 }
