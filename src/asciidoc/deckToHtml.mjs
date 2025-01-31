@@ -300,6 +300,8 @@ export function readFileToDataUri (type, filePath) {
     case SUPPORTED_IMAGE_TYPES.JXL:
     case SUPPORTED_IMAGE_TYPES.AVIF:
     case SUPPORTED_IMAGE_TYPES.WEBP:
+    case SUPPORTED_IMAGE_TYPES.JPG:
+    case SUPPORTED_IMAGE_TYPES.JPEG:
       return `data:image/${type};base64,${readAsBase64Sync(filePath)}`;
     default:
       const supportedFileTypesMessage = Object.values(SUPPORTED_IMAGE_TYPES).join(', ');
