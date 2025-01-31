@@ -10,7 +10,7 @@
 
 = image:asciidoc-logo.svg[Asciidoc logo,role=thumb] => image:reveal-logo.png[Reveal.js logo,role=thumb]
 
-A tale of how I converted asciidocs to single-page HTML presentations.
+A tale of how I converted Asciidoc files to single-page HTML presentations.
 
 https://github.com/quilicicf/AsciidocToReveal[The code]
 
@@ -143,15 +143,7 @@ flowchart LR
 
 === Architecture
 
-[.layout-columns]
-====
-[.column-3x]
-=====
-=====
-
-[.column-6x]
-=====
-[source,role="keep-markup"]
+[source,role="keep-markup fit-content"]
 ----
 .
 ├── <span class="token tag">build-area</span>            <span class="dim"># Build cache</span>
@@ -161,8 +153,6 @@ flowchart LR
 ├── <span class="token function">src</span>                   <span class="dim"># Source files for a2r</span>
 └── <span class="token string">test</span>                  <span class="dim"># Test presentation files</span>
 ----
-=====
-====
 
 [.notes]
 ====
@@ -298,7 +288,7 @@ Right block, 8 spans
 
 === Code highlight - example
 
-[source,mermaid,role="line-numbers keep-markup"]
+[source,mermaid,role="line-numbers keep-markup",opts="novalidate"]
 ----
 flowchart LR
     <span class="fragment">toto[[This is some text]]</span>
@@ -318,7 +308,7 @@ flowchart LR
 * Switching the global theme switches the highlighting theme too!
 ====
 
-=== Mermaid graphs - example
+=== Mermaid graphs — example
 
 [.layout-columns]
 ====
