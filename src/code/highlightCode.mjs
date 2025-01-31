@@ -59,19 +59,21 @@ function buildHighlightStyles (themeName, highlightThemeDark, highlightThemeLigh
   const lightTheme = readTextFileSync(lightThemeCssPath);
 
   if (themeName === 'dark') {
-    return [ { id: 'PRISM_DARK', css: darkTheme } ];
+    return { PRISM_DARK: darkTheme };
   }
   if (themeName === 'light') {
-    return [ { id: 'PRISM_LIGHT', css: lightTheme } ];
+    return { PRISM_LIGHT: lightTheme };
   }
   if (themeSwitchingMode === 'manual') {
-    return [
-      { id: 'PRISM_DARK', css: darkTheme },
-      { id: 'PRISM_LIGHT', css: lightTheme },
-    ];
+    return {
+      PRISM_DARK: darkTheme,
+      PRISM_LIGHT: lightTheme,
+    };
   }
 
-  return { id: 'PRISM', css: `@media (prefers-color-scheme: dark) { ${darkTheme} } @media (prefers-color-scheme: light) { ${lightTheme} }` };
+  return [
+    { id: 'PRISM', css: `@media (prefers-color-scheme: dark) { ${darkTheme} } @media (prefers-color-scheme: light) { ${lightTheme} }` }
+  ];
 }
 
 async function prepareHighlighting (dom, pluginsToActivate, highlightStyles) {

@@ -16,10 +16,16 @@ const MERMAID_CONFIGURATION = {
     backgroundColor: 'transparent',
     myCSS: undefined,
     mermaidConfig: {
+      theme: 'default',
       logLevel: 'error',
       securityLevel: 'loose',
       startOnLoad: false,
       deterministicIds: true,
+      htmlLabels: false,
+      flowchart: {
+        useMaxWidth: false,
+        htmlLabels: false,
+      },
     },
   },
 };

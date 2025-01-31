@@ -25,6 +25,7 @@ const MERMAID_DARK_CONFIGURATION = {
       securityLevel: 'loose',
       startOnLoad: false,
       deterministicIds: true,
+      htmlLabels: false,
     },
   },
 };
@@ -45,6 +46,7 @@ const MERMAID_LIGHT_CONFIGURATION = {
       securityLevel: 'loose',
       startOnLoad: false,
       deterministicIds: true,
+      htmlLabels: false,
     },
   },
 };
