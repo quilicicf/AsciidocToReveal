@@ -31,7 +31,7 @@ const BASE_HTML = `
   <div class="reveal">
     <div class="slides">
       <section id="deck-title">
-        <h1></h1>      
+        <h1></h1>
       </section>
     </div>
   </div>

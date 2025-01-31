@@ -59,7 +59,7 @@ em {
   color: var(--color-gray);
 }
 
-.fit-content pre {
+.listingblock.fit-content pre {
   width: fit-content;
 }
 
