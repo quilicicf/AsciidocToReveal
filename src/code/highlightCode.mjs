@@ -71,9 +71,9 @@ function buildHighlightStyles (themeName, highlightThemeDark, highlightThemeLigh
     };
   }
 
-  return [
-    { id: 'PRISM', css: `@media (prefers-color-scheme: dark) { ${darkTheme} } @media (prefers-color-scheme: light) { ${lightTheme} }` }
-  ];
+  return {
+    PRISM: `@media (prefers-color-scheme: dark) { ${darkTheme} } @media (prefers-color-scheme: light) { ${lightTheme} }`
+  };
 }
 
 async function prepareHighlighting (dom, pluginsToActivate, highlightStyles) {
