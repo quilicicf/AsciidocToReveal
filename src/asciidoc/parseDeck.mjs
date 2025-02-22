@@ -9,6 +9,13 @@ import registerGraphAnimationExtension from './graph-animations/asciidoctor-grap
 import registerGraphExtension from './graphs/asciidoctor-graphs.mjs';
 import registerInlineSvgIconsExtension from './inline-svg-icons/asciidoctor-inline-svg-icons.mjs';
 
+/**
+ * Parses the Asciidoc file into a Deck ready for transformation to HTML
+ *
+ * @param inputPath {string}
+ * @param buildOptions {A2R.BuildOptions}
+ * @returns {A2R.Deck}
+ */
 export default function parseDeck (inputPath, buildOptions) {
   const inputFolder = findInputFolder(inputPath);
   const cachePath = resolve(inputFolder, '.a2r-cache');
@@ -34,6 +41,7 @@ export default function parseDeck (inputPath, buildOptions) {
     configuration,
     graphTypes: [], // Added when graphs are converted because mermaid detects the type, we rely on it
     buildOptions,
+    svgIcons: [], // Added later FIXME : add there instead of later, duh
   };
 }
 

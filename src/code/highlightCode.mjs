@@ -27,6 +27,11 @@ export const HIGHLIGHT_THEMES = findAllThemes();
 export const DEFAULT_DARK_HIGHLIGHT_THEME = 'one-dark';
 export const DEFAULT_LIGHT_HIGHLIGHT_THEME = 'one-light';
 
+/**
+ * @param dom {A2R.Dom}
+ * @param deck {A2R.Deck}
+ * @returns {A2R.Dom}
+ */
 export default async function highlightCode (dom, { configuration }) {
   const { themeName, highlightThemeDark, highlightThemeLight, themeSwitchingMode } = configuration;
   const languages = [

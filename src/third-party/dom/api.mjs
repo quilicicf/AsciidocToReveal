@@ -5,6 +5,12 @@ export const INSERT_POSITIONS = {
   AFTER_BEGIN: 'afterbegin',
 };
 
+/**
+ * Takes HTML source code and parses it to a DOM
+ *
+ * @param source {string}
+ * @returns {A2R.Dom}
+ */
 export function toDom (source) {
   const delegate = new jsdom.JSDOM(source);
 

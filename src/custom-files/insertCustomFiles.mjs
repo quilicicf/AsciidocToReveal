@@ -2,6 +2,11 @@ import { existsSync, readTextFileSync } from '../third-party/fs/api.mjs';
 import { _, logInfo, logWarn, theme } from '../third-party/logger/log.mjs';
 import { resolve } from '../third-party/path/api.mjs';
 
+/**
+ * @param dom {A2R.Dom}
+ * @param deck {A2R.Deck}
+ * @returns {A2R.Dom}
+ */
 export default function insertCustomFiles (dom, { inputFolder, configuration }) {
   const { customCss, customJs } = configuration;
   const messageBits = [];

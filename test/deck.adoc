@@ -122,21 +122,21 @@ flowchart LR
 ----
 [
   { selector: '.root .nodes .root:nth-of-type(2)', attributes: { 'data-fragment-index': 0 } },
-  { selector: '#L-asciicode-loa-0', attributes: { 'data-fragment-index': 0 } },
+  { selector: '#L_asciicode_loa_0', attributes: { 'data-fragment-index': 0 } },
   { selector: '.root.top-level>.edgeLabels>.edgeLabel:nth-of-type(3)', attributes: { 'data-fragment-index': 0 } },
 
   { selector: '.root .nodes .root:nth-of-type(1)', attributes: { 'data-fragment-index': 1 } },
-  { selector: '#L-loa-lod-0', attributes: { 'data-fragment-index': 1 } },
+  { selector: '#L_loa_lod_6', attributes: { 'data-fragment-index': 1 } },
 
   { selector: '#flowchart-htmlCode-17', attributes: { 'data-fragment-index': 2 } },
-  { selector: '#L-lod-htmlCode-0', attributes: { 'data-fragment-index': 2 } },
+  { selector: '#L_lod_htmlCode_16', attributes: { 'data-fragment-index': 2 } },
   { selector: '.root.top-level>.edgeLabels>.edgeLabel:nth-of-type(5)', attributes: { 'data-fragment-index': 2 } },
 
   { selector: '#flowchart-minifiedHtmlCode-18', attributes: { 'data-fragment-index': 2 } },
-  { selector: '#L-htmlCode-minifiedHtmlCode-0', attributes: { 'data-fragment-index': 2 } },
+  { selector: '#L_htmlCode_minifiedHtmlCode_17', attributes: { 'data-fragment-index': 2 } },
   { selector: '.root.top-level>.edgeLabels>.edgeLabel:nth-of-type(1)', attributes: { 'data-fragment-index': 2 } },
   { selector: '#flowchart-gzippedHtmlCode-19', attributes: { 'data-fragment-index': 2 } },
-  { selector: '#L-minifiedHtmlCode-gzippedHtmlCode-0', attributes: { 'data-fragment-index': 2 } },
+  { selector: '#L_minifiedHtmlCode_gzippedHtmlCode_18', attributes: { 'data-fragment-index': 2 } },
   { selector: '.root.top-level>.edgeLabels>.edgeLabel:nth-of-type(2)', attributes: { 'data-fragment-index': 2 } },
 ]
 ----
@@ -183,7 +183,7 @@ flowchart LR
 * Including binary files!
 * Solution: data-URIs!
 
-[source,html,role=fragment]
+[source,html,role="fragment fit-content"]
 --
 <head>
   <title>My presentation</title>
@@ -312,7 +312,7 @@ flowchart LR
 
 [.layout-columns]
 ====
-[.column-7x]
+[.column-8x]
 =====
 [source,mermaid]
 ----
@@ -347,7 +347,7 @@ flowchart LR
 ----
 =====
 
-[.column-5x.vertically-centered-panel]
+[.column-4x.vertically-centered-panel]
 =====
 [graph,flowchart]
 ----
@@ -374,13 +374,13 @@ flowchart LR
 
   { selector: '[id^=flowchart-mermaidCode-]', attributes: { 'data-fragment-index': 1 } },
 
-  { selector: '#L-mermaidCode-svgCode-0', attributes: { 'data-fragment-index': 2 } },
+  { selector: '#L_mermaidCode_svgCode_0', attributes: { 'data-fragment-index': 2 } },
   { selector: '[id^=flowchart-svgCode-]', attributes: { 'data-fragment-index': 2 } },
 
   { selector: '[id^=flowchart-animationCode-]', attributes: { 'data-fragment-index': 3 } },
 
-  { selector: '#L-svgCode-animatedSvgCode-0', attributes: { 'data-fragment-index': 4 } },
-  { selector: '#L-animationCode-animatedSvgCode-0', attributes: { 'data-fragment-index': 4 } },
+  { selector: '#L_svgCode_animatedSvgCode_1', attributes: { 'data-fragment-index': 4 } },
+  { selector: '#L_animationCode_animatedSvgCode_2', attributes: { 'data-fragment-index': 4 } },
   { selector: '[id^=flowchart-animatedSvgCode-]', attributes: { 'data-fragment-index': 4 } },
   { selector: '#wtf' },
 ]

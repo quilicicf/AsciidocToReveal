@@ -1,11 +1,23 @@
-export default function processFragments (initialDom, deck) {
-  return [
+/**
+ * @param baseDom {A2R.Dom}
+ * @param deck {A2R.Deck}
+ * @returns {A2R.Dom}
+ */
+export default function processFragments (baseDom, deck) {
+  /** @type {A2R.DomTransformer} */
+  const transformers = [
     fragmentLists,
     fragmentTables,
     indexDeckFragments,
-  ].reduce((dom, operation) => operation(dom, deck), initialDom);
+  ];
+  return transformers.reduce((dom, operation) => operation(dom, deck), baseDom);
 }
 
+/**
+ * @param dom {A2R.Dom}
+ * @param deck {A2R.Deck}
+ * @returns {A2R.Dom}
+ */
 function fragmentLists (dom, { configuration }) {
   if (!configuration.shouldFragmentLists) { return dom; }
 
@@ -22,6 +34,11 @@ function fragmentLists (dom, { configuration }) {
   return dom;
 }
 
+/**
+ * @param dom {A2R.Dom}
+ * @param deck {A2R.Deck}
+ * @returns {A2R.Dom}
+ */
 function fragmentTables (dom, { configuration }) {
   if (!configuration.shouldFragmentTables) { return dom; }
 
@@ -32,6 +49,10 @@ function fragmentTables (dom, { configuration }) {
   return dom;
 }
 
+/**
+ * @param dom {A2R.Dom}
+ * @returns {A2R.Dom}
+ */
 function indexDeckFragments (dom) {
   dom.selectAll('section.auto-fragments-first')
     .filter((slideNode) => slideNode.querySelector('*[data-fragment-index]'))

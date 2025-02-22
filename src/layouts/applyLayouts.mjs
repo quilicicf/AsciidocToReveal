@@ -34,6 +34,10 @@ const LAYOUTS = {
   `, // FIXME: use CSS nesting when 3rd-party DOM lib supports it
 };
 
+/**
+ * @param dom {A2R.Dom}
+ * @returns {A2R.Dom}
+ */
 export default function applyLayouts (dom) {
   const cssToInject = Object.entries(LAYOUTS)
     .filter(([ cssClass ]) => !!dom.select(`.${cssClass}`))

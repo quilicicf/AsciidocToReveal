@@ -1,40 +1,24 @@
-import { run } from '@mermaid-js/mermaid-cli';
-
 import { hashString } from '../third-party/crypto/api.mjs';
-import { removeFromParent, toDom } from '../third-party/dom/api.mjs';
+import { toDom } from '../third-party/dom/api.mjs';
 import { existsSync, readTextFileSync, writeTextFileSync } from '../third-party/fs/api.mjs';
 import { _, logError, logWarn, theme } from '../third-party/logger/log.mjs';
 import { resolve } from '../third-party/path/api.mjs';
+import { createMermaidProcessor } from './mermaid.mjs';
 
-const MERMAID_CONFIGURATION = {
-  quiet: true,
-  outputFormat: 'svg',
-  puppeteerConfig: {
-    headless: 'new',
-  },
-  parseMMDOptions: {
-    backgroundColor: 'transparent',
-    myCSS: undefined,
-    mermaidConfig: {
-      theme: 'default',
-      logLevel: 'error',
-      securityLevel: 'loose',
-      startOnLoad: false,
-      deterministicIds: true,
-      htmlLabels: false,
-      flowchart: {
-        useMaxWidth: false,
-        htmlLabels: false,
-      },
-    },
-  },
-};
+/** @type {A2R.MermaidProcessor} */
+let MERMAID_PROCESSOR;
 
+/**
+ * @param dom {A2R.Dom}
+ * @param deck {A2R.Deck}
+ * @returns {Promise<A2R.Dom>}
+ */
 export default async function buildGraphs (dom, deck) {
-  const { graphsRegister, graphAnimationsRegister, graphTypes } = deck;
+  const { graphsRegister, graphAnimationsRegister, graphTypes, svgIcons } = deck;
   const graphEntries = Object.entries(graphsRegister);
   if (!graphEntries.length) { return dom; }
 
+  MERMAID_PROCESSOR = await createMermaidProcessor();
   const graphTypesWithPotentialDuplicates = await Promise.all(
     graphEntries
       .map(([ graphId, graphText ]) => processGraph(dom, graphId, graphText, deck)),
@@ -47,6 +31,9 @@ export default async function buildGraphs (dom, deck) {
     logWarn(_`Graph animations [ ${animationsWithNoGraph.join(', ')} ] are linked to no known graph`({ nodes: [ theme ] }));
   }
 
+  if (!deck.buildOptions.shouldAddLiveReload) {
+    await MERMAID_PROCESSOR.close(); // Close when building, keep open when watching
+  }
   return dom;
 }
 
@@ -80,7 +67,8 @@ async function mermaidToSvg (graphId, graphCode, { cachePath }) {
   if (!existsSync(outputFilePath)) {
     writeTextFileSync(inputFilePath, graphCode);
     try {
-      await run(inputFilePath, outputFilePath, MERMAID_CONFIGURATION);
+      const { data } = await MERMAID_PROCESSOR.render(graphCode, `graph-${graphId}`);
+      writeTextFileSync(outputFilePath, new TextDecoder().decode(data));
     } catch (error) {
       logError(_`Failed processing graph ${graphId}: ${error.message}`({ nodes: [ theme.strong, theme.error ] }));
       return writeErrorGraph(cachePath);
@@ -88,7 +76,7 @@ async function mermaidToSvg (graphId, graphCode, { cachePath }) {
 
     const dom = readTextFileSync(outputFilePath, (svg) => toDom(svg));
     const graphNode = dom.select('svg');
-    addDiagramTweaks(graphNode, dom, graphId);
+    addDiagramTweaks(graphNode, dom);
     writeTextFileSync(outputFilePath, graphNode.outerHTML);
   }
 
@@ -96,31 +84,28 @@ async function mermaidToSvg (graphId, graphCode, { cachePath }) {
 }
 
 async function writeErrorGraph (cachePath) {
-  const inputFilePath = resolve(cachePath, 'error.mermaid');
   const outputFilePath = resolve(cachePath, 'error.svg');
 
   if (existsSync(outputFilePath)) {
     return readTextFileSync(outputFilePath);
   }
 
-  writeTextFileSync(inputFilePath, 'error');
-  await run(inputFilePath, outputFilePath, MERMAID_CONFIGURATION);
+  const errorGraph = await MERMAID_PROCESSOR.render('error', 'mermaid-error');
+  writeTextFileSync(outputFilePath, errorGraph);
   return readTextFileSync(outputFilePath);
 }
 
-function addDiagramTweaks (graphNode, dom, graphId) {
+function addDiagramTweaks (graphNode, dom) {
   const graphType = graphNode.getAttribute('aria-roledescription');
-  graphNode.id = `graph-${graphId}`;
   graphNode.classList.add(graphType);
-  removeFromParent(graphNode.querySelector('style')); // Added globally to avoid duplication
 
-  dom.selectAll('marker > path')
+  dom.selectAll('marker > path') // Colors arrow heads like their tails
     .forEach((markerPath) => markerPath.setAttribute('fill', 'context-stroke'));
 
-  dom.selectAll('svg[data-inject]')
+  dom.selectAll('svg[data-inject]') // FIXME : SVG injection should not work anymore (htmlLabels false).
     .forEach((node) => node.innerHTML = `<use href="#${node.getAttribute('data-inject')}"/>`);
 
-  dom.selectAll('svg[data-icon-label]')
+  dom.selectAll('svg[data-icon-label]') // FIXME : use icon shapes instead
     .forEach((node) => {
       const iconName = node.getAttribute('data-icon-label');
       const requestedIconSize = parseInt(node.getAttribute('height'), 10);

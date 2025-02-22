@@ -24,7 +24,6 @@
   "license": "Apache-2.0",
   "dependencies": {
     "@asciidoctor/core": "3.0.4",
-    "@mermaid-js/mermaid-cli": "11.4.2",
     "@minify-html/node": "0.11.2",
     "chroma-js": "3.1.2",
     "jsdom": "26.0.0",
@@ -32,6 +31,7 @@
     "mermaid": "11.4.1",
     "prism-themes": "1.9.0",
     "prismjs": "1.29.0",
+    "puppeteer": "24.2.1",
     "reveal.js": "5.1.0",
     "sass": "1.83.4",
     "stoyle": "1.0.0",

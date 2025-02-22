@@ -18,6 +18,11 @@ export const THEMES = {
 export const DEFAULT_COLOR = [ .6, .1, 170 ];
 export const DEFAULT_THEME = THEMES.DARK;
 
+/**
+ * @param dom {A2R.Dom}
+ * @param deck {A2R.Deck}
+ * @returns {A2R.Dom}
+ */
 export default function applyTheme (dom, { cachePath, graphTypes, configuration }) {
   const { themeName, themeColor, startingThemeName, nonStartingThemeName, themeSwitchingMode } = configuration;
 

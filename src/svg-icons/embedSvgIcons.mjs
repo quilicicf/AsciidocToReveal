@@ -1,6 +1,6 @@
 import { toDom } from '../third-party/dom/api.mjs';
 import { readdirSync, readTextFileSync } from '../third-party/fs/api.mjs';
-import { _, logError, theme } from '../third-party/logger/log.mjs';
+import { _, logError, logInfo, theme } from '../third-party/logger/log.mjs';
 import { getBaseName, getExtension, resolve } from '../third-party/path/api.mjs';
 
 const ICONS_STYLE = `
@@ -25,14 +25,26 @@ const ICONS_STYLE = `
   }
 `;
 
+/**
+ * @param dom {A2R.Dom}
+ * @param deck {A2R.Deck}
+ * @returns {A2R.Dom}
+ */
 export default function embedSvgIcons (dom, deck) {
-  const { configuration: { svgIconsFolder } } = deck;
+  const { configuration: { svgIconsFolder }, svgIcons } = deck;
 
   if (!svgIconsFolder) { return dom; }
 
-  const symbols = readdirSync(svgIconsFolder)
+  const foundSvgIcons = readdirSync(svgIconsFolder)
     .map((filePath) => prepareIcon(svgIconsFolder, filePath))
-    .filter(Boolean) // Remove undefined values for icons that failed to load
+    .filter(Boolean); // Remove undefined values for icons that failed to load
+
+  const foundIconIds = foundSvgIcons.map(({ id }) => id);
+  logInfo(`Found and loaded SVG icons : [${foundIconIds.join(',')}]`);
+  svgIcons.push(...foundIconIds);
+
+  const symbols = foundSvgIcons
+    .map(({ svg }) => svg)
     .join('\n');
 
   const iconsLib = `
@@ -47,11 +59,16 @@ export default function embedSvgIcons (dom, deck) {
   return dom;
 }
 
+/**
+ * @param svgIconsFolder string
+ * @param fileName string
+ * @returns {SvgIcon}
+ */
 function prepareIcon (svgIconsFolder, fileName) {
   const filePath = resolve(svgIconsFolder, fileName);
   const svg = readTextFileSync(filePath);
   const extension = getExtension(fileName);
-  const baseName = getBaseName(fileName, extension);
+  const svgId = getBaseName(fileName, extension);
   try {
     const svgDom = toDom(svg);
     const svgNode = svgDom.select('svg');
@@ -66,11 +83,14 @@ function prepareIcon (svgIconsFolder, fileName) {
     }
     svgNode.removeAttribute('width');
     svgNode.removeAttribute('height');
-    svgNode.setAttribute('id', `${baseName}-icon`);
+    svgNode.setAttribute('id', `${svgId}-icon`);
 
-    return svgNode.outerHTML
-      .replaceAll('<svg', '<symbol')
-      .replaceAll('</svg>', '</symbol>');
+    return {
+      id: svgId,
+      svg: svgNode.outerHTML
+        .replaceAll('<svg', '<symbol')
+        .replaceAll('</svg>', '</symbol>'),
+    };
 
   } catch (error) {
     const shortPath = `${svgIconsFolder}/${fileName}`;

@@ -40,9 +40,16 @@ const BASE_HTML = `
   </html>
 `;
 
+/**
+ * Converts input deck into a DOM.
+ *
+ * @param deck {A2R.Deck}
+ * @returns {A2R.Dom}
+ */
 export default function deckToHtml (deck) {
   const baseDom = toDom(BASE_HTML);
-  return [
+  /** @type {A2R.DomTransformer[]} */
+  const transformers = [
     insertFavicon,
     insertTitleSection,
     insertOtherSections,
@@ -50,9 +57,10 @@ export default function deckToHtml (deck) {
     embedEmojis,
     fixupCodeBlocks,
     extractSpeakerNotes,
-  ].reduce(
-    (promise, operation) => promise.then(async (dom) => operation(dom, deck)),
-    Promise.resolve(baseDom),
+  ];
+  return transformers.reduce(
+    (promise, transform) => promise.then(async (dom) => transform(dom, deck)),
+    /** @type {Promise<A2R.Dom>} */ Promise.resolve(baseDom),
   );
 }
 
