@@ -1,0 +1,44 @@
+{
+  "version": "4",
+  "specifiers": {
+    "jsr:@std/encoding@*": "1.0.7"
+  },
+  "jsr": {
+    "@std/encoding@1.0.7": {
+      "integrity": "f631247c1698fef289f2de9e2a33d571e46133b38d042905e3eac3715030a82d"
+    }
+  },
+  "redirects": {
+    "https://deno.land/std/encoding/base64.ts": "https://deno.land/std@0.224.0/encoding/base64.ts",
+    "https://deno.land/x/minify/mod.ts": "https://deno.land/x/minify@1.0.1/mod.ts"
+  },
+  "remote": {
+    "https://deno.land/std@0.224.0/encoding/_util.ts": "beacef316c1255da9bc8e95afb1fa56ed69baef919c88dc06ae6cb7a6103d376",
+    "https://deno.land/std@0.224.0/encoding/base64.ts": "dd59695391584c8ffc5a296ba82bcdba6dd8a84d41a6a539fbee8e5075286eaf",
+    "https://deno.land/x/minify@1.0.1/mod.ts": "f911c7e17079a31709dd4041207a48b3c6df50961d8687029681776f98005b89",
+    "https://deno.land/x/minify@1.0.1/wasm.js": "184704bb77447524f835332cea2393ddbf2f2b2ffb510b1bfddce0eb45d1f698"
+  },
+  "workspace": {
+    "packageJson": {
+      "dependencies": [
+        "npm:@asciidoctor/core@3.0.4",
+        "npm:@minify-html/node@0.11.2",
+        "npm:chokidar@4.0.3",
+        "npm:chroma-js@3.1.2",
+        "npm:jsdom@26.0.0",
+        "npm:json5@2.2.3",
+        "npm:mermaid@11.4.1",
+        "npm:parcel@2.13.3",
+        "npm:prism-themes@1.9.0",
+        "npm:prismjs@1.29.0",
+        "npm:puppeteer@24.2.1",
+        "npm:reveal.js@5.1.0",
+        "npm:sass@1.83.4",
+        "npm:stoyle@1.0.0",
+        "npm:uuid@11.0.5",
+        "npm:ws@8.18.0",
+        "npm:yargs@17.7.2"
+      ]
+    }
+  }
+}

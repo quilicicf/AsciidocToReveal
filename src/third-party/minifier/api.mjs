@@ -1,4 +1,5 @@
-import minifyHtml from '@minify-html/node';
+// import minifyHtml from '@minify-html/node';
+import { minifyHTML } from "https://deno.land/x/minify/mod.ts";
 
 const MINIFIER_CONFIGURATION = {
   keep_spaces_between_attributes: false,
@@ -8,6 +9,8 @@ const MINIFIER_CONFIGURATION = {
 };
 
 export function minify (code) {
-  return minifyHtml.minify(Buffer.from(code), MINIFIER_CONFIGURATION)
-    .toString('utf8');
+  return minifyHTML(code, {
+    minifyCSS: true,
+    minifyJS: true,
+  });
 }

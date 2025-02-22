@@ -1,5 +1,6 @@
 import { watch as _watch } from 'chokidar';
-import { existsSync as _existsSync, mkdirSync as _mkdirSync, readdirSync as _readdirSync, readFileSync, statSync as _statSync, writeFileSync } from 'fs';
+import { existsSync as _existsSync, mkdirSync as _mkdirSync, readdirSync as _readdirSync, readFileSync, statSync as _statSync, writeFileSync } from 'node:fs';
+import { encodeBase64 } from "jsr:@std/encoding/base64";
 
 export const statSync = _statSync;
 export const mkdirSync = _mkdirSync;
@@ -19,9 +20,8 @@ export function existsSync (filePath) {
 }
 
 export function readAsBase64Sync (filePath) {
-  return Buffer
-    .from(readFileSync(filePath))
-    .toString('base64');
+  const arrayBuffer = Deno.readFileSync(filePath);
+  return encodeBase64(arrayBuffer);
 }
 
 export function readTextFileSync (filePath, converter) {

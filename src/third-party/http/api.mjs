@@ -1,4 +1,4 @@
-import { get } from 'https';
+import { get } from 'node:https';
 
 export async function httpGet (url) {
   return new Promise((resolve, reject) => {

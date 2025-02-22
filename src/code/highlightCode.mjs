@@ -82,9 +82,9 @@ function buildHighlightStyles (themeName, highlightThemeDark, highlightThemeLigh
 }
 
 async function prepareHighlighting (dom, pluginsToActivate, highlightStyles) {
-  global.window = dom.window; // NOTE: required for Prism plugins, emulates a browser environment
-  global.document = dom.document; // NOTE: required for Prism plugins, emulates a browser environment
-  global.getComputedStyle = window.getComputedStyle; // Line-numbers plugin uses it as if in a browser => window instead of global
+  globalThis.window = dom.window; // NOTE: required for Prism plugins, emulates a browser environment
+  globalThis.document = dom.document; // NOTE: required for Prism plugins, emulates a browser environment
+  globalThis.getComputedStyle = window.getComputedStyle; // Line-numbers plugin uses it as if in a browser => window instead of global
 
   const pluginsCss = await pluginsToActivate
     .reduce(

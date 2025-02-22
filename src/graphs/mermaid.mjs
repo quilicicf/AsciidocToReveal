@@ -1,5 +1,5 @@
-import { resolve, dirname } from 'path';
-import { pathToFileURL, fileURLToPath } from 'url';
+import { resolve, join } from '../third-party/path/api.mjs';
+import { pathToFileUrl } from '../third-party/path/api.mjs';
 import puppeteer from 'puppeteer';
 import { removeFromParent } from '../third-party/dom/api.mjs';
 
@@ -71,8 +71,8 @@ export async function createMermaidProcessor() {
       });
 
       try {
-        const mermaidHTMLPath = path.join(import.meta.dirname, 'index.html');
-        await page.goto(pathToFileURL(mermaidHTMLPath).href);
+        const mermaidHTMLPath = join(import.meta.dirname, 'index.html');
+        await page.goto(pathToFileUrl(mermaidHTMLPath).href);
         await page.$eval('body', (body, backgroundColor) => {
           body.style.background = backgroundColor;
         }, backgroundColor);
