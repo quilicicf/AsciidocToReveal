@@ -1,0 +1,7 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="BUNDLE DECK BASE" type="DenoConfigurationType" inputPath="$PROJECT_DIR$/scripts/bundleDeckBase.ts" programParameters="run --allow-all">
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

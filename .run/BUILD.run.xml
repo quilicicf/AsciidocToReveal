@@ -1,5 +1,0 @@
-<component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="BUILD" type="NodeJSConfigurationType" application-parameters="build --input-file test/deck.adoc --output-file dist/deck.html" path-to-js-file="cli/a2r.mjs" working-dir="$PROJECT_DIR$">
-    <method v="2" />
-  </configuration>
-</component>
