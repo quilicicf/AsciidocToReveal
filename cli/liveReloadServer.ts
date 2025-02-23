@@ -1,5 +1,4 @@
 import { stoyle } from 'stoyle';
-import { WebSocketServer } from 'npm:ws';
 
 import { logInfo, theme } from '../src/third-party/logger/log.ts';
 import { uuid } from '../src/third-party/uuid/api.ts';
@@ -14,22 +13,31 @@ interface State {
 }
 
 export default function startLiveReloadServer (initialHash: string): ReloadServer {
-  const wss = new WebSocketServer({ port: 1234 });
   const state: State = {
     hash: initialHash,
     clients: {},
   };
-  wss.on('connection', (ws: WebSocket) => {
-    const key = uuid();
-    logInfo(stoyle`Registering client ${key}`({ nodes: [ theme.strong ] }));
-    state.clients[ key ] = ws;
-  });
 
-  wss.on('message', (messageAsString: string) => {
-    const message = JSON.parse(messageAsString);
-    if (message.hash !== state.hash) {
-      sendReloadMessages(); // NOTE: optionally find a way to only reload the outdated pages (not MVP tho)
+  Deno.serve({ port: 1234 }, (request) => {
+    if (request.headers.get('upgrade') != 'websocket') {
+      return new Response(null, { status: 501 });
     }
+
+    const { socket, response } = Deno.upgradeWebSocket(request);
+
+    socket.addEventListener('open', () => {
+      const key = uuid();
+      logInfo(stoyle`Registering client ${key}`({ nodes: [ theme.strong ] }));
+      state.clients[ key ] = socket;
+    });
+    socket.addEventListener('message', (event: MessageEvent) => {
+      const message = JSON.parse(event.data);
+      if (message.hash !== state.hash) {
+        sendReloadMessages(); // NOTE: optionally find a way to only reload the outdated pages (not MVP tho)
+      }
+    });
+
+    return response;
   });
 
   function sendReloadMessage (key: string) {

@@ -15,8 +15,7 @@
     "npm:puppeteer@*": "24.2.1_devtools-protocol@0.0.1402036",
     "npm:reveal.js@*": "5.1.0",
     "npm:sass@*": "1.85.0",
-    "npm:uuid@*": "11.0.5",
-    "npm:ws@*": "8.18.1"
+    "npm:uuid@*": "11.0.5"
   },
   "jsr": {
     "@std/encoding@1.0.7": {

@@ -9,7 +9,7 @@ export default function insertLiveReload (dom: Dom, { inputHash, buildOptions }:
   const liveReloadScriptPath = resolve(LIB_FOLDER, 'liveReload.mjs');
   const liveReloadScript = readTextFileSyncAndConvert(
     liveReloadScriptPath,
-    (template: string) => template.replace('$$HASH$$', inputHash),
+    (template: string) => template.replaceAll('$$HASH$$', inputHash),
   );
 
   dom.insertInlineScript('LIVE_RELOAD', liveReloadScript);
