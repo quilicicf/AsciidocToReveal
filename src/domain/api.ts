@@ -1,6 +1,7 @@
 import { Block, Document as AsciiDoc, Extensions, Reader, Registry } from 'npm:@asciidoctor/core';
 
 export type AsciidoctorDocument = AsciiDoc;
+export type AsciidoctorImageReference = AsciiDoc.ImageReference;
 export type AsciidoctorReader = Reader;
 export type AsciidoctorBlock = Block;
 export type AsciidoctorExtensions = typeof Extensions;

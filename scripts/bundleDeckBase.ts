@@ -3,17 +3,14 @@
 import 'npm:parcel';
 import 'npm:@parcel/reporter-cli';
 // import 'npm:@parcel/config-default';
-import { resolve } from 'node:path';
 import { Parcel } from 'npm:@parcel/core';
 
-async function main () {
-  const HERE = import.meta.dirname || '';
-  const REPOSITORY_ROOT_PATH = resolve(HERE, '..');
-  const LIB_FOLDER_PATH = resolve(REPOSITORY_ROOT_PATH, 'lib');
-  const BUNDLED_FOLDER_PATH = resolve(REPOSITORY_ROOT_PATH, 'bundled');
-  const DECK_BASE_JS_FILE_PATH = resolve(LIB_FOLDER_PATH, 'deckBase.mjs');
+import { resolve } from '../src/third-party/path/api.ts';
+import { DECK_BASE_FOLDER_PATH, LIB_FOLDER, REPOSITORY_ROOT_PATH } from '../src/paths.ts';
 
-  await bundle(DECK_BASE_JS_FILE_PATH, BUNDLED_FOLDER_PATH, REPOSITORY_ROOT_PATH);
+async function main () {
+  const INPUT_FILE_PATH = resolve(LIB_FOLDER, 'deckBase.mjs');
+  await bundle(INPUT_FILE_PATH, DECK_BASE_FOLDER_PATH, REPOSITORY_ROOT_PATH);
 }
 
 async function bundle (inputFilePath: string, outputFolderPath: string, resolveFrom: string): Promise<void> {

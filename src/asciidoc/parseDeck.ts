@@ -13,7 +13,7 @@ import { BuildOptions, Deck, DeckConfiguration } from '../domain/api.ts';
 /**
  * Parses the Asciidoc file into a Deck ready for transformation to HTML
  */
-export default function parseDeck (inputPath: string, buildOptions: BuildOptions): Deck {
+export default async function parseDeck (inputPath: string, buildOptions: BuildOptions): Promise<Deck> {
   const inputFolder = findInputFolder(inputPath);
   const cachePath = resolve(inputFolder, '.a2r-cache');
 
@@ -25,7 +25,7 @@ export default function parseDeck (inputPath: string, buildOptions: BuildOptions
 
   const ast = processor.loadFile(inputPath, { catalog_assets: true });
   const configuration = parseConfiguration(ast, inputFolder);
-  const inputHash = computeDeckHash(inputPath, configuration);
+  const inputHash = await computeDeckHash(inputPath, configuration);
 
   return {
     ast,
@@ -43,13 +43,13 @@ export default function parseDeck (inputPath: string, buildOptions: BuildOptions
 }
 
 // FIXME: this will need a revamp, as ideally all the assets should be inputs for the hashing
-export function computeDeckHash (inputPath: string, { customCss, customJs }: DeckConfiguration): string {
+export async function computeDeckHash (inputPath: string, { customCss, customJs }: DeckConfiguration): Promise<string> {
   const input = [ inputPath, customCss, customJs ]
     .filter(Boolean)
     .map((filePath) => readTextFileSync(filePath))
     .join('');
 
-  return hashString(input);
+  return await hashString(input);
 }
 
 function findInputFolder (inputPath: string): string {

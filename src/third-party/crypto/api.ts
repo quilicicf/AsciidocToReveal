@@ -1,8 +1,6 @@
-import { createHash } from 'node:crypto';
-
-export function hashString (content) {
-  return createHash('md5')
-    .update(content)
-    .digest('hex')
-    .substring(0, 12);
+export async function hashString (content: string): Promise<string> {
+  const result: ArrayBuffer = await crypto.subtle
+    .digest('SHA-1', new TextEncoder().encode(content));
+  return Array.from(new Uint8Array(result))
+    .map((byte) => byte.toString(16).padStart(2, '0')).join('');
 }

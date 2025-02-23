@@ -1,24 +1,31 @@
 import { ChokidarOptions, watch as _watch } from 'npm:chokidar';
-import { existsSync as _existsSync } from "jsr:@std/fs/exists";
-import { ensureDirSync } from "jsr:@std/fs/ensure-dir";
-import {
-  mkdirSync as _mkdirSync,
-  readdirSync as _readdirSync,
-  statSync as _statSync,
-} from 'node:fs';
+import { existsSync as _existsSync } from 'jsr:@std/fs/exists';
+import { ensureDirSync } from 'jsr:@std/fs/ensure-dir';
 import { encodeBase64 } from 'jsr:@std/encoding/base64';
 
 type Converter<T> = (content: string) => T;
 
-export const statSync = _statSync;
-export const mkdirSync = _mkdirSync;
+interface Stats {
+  isFile: boolean;
+  isDirectory: boolean;
+}
+
+export function statSync (filePath: string): Stats {
+  const { isFile, isDirectory } = Deno.statSync(filePath);
+  return { isFile, isDirectory };
+}
+
+export function mkdirSync (filePath: string, { recursive }: { recursive?: boolean }) {
+  return Deno.mkdirSync(filePath, { recursive });
+}
 
 export function mkdirIfNotExistsSync (path: string): void {
   return ensureDirSync(path);
 }
 
-export function readdirSync (filePath: string): string[] {
-  return _readdirSync(filePath);
+export function readDirSync (filePath: string): string[] {
+  return [ ...Deno.readDirSync(filePath) ]
+    .map(({ name }) => name);
 }
 
 export function existsSync (filePath: string): boolean {

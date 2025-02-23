@@ -21,7 +21,7 @@ const OUTPUT_FILE_PATH: string = resolve(DIST_FOLDER_PATH, 'deck.html');
  * Transforms an asciidoc file to a Deck on which A2R features can be implemented.
  */
 export async function asciidocToReveal (inputPath: string, outputPath: string = OUTPUT_FILE_PATH, buildOptions: BuildOptions = {}) {
-  const deck = parseDeck(inputPath, buildOptions);
+  const deck = await parseDeck(inputPath, buildOptions);
   mkdirIfNotExistsSync(deck.cachePath);
   mkdirIfNotExistsSync(getParentFolderName(outputPath));
 

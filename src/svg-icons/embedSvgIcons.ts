@@ -1,5 +1,5 @@
 import { toDom } from '../third-party/dom/api.ts';
-import { readdirSync, readTextFileSync } from '../third-party/fs/api.ts';
+import { readDirSync, readTextFileSync } from '../third-party/fs/api.ts';
 import { _, logError, logInfo, theme } from '../third-party/logger/log.ts';
 import { getBaseName, getExtension, resolve } from '../third-party/path/api.ts';
 import { Deck, Dom, SvgIcon } from '../domain/api.ts';
@@ -25,7 +25,7 @@ export default function embedSvgIcons (dom: Dom, deck: Deck): Dom {
 
   if (!svgIconsFolder) { return dom; }
 
-  const foundSvgIcons: SvgIcon[] = readdirSync(svgIconsFolder)
+  const foundSvgIcons: SvgIcon[] = readDirSync(svgIconsFolder)
     .map((filePath) => prepareIcon(svgIconsFolder, filePath))
     .filter(Boolean) as SvgIcon[]; // Remove undefined values for icons that failed to load
 

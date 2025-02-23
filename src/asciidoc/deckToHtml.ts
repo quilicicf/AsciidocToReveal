@@ -1,18 +1,14 @@
 import { removeFromParent, replaceInParent, toDom } from '../third-party/dom/api.ts';
-import {
-  existsSync,
-  readAsBase64Sync,
-  readTextFileSync,
-  readTextFileSyncAndConvert,
-  statSync,
-} from '../third-party/fs/api.ts';
+import { existsSync, readAsBase64Sync, readTextFileSyncAndConvert, statSync } from '../third-party/fs/api.ts';
 
 import { _, logError, logWarn, theme } from '../third-party/logger/log.ts';
 import { getBaseName, getExtension, join, resolve } from '../third-party/path/api.ts';
 import processBlocksRecursively from './processBlocksRecursively.ts';
 import {
   AsciidoctorBlock,
-  Deck, DiscouragedImageType,
+  AsciidoctorImageReference,
+  Deck,
+  DiscouragedImageType,
   Dom,
   DomTransformer,
   EmbeddableImage,
@@ -67,8 +63,8 @@ function insertFavicon (dom: Dom, { configuration }: Deck): Dom {
     const extension = getExtension(favicon);
     const type = extension.replace(/^\./g, '');
     const dataUri = readFileToDataUri(type, favicon);
-    dom.select('head')
-      .insertAdjacentHTML('afterbegin', `<link rel="icon" href="${dataUri}"/>`);
+    const head = dom.select('head') as Element;
+    head.insertAdjacentHTML('afterbegin', `<link rel="icon" href="${dataUri}"/>`);
   }
 
   return dom;
@@ -105,11 +101,11 @@ function insertOtherSections (dom: Dom, { ast }: Deck): Dom {
   const [ , ...nonTitleSectionDocs ] = ast.getBlocks();
   nonTitleSectionDocs.forEach((sectionDoc) => {
     const sectionHtml = sectionDoc.convert();
-    const slidesNode = dom.select('.slides');
+    const slidesNode = dom.select('.slides') as Element;
     slidesNode
       .insertAdjacentHTML('beforeend', sectionHtml);
     if (sectionHtml.includes('sect2')) { // Has subsections
-      const topLevelSectionAsDiv = dom.select('div.sect1');
+      const topLevelSectionAsDiv = dom.select('div.sect1') as Element;
       const subSectionsAsDivs = dom.selectAll('div.sect2');
 
       // Cleanup
@@ -142,9 +138,9 @@ function insertOtherSections (dom: Dom, { ast }: Deck): Dom {
 function embedImages (dom: Dom, { ast, inputFolder }: Deck): Dom {
   const images: Record<string, Image> = ast.getImages()
     .reduce(
-      (seed, image) => {
+      (seed, image: AsciidoctorImageReference) => {
         const name = image.getTarget();
-        const imageRelativePath = join(image.getImagesDirectory(), name);
+        const imageRelativePath = join(image.getImagesDirectory() || '', name); // FIXME : from where by default ?
         const imageAbsolutePath = resolve(inputFolder, imageRelativePath);
 
         try {
@@ -301,7 +297,7 @@ export function readFileToDataUri (type: string, filePath: string): string {
     throw Error(`File not found`);
   }
 
-  if (statSync(filePath).isDirectory()) {
+  if (statSync(filePath).isDirectory) {
     throw Error(`Found folder instead of file`);
   }
 

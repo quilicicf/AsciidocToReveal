@@ -56,7 +56,7 @@ async function processGraph (dom: Dom, graphId: string, graphText: string, deck:
  * This pollutes the build area a bit, but allows the builder to skip rebuilds when the mermaid code doesn't change.
  */
 async function mermaidToSvg (graphId: string, graphCode: string, { cachePath }: Deck): Promise<string> {
-  const graphCodeHash = hashString(graphCode);
+  const graphCodeHash = await hashString(graphCode);
   const inputFilePath = resolve(cachePath, `${graphId}.mermaid`);
   const outputFilePath = resolve(cachePath, `${graphId}_${graphCodeHash}.svg`);
 

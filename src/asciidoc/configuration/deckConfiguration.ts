@@ -18,14 +18,14 @@ type PathValidator = (absolutePath: string, name: string) => string | undefined;
 
 const PATH_VALIDATORS: Record<FsItem, PathValidator> = {
   FILE (absolutePath, name) {
-    if (!statSync(absolutePath).isFile()) {
+    if (!statSync(absolutePath).isFile) {
       logWarn(_`Expected a file for ${name}, got a folder instead`({ nodes: [ theme.strong ] }));
       return undefined;
     }
     return absolutePath;
   },
   FOLDER (absolutePath, name) {
-    if (!statSync(absolutePath).isDirectory()) {
+    if (!statSync(absolutePath).isDirectory) {
       logWarn(_`Expected a folder for ${name}, got a file instead`({ nodes: [ theme.strong ] }));
       return undefined;
     }

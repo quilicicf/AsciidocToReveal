@@ -4,7 +4,7 @@ import loadLanguages from 'npm:prismjs/components/index.js';
 
 import { NODE_MODULES_PATH } from '../paths.ts';
 import { DEFAULT_THEME } from '../themes/applyTheme.ts';
-import { readdirSync, readTextFileSync } from '../third-party/fs/api.ts';
+import { readDirSync, readTextFileSync } from '../third-party/fs/api.ts';
 import { _, logError, logInfo, theme } from '../third-party/logger/log.ts';
 import { resolve } from '../third-party/path/api.ts';
 import { Deck, Dom, ThemeName } from '../domain/api.ts';
@@ -113,7 +113,7 @@ async function prepareHighlighting (dom: Dom, pluginsToActivate: PrismPlugin[], 
 
 function findThemesInModule (modulePath: string): PrismTheme[] {
   const themeFileNameRegex = /^prism-([^.]+)\.min\.css$/;
-  return readdirSync(modulePath)
+  return readDirSync(modulePath)
     .filter((themeFileName) => themeFileNameRegex.test(themeFileName))
     .map((fileName) => ({
       name: themeFileNameRegex.exec(fileName)?.[ 1 ] as string,
