@@ -1,4 +1,4 @@
-import { stoyle } from 'npm:stoyle';
+import { stoyle } from 'stoyle';
 import { Arguments } from "yargs/deno-types.ts";
 import { YargsInstance } from "yargs/build/lib/yargs-factory.js";
 

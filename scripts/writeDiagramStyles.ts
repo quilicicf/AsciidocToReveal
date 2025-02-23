@@ -1,6 +1,6 @@
 #!/usr/bin/env deno
 
-import { stoyle } from 'npm:stoyle';
+import { stoyle } from 'stoyle';
 
 import { LIB_FOLDER } from '../src/paths.ts';
 import { toDom } from '../src/third-party/dom/api.ts';

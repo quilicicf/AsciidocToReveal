@@ -1,4 +1,4 @@
-import { DecorationCode, ForegroundSimpleCode, Style, stoyle } from 'npm:stoyle';
+import { DecorationCode, ForegroundSimpleCode, Style, stoyle } from 'stoyle';
 
 type LogLevel = 'INFO' | 'WARN' | 'ERROR';
 

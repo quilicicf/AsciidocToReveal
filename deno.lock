@@ -15,7 +15,6 @@
     "npm:puppeteer@*": "24.2.1_devtools-protocol@0.0.1402036",
     "npm:reveal.js@*": "5.1.0",
     "npm:sass@*": "1.85.0",
-    "npm:stoyle@*": "1.0.0",
     "npm:uuid@*": "11.0.5",
     "npm:ws@*": "8.18.1"
   },
@@ -1538,9 +1537,6 @@
     "sprintf-js@1.1.3": {
       "integrity": "sha512-Oo+0REFV59/rz3gfJNKQiBlwfHaSESl1pcGyABQsnnIfWOFt6JNj5gCog2U6MLZ//IGYD+nA8nI+mTShREReaA=="
     },
-    "stoyle@1.0.0": {
-      "integrity": "sha512-q0llJnpEeIBE9hEoQPDkpaKmTIqoxrrgNJvpMDVpFBOW3GABP+LEzJgWLfi8dOD+9aDMzN7pl9i1Vq/fPM0bKQ=="
-    },
     "streamx@2.22.0": {
       "integrity": "sha512-sLh1evHOzBy/iWRiR6d1zRcLao4gGZr3C1kzNz4fopCOKJb6xD9ub8Mpi9Mr1R6id5o43S+d93fI48UC5uM9aw==",
       "dependencies": [
@@ -1900,6 +1896,7 @@
     "https://deno.land/x/yargs_parser@v20.2.4-deno/build/lib/string-utils.js": "12fc056b23703bc370aae5b179dc5abee53fca277abc30eaf76f78d2546d6413",
     "https://deno.land/x/yargs_parser@v20.2.4-deno/build/lib/tokenize-arg-string.js": "7e0875b11795b8e217386e45f14b24a6e501ebbc62e15aa469aa8829d4d0ee61",
     "https://deno.land/x/yargs_parser@v20.2.4-deno/build/lib/yargs-parser.js": "453200a7dfbb002e605d8009b7dad30f2b1d93665e046ab89c073a4fe63dfd48",
-    "https://deno.land/x/yargs_parser@v20.2.4-deno/deno.ts": "ad53c0c82c3982c4fc5be9472384b259e0a32ce1f7ae0f68de7b2445df5642fc"
+    "https://deno.land/x/yargs_parser@v20.2.4-deno/deno.ts": "ad53c0c82c3982c4fc5be9472384b259e0a32ce1f7ae0f68de7b2445df5642fc",
+    "https://raw.githubusercontent.com/quilicicf/Stoyle/refs/tags/0.2.0/mod.ts": "1617cb93a593766e6f3eb2ecc11e56be9298b2dc378d99c344b48ab779edd6f4"
   }
 }

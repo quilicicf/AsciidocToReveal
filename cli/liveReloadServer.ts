@@ -1,4 +1,4 @@
-import { stoyle } from 'npm:stoyle';
+import { stoyle } from 'stoyle';
 import { WebSocketServer } from 'npm:ws';
 
 import { logInfo, theme } from '../src/third-party/logger/log.ts';

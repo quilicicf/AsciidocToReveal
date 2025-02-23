@@ -1,5 +1,6 @@
 {
   "imports": {
+    "stoyle": "https://raw.githubusercontent.com/quilicicf/Stoyle/refs/tags/0.2.0/mod.ts",
     "yargs/": "https://deno.land/x/yargs@v17.7.2-deno/"
   }
 }
