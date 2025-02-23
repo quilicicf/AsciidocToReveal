@@ -1,0 +1,5 @@
+{
+  "imports": {
+    "yargs/": "https://deno.land/x/yargs@v17.7.2-deno/"
+  }
+}

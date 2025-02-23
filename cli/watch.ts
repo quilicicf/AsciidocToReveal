@@ -1,5 +1,6 @@
 import { stoyle } from 'npm:stoyle';
-import { ArgumentsCamelCase, YargsInstance } from 'npm:yargs';
+import { Arguments } from "yargs/deno-types.ts";
+import { YargsInstance } from "yargs/build/lib/yargs-factory.js";
 
 import { hashString } from '../src/third-party/crypto/api.ts';
 import { existsSync, mkdirSync, readTextFileSyncAndConvert, watch } from '../src/third-party/fs/api.ts';
@@ -8,12 +9,6 @@ import { getBaseName, resolve } from '../src/third-party/path/api.ts';
 import startLiveReloadServer from './liveReloadServer.ts';
 
 export const command = 'watch';
-
-interface Args {
-  inputFile: string;
-  outputFile: string;
-  assetsFolder: string;
-}
 
 function builder (yargs: YargsInstance) {
   return yargs
@@ -45,7 +40,7 @@ function builder (yargs: YargsInstance) {
       requiresArg: true,
       demandOption: false,
     })
-    .check(function checker (_argv: ArgumentsCamelCase<Args>, currentArgs: ArgumentsCamelCase<Args>) {
+    .check(function checker (_argv: Arguments, currentArgs: Arguments) {
       const assetsFolder = currentArgs?.assetsFolder;
       if (assetsFolder) {
         const assetsFolderAbsolutePath = resolve(currentArgs.inputFile, '..', assetsFolder);
@@ -59,7 +54,7 @@ function builder (yargs: YargsInstance) {
     .wrap(null);
 }
 
-async function handler (args: ArgumentsCamelCase<Args>) {
+async function handler (args: Arguments) {
   const { inputFile, outputFile, assetsFolder } = args;
 
   const outputFolder = getBaseName(outputFile);
@@ -69,7 +64,7 @@ async function handler (args: ArgumentsCamelCase<Args>) {
     queue: Promise.resolve(),
   };
 
-  const initialInputHash = readTextFileSyncAndConvert(inputFile, (content: string) => hashString(content));
+  const initialInputHash = await readTextFileSyncAndConvert(inputFile, (content: string) => hashString(content));
   const liveReloadServer = startLiveReloadServer(initialInputHash);
 
   const additionalWatchedPaths = assetsFolder

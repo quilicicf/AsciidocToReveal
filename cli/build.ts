@@ -1,14 +1,10 @@
-import { YargsInstance, ArgumentsCamelCase } from 'npm:yargs';
+import { Arguments } from 'yargs/deno-types.ts';
+import { YargsInstance } from "yargs/build/lib/yargs-factory.js";
 
 import { existsSync, mkdirSync } from '../src/third-party/fs/api.ts';
 import { getParentFolderName } from '../src/third-party/path/api.ts';
 
 export const command = 'build';
-
-interface Args {
-  inputFile: string;
-  outputFile: string;
-}
 
 function builder (yargs: YargsInstance) {
   return yargs
@@ -37,7 +33,7 @@ function builder (yargs: YargsInstance) {
     .wrap(null);
 }
 
-async function handler (args: ArgumentsCamelCase<Args>) {
+async function handler (args: Arguments) {
   const { inputFile, outputFile } = args;
 
   const outputFolder = getParentFolderName(outputFile);

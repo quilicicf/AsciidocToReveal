@@ -49,7 +49,9 @@ export function writeTextFileSync (filePath: string, content: string): void {
   Deno.writeTextFileSync(filePath, content);
 }
 
-export function watch (globs: string, { cwd }: { cwd: string }, listeners: EventListener[]) {
+export type Listener = (event: string, path: string) => void;
+
+export function watch (globs: string[], { cwd }: { cwd: string }, listeners: Record<string, Listener>) {
   const options: ChokidarOptions = {
     cwd,
     depth: 10,

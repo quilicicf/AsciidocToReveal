@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import yargs from 'npm:yargs';
+import yargs from "yargs/deno.ts";
 
 import build from './build.ts';
 import watch from './watch.ts';
@@ -16,7 +16,7 @@ async function main () {
     .version()
     .epilogue('For more information, read the manual at https://github.com/quilicicf/AsciidocToReveal')
     .wrap(null)
-    .argv;
+    .parse();
 }
 
 main()
