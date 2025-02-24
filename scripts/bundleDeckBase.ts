@@ -2,7 +2,7 @@
 
 import 'npm:parcel';
 import 'npm:@parcel/reporter-cli';
-// import 'npm:@parcel/config-default';
+import 'npm:@parcel/config-default';
 import { Parcel } from 'npm:@parcel/core';
 
 import { resolve } from '../src/third-party/path/api.ts';
@@ -14,6 +14,7 @@ async function main () {
 }
 
 async function bundle (inputFilePath: string, outputFolderPath: string, resolveFrom: string): Promise<void> {
+  console.log(`Bundling ${inputFilePath} in ${outputFolderPath}`);
   await new Parcel({
     entries: [ inputFilePath ],
     mode: 'production',

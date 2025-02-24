@@ -6,7 +6,8 @@ import { existsSync, readTextFileSync, writeTextFileSync } from '../third-party/
 import { _, logInfo, logWarn, theme } from '../third-party/logger/log.ts';
 import { resolve } from '../third-party/path/api.ts';
 import { compileStyle } from '../third-party/sass/api.ts';
-import { Deck, Dom, ThemeName, ThemeColor, Theme } from '../domain/api.ts';
+import { Deck, Dom, ThemeName, ThemeColor, Theme, ThemeClass } from '../domain/api.ts';
+import { MANUAL_THEME_SWITCHER } from './manualThemeSwitcher.ts';
 
 const BASE_SCSS_PATH = resolve(LIB_FOLDER, 'theme', 'base.scss');
 
@@ -41,16 +42,10 @@ export default function applyTheme (dom: Dom, { cachePath, graphTypes, configura
   dom.insertInlineStyle('REVEAL_THEME', builtCss);
 
   if (themeSwitchingMode === 'manual') {
-    dom.select('body')
+    (dom.select('body') as Element)
       .classList
       .add(`theme-${startingThemeName}`);
-    const manualThemeSwitcherFilePath = resolve(LIB_FOLDER, 'manualThemeSwitcher.mjs');
-    const manualThemeSwitcher = readTextFileSync(manualThemeSwitcherFilePath);
-    const scriptContent = `
-      ${manualThemeSwitcher}
-      Reveal.on('ready', () => { toggleDisabled('${nonStartingThemeName.toUpperCase()}', true); });
-    `;
-    dom.insertInlineScript('THEME_SWITCHER', scriptContent);
+    dom.insertInlineScript('THEME_SWITCHER', MANUAL_THEME_SWITCHER);
   }
 
   return dom;
@@ -209,7 +204,7 @@ function createTheme ([ light, chroma, hue ]: ThemeColor): Theme {
   };
 }
 
-function prepareColorExports (themeName: ThemeName, themeColor: ThemeColor) {
+function prepareColorExports (themeName: ThemeName, themeColor: ThemeColor): string {
   const theme = createTheme(themeColor);
   switch (themeName) {
     case THEMES.DARK:
@@ -224,8 +219,10 @@ function prepareColorExports (themeName: ThemeName, themeColor: ThemeColor) {
     case THEMES.DARK_AND_LIGHT_MANUAL:
     case THEMES.LIGHT_AND_DARK_MANUAL:
       return `
-        body.theme-dark { ${prepareDarkColorExport(theme)} }
-        body.theme-light { ${prepareLightColorExport(theme)} }
+        body.${ThemeClass.DARK} { ${prepareDarkColorExport(theme)} }
+        body.${ThemeClass.LIGHT} { ${prepareLightColorExport(theme)} }
       `;
+    default :
+      throw Error(`Unsupported theme ${themeName}`);
   }
 }

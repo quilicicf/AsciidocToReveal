@@ -143,7 +143,7 @@ flowchart LR
 
 === Architecture
 
-[source,role="keep-markup fit-content"]
+[source,role="fit-content"]
 ----
 .
 ├── <span class="token tag">build-area</span>            <span class="dim"># Build cache</span>
@@ -246,7 +246,7 @@ There are some notes on this slide!
 * Used with asciidoc blocks
 =====
 
-[source,asciidoc,role="keep-markup column-8x"]
+[source,asciidoc,role="column-8x"]
 ----
 <div class="fragment">
 [.layout-columns]
@@ -278,22 +278,126 @@ Right block, 8 spans
 * Beautiful code
 * Show line numbers
 * Display code bit-by-bit
+* And more
 
 [.notes]
 ====
-* Syntax coloration done with link:https://prismjs.com/[PrismJS] because of how lightweight and versatile it is
-* Plugin link:https://prismjs.com/plugins/line-numbers/[line-numbers] added when class `line-numbers` is set on at least one code block
-* Plugin link:https://prismjs.com/plugins/keep-markup/[keep-markup] added when class `keep-markup` is set on at least one code block. Allows animating code display with
+* Syntax coloration done with link:https://shiki.style[Shiki]
 ====
 
-=== Code highlight - example
+=== Code highlight - classes
 
-[source,mermaid,role="line-numbers keep-markup",opts="novalidate"]
+[source,asciidoc,role="fit-content"]
+.source
 ----
-flowchart LR
-    <span class="fragment">toto[[This is some text]]</span>
-    <span class="fragment">toto --> tata</span>
+// [!code word:fit-content]
+// [!code word:line-numbers]
+[source,js,role="line-numbers fit-content"]
+-----
+console.log('Hello world 1');
+console.log('Hello world 2');
+-----
 ----
+
+[source,js,role="line-numbers fit-content"]
+.result
+----
+console.log('Hello world 1');
+console.log('Hello world 2');
+----
+
+=== Code highlight - fragments
+
+Display code line by line
+
+[.layout-columns]
+====
+[.column-6x]
+=====
+[source,js,role="fit-content"]
+.source
+----
+#!/usr/bin/env node // [\!code f-1]
+
+function main () { // [\!code f-2]
+  // [\!code f-3:2]
+  console.log('Hello world!');
+  console.log('Hello world (bis)!');
+} // [\!code f-2]
+
+main(); // [\!code f-4]
+----
+=====
+
+[.column-6x]
+=====
+[source,js,role="fit-content"]
+.result
+----
+#!/usr/bin/env node // [!code f-1]
+
+function main () { // [!code f-2]
+  // [!code f-3:2]
+  console.log('Hello world!');
+  console.log('Hello world (bis)!');
+} // [!code f-2]
+
+main(); // [!code f-4]
+----
+=====
+====
+
+=== Code highlight - other goodies
+
+[.layout-columns]
+====
+[.column-6x]
+=====
+[source,js,role="fit-content"]
+.source
+----
+#!/usr/bin/env node
+
+// [\!code word:main]
+function main () {
+  // DIFF
+  console.log('Hello wrld!'); // [\!code --]
+  console.log('Hello world!'); // [\!code ++]
+
+  // LEVELS
+  console.log('SUCCESS'); // [\!code SUCCESS]
+  console.log('WARNING'); // [\!code WARNING]
+  console.log('ERROR'); // [\!code ERROR]
+}
+
+// HIGHLIGHT
+main(); // [\!code highlight]
+----
+=====
+[.column-6x]
+=====
+[source,js,role="line-numbers fit-content"]
+.result
+----
+#!/usr/bin/env node
+
+// [!code word:main]
+function main () { // [!code WARNING]
+  // DIFF
+  console.log('Hello wrld!'); // [!code --]
+  console.log('Hello world!'); // [!code ++]
+
+  // LEVELS
+  console.log('SUCCESS'); // [!code SUCCESS]
+  console.log('WARNING'); // [!code WARNING]
+  console.log('ERROR'); // [!code ERROR]
+}
+
+// HIGHLIGHT
+main(); // [!code highlight]
+----
+=====
+====
 
 == Mermaid graphs
 
@@ -504,13 +608,13 @@ emoji:muscle[]emoji:muscle[1.4,em]emoji:muscle[]
 | The theme's accent color
 
 | `a2r-highlight-theme-dark`
-| one-dark
-| a11y-dark, atom-dark, cb, coldark-cold, coldark-dark, coy, coy-without-shadows, darcula, dark, default, dracula, duotone-dark, duotone-earth, duotone-forest, duotone-light, duotone-sea, duotone-space, funky, ghcolors, gruvbox-dark, gruvbox-light, holi-theme, hopscotch, lucario, material-dark, material-light, material-oceanic, night-owl, nord, okaidia, one-dark, one-light, pojoaque, shades-of-purple, solarized-dark-atom, solarizedlight, synthwave84, tomorrow, twilight, vs, vsc-dark-plus, xonokai, z-touch
+| github-dark-dimmed
+| andromeeda, aurora-x, ayu-dark, catppuccin-frappe, catppuccin-macchiato, catppuccin-mocha, dark-plus, dracula, dracula-soft, everforest-dark, github-dark, github-dark-default, github-dark-dimmed, github-dark-high-contrast, houston, kanagawa-dragon, kanagawa-wave, laserwave, material-theme, material-theme-darker, material-theme-ocean, material-theme-palenight, min-dark, monokai, night-owl, nord, one-dark-pro, plastic, poimandres, red, rose-pine, rose-pine-moon, slack-dark, solarized-dark, synthwave-84, tokyo-night, vesper, vitesse-black, vitesse-dark
 | The theme for syntax coloration in dark mode
 
 | `a2r-highlight-theme-light`
-| one-light
-| Same as for dark mode
+| github-light
+| catppuccin-latte, everforest-light, github-light, github-light-default, github-light-high-contrast, kanagawa-lotus, light-plus, material-theme-lighter, min-light, one-light, rose-pine-dawn, slack-ochin, snazzy-light, solarized-light, vitesse-light
 | The theme for syntax coloration in light mode
 
 |===

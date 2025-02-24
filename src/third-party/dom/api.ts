@@ -21,11 +21,14 @@ export function toDom (source: string): Dom {
     selectAll (selector: string): Element[] {
       return Array.from(this.getDocument().querySelectorAll(selector));
     },
-    newElement (tag: string, classes: string[] = [], attributes: Record<string, string> = {}): Element {
-      const element = this.getDocument().createElement(tag);
+    newElement (tag: string, classes: string[] = [], attributes: Record<string, string> = {}, content?: string): Element {
+      const element: HTMLElement = this.getDocument().createElement(tag);
       element.classList.add(...classes);
       Object.entries(attributes)
         .forEach(([ key, value ]) => element.setAttribute(key, value));
+      if (content) {
+        element.insertAdjacentHTML('afterbegin', content);
+      }
       return element;
     },
     changeElementTag (element: Element, newTag: string): void {
@@ -59,6 +62,13 @@ export function replaceInParent (element: Element, newElement: Element): void {
 
 export function removeFromParent (element: Element): void {
   element.parentNode?.removeChild(element);
+}
+
+export function findParentRecursively (element: Element, predicate: (element: Element) => boolean): Element | null {
+  const parent = element.parentElement;
+  if (!parent) { return null; }
+  if (predicate(parent)) { return parent; }
+  return findParentRecursively(parent, predicate);
 }
 
 export function sanitize (text: string): string {

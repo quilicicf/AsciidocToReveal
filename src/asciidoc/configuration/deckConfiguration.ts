@@ -4,13 +4,19 @@ import {
   DEFAULT_DARK_HIGHLIGHT_THEME,
   DEFAULT_LIGHT_HIGHLIGHT_THEME,
   HIGHLIGHT_THEMES,
-} from '../../code/highlightCode.ts';
+} from '../../third-party/code-highlight/api.ts';
 import { DEFAULT_COLOR, DEFAULT_THEME, THEMES } from '../../themes/applyTheme.ts';
 import { sanitize } from '../../third-party/dom/api.ts';
 import { existsSync, statSync } from '../../third-party/fs/api.ts';
 import { _, logError, logWarn, theme } from '../../third-party/logger/log.ts';
 import { join } from '../../third-party/path/api.ts';
-import { AsciidoctorDocument, DeckConfiguration, ThemeFamily } from '../../domain/api.ts';
+import {
+  AsciidoctorDocument,
+  DeckConfiguration,
+  ThemeFamily,
+  ThemeName,
+  ThemeSwitchingMode,
+} from '../../domain/api.ts';
 
 type FsItem = 'FILE' | 'FOLDER';
 
@@ -139,7 +145,7 @@ export const deckConfiguration = {
     id: 'a2r-highlight-theme-dark',
     documentation: 'The theme for syntax coloration in dark mode',
     defaultValue: DEFAULT_DARK_HIGHLIGHT_THEME,
-    acceptedValues: Object.keys(HIGHLIGHT_THEMES).sort(),
+    acceptedValues: HIGHLIGHT_THEMES.dark.sort(),
     validate (value: string) {
       return validateEnumValue(value, 'dark highlight theme', this.acceptedValues, this.defaultValue);
     },
@@ -148,9 +154,9 @@ export const deckConfiguration = {
     id: 'a2r-highlight-theme-light',
     documentation: 'The theme for syntax coloration in light mode',
     defaultValue: DEFAULT_LIGHT_HIGHLIGHT_THEME,
-    acceptedValues: 'Same as for dark mode',
+    acceptedValues: HIGHLIGHT_THEMES.light.sort(),
     validate (value: string) {
-      return validateEnumValue(value, 'light highlight theme', Object.keys(HIGHLIGHT_THEMES), this.defaultValue);
+      return validateEnumValue(value, 'light highlight theme', this.acceptedValues, this.defaultValue);
     },
   },
 };
@@ -168,9 +174,9 @@ export function parseConfiguration (ast: AsciidoctorDocument, inputFolder: strin
       {} as DeckConfiguration,
     );
 
-  const themeSwitchingMode = baseConfiguration.themeName.endsWith(('-manual')) ? 'manual' : 'auto';
-  const startingThemeName = baseConfiguration.themeName.split('-')[ 0 ] as ThemeFamily;
-  const nonStartingThemeName = startingThemeName === 'dark' ? 'light' : 'dark';
+  const themeSwitchingMode: ThemeSwitchingMode = findThemeSwitchingMode(baseConfiguration.themeName);
+  const startingThemeName: ThemeFamily = baseConfiguration.themeName.split('-')[ 0 ] as ThemeFamily;
+  const nonStartingThemeName: ThemeFamily = startingThemeName === 'dark' ? 'light' : 'dark';
 
   return {
     ...baseConfiguration,
@@ -179,6 +185,12 @@ export function parseConfiguration (ast: AsciidoctorDocument, inputFolder: strin
     nonStartingThemeName,
     themeSwitchingMode,
   };
+}
+
+function findThemeSwitchingMode (themeName: ThemeName): ThemeSwitchingMode {
+  if (themeName.endsWith('-manual')) { return 'manual'; }
+  if (themeName.endsWith('-auto')) { return 'auto'; }
+  return 'none';
 }
 
 function validateCustomPath (value: string, name: string, inputFolder: string, pathValidator: PathValidator): string | undefined {

@@ -1,6 +1,6 @@
 import deckToHtml from './asciidoc/deckToHtml.ts';
 import parseDeck from './asciidoc/parseDeck.ts';
-import highlightCode from './code/highlightCode.ts';
+import highlightCodeInDeck from './code-highlight/highlightCodeInDeck.ts';
 import insertCustomFiles from './custom-files/insertCustomFiles.ts';
 import { DIST_FOLDER_PATH } from './paths.ts';
 import processFragments from './fragments/processFragments.ts';
@@ -29,7 +29,7 @@ export async function asciidocToReveal (inputPath: string, outputPath: string = 
   const transformers: DomTransformer[] = [
     embedSvgIcons,
     buildGraphs,
-    highlightCode,
+    highlightCodeInDeck,
     applyLayouts,
     applyTheme,
     insertCustomFiles,

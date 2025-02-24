@@ -11,6 +11,11 @@ export type AsciidoctorInlineMacroProcessorDsl = Extensions.InlineMacroProcessor
 export type AsciidoctorBlockProcessor = Extensions.BlockProcessor;
 export type AsciidoctorBlockProcessorDsl = Extensions.BlockProcessorDsl;
 
+export enum ThemeClass {
+  LIGHT = 'theme-light',
+  DARK = 'theme-dark',
+}
+
 export enum PreferredImageType {
   SVG = 'svg',
   JXL = 'jxl',
@@ -53,6 +58,7 @@ export type GraphAnimationsMap = Record<string, GraphAnimation[]>;
 export type ThemeFamily = 'dark' | 'light';
 export type ThemeName = ThemeFamily | 'light-and-dark-manual' | 'dark-and-light-manual' | 'light-and-dark-auto';
 export type ThemeColor = [ number, number, number ];
+export type ThemeSwitchingMode = 'manual' | 'auto' | 'none';
 
 export interface Theme {
   primaryColor: string;
@@ -81,7 +87,7 @@ export interface DeckConfiguration {
   // Auto-generated part
   startingThemeName: ThemeFamily;
   nonStartingThemeName: ThemeFamily;
-  themeSwitchingMode: string;
+  themeSwitchingMode: ThemeSwitchingMode;
 }
 
 export interface BuildOptions {
@@ -113,9 +119,9 @@ export interface Dom {
   getWindow: () => Window;
   getDocument: () => Document;
 
-  select: (selector: string) => Element| null;
+  select: (selector: string) => Element | null;
   selectAll: (selector: string) => Element[];
-  newElement: (tag: string, classes: string[], attributes: Record<string, string>) => Element;
+  newElement: (tag: string, classes: string[], attributes: Record<string, string>, content?: string) => Element;
   changeElementTag: (element: Element, newTag: string) => void;
   insertHtml: (selector: string, html: string, position?: InsertPosition) => void;
   insertInlineStyle: (styleId: string, styleContent: string, stylePosition?: InsertPosition) => void;
