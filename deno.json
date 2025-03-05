@@ -9,15 +9,37 @@
     "stoyle": "https://raw.githubusercontent.com/quilicicf/Stoyle/refs/tags/0.2.0/mod.ts",
     "yargs/": "https://deno.land/x/yargs@v17.7.2-deno/",
 
+    "npm:@asciidoctor/core": "npm:@asciidoctor/core@3.0.4",
+
+    "npm:chokidar": "npm:chokidar@4.0.3",
+
+    "npm:chroma-js": "npm:chroma-js@3.1.2",
+
+    "npm:jsdom": "npm:jsdom@26.0.0",
+
+    "npm:puppeteer": "npm:puppeteer@24.2.1",
+    "npm:mermaid": "npm:mermaid@11.4.1",
+
+    "npm:parcel": "npm:parcel@2.13.3",
+    "npm:@parcel/core": "npm:@parcel/core@2.13.3",
+    "npm:@parcel/reporter-cli": "npm:@parcel/reporter-cli@2.13.3",
+    "npm:@parcel/config-default": "npm:@parcel/config-default@2.13.3",
+
     "npm:postcss": "npm:postcss@8.5.3",
     "npm:postcss-nesting": "npm:postcss-nesting@13.0.1",
+
+    "npm:reveal.js": "npm:reveal.js@5.1.0",
+
+    "npm:sass": "npm:sass@1.85.0",
 
     "npm:shiki": "npm:shiki@3.0.0",
     "npm:@shikijs/types": "npm:@shikijs/types@3.0.0",
     "npm:@shikijs/themes": "npm:@shikijs/themes@3.0.0",
     "npm:@shikijs/transformers": "npm:@shikijs/transformers@3.0.0",
     "npm:@shikijs/colorized-brackets": "npm:@shikijs/colorized-brackets@3.0.0",
-    "npm:@types/hast": "npm:@types/hast@3.0.4"
+    "npm:@types/hast": "npm:@types/hast@3.0.4",
+
+    "npm:uuid": "npm:uuid@11.0.5"
   },
   "compilerOptions": {
     "lib": [
