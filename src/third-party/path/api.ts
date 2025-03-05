@@ -1,4 +1,4 @@
-import { basename, dirname, extname, join as _join, resolve as _resolve, toFileUrl } from 'jsr:@std/path';
+import { basename, dirname, extname, join as _join, resolve as _resolve, toFileUrl } from '@std/path';
 
 export function getParentFolderName (path: string): string {
   return dirname(path);

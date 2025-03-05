@@ -1,6 +1,24 @@
 {
   "nodeModulesDir": "auto",
-  "importMap": "./importMap.json",
+  "imports": {
+    "@std/fs": "jsr:@std/fs@1.0.14",
+    "@std/path": "jsr:@std/path@1.0.8",
+    "@std/encoding": "jsr:@std/encoding@1.0.7",
+
+    "json5": "https://deno.land/x/json5@v1.0.0/mod.ts",
+    "stoyle": "https://raw.githubusercontent.com/quilicicf/Stoyle/refs/tags/0.2.0/mod.ts",
+    "yargs/": "https://deno.land/x/yargs@v17.7.2-deno/",
+
+    "npm:postcss": "npm:postcss@8.5.3",
+    "npm:postcss-nesting": "npm:postcss-nesting@13.0.1",
+
+    "npm:shiki": "npm:shiki@3.0.0",
+    "npm:@shikijs/types": "npm:@shikijs/types@3.0.0",
+    "npm:@shikijs/themes": "npm:@shikijs/themes@3.0.0",
+    "npm:@shikijs/transformers": "npm:@shikijs/transformers@3.0.0",
+    "npm:@shikijs/colorized-brackets": "npm:@shikijs/colorized-brackets@3.0.0",
+    "npm:@types/hast": "npm:@types/hast@3.0.4"
+  },
   "compilerOptions": {
     "lib": [
       "deno.window",

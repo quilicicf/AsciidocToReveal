@@ -1,7 +1,7 @@
 import { ChokidarOptions, watch as _watch } from 'npm:chokidar';
-import { existsSync as _existsSync } from 'jsr:@std/fs/exists';
-import { ensureDirSync } from 'jsr:@std/fs/ensure-dir';
-import { encodeBase64 } from 'jsr:@std/encoding/base64';
+import { existsSync as _existsSync } from '@std/fs/exists';
+import { ensureDirSync } from '@std/fs/ensure-dir';
+import { encodeBase64 } from '@std/encoding/base64';
 
 type Converter<T> = (content: string) => T;
 

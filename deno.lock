@@ -1,9 +1,10 @@
 {
   "version": "4",
   "specifiers": {
-    "jsr:@std/encoding@*": "1.0.7",
-    "jsr:@std/fs@*": "1.0.11",
+    "jsr:@std/encoding@1.0.7": "1.0.7",
+    "jsr:@std/fs@1.0.14": "1.0.14",
     "jsr:@std/path@*": "1.0.8",
+    "jsr:@std/path@1.0.8": "1.0.8",
     "npm:@asciidoctor/core@*": "3.0.4",
     "npm:@parcel/config-default@*": "2.13.3_@parcel+core@2.13.3_postcss@8.5.3",
     "npm:@parcel/core@*": "2.13.3",
@@ -36,8 +37,8 @@
     "@std/encoding@1.0.7": {
       "integrity": "f631247c1698fef289f2de9e2a33d571e46133b38d042905e3eac3715030a82d"
     },
-    "@std/fs@1.0.11": {
-      "integrity": "ba674672693340c5ebdd018b4fe1af46cb08741f42b4c538154e97d217b55bdd"
+    "@std/fs@1.0.14": {
+      "integrity": "1e84bf0b95fe08f41f1f4aea9717bbf29f45408a56ce073b0114474ce1c9fccf"
     },
     "@std/path@1.0.8": {
       "integrity": "548fa456bb6a04d3c1a1e7477986b6cffbce95102d0bb447c67c4ee70e0364be"
@@ -3590,6 +3591,9 @@
   },
   "workspace": {
     "dependencies": [
+      "jsr:@std/encoding@1.0.7",
+      "jsr:@std/fs@1.0.14",
+      "jsr:@std/path@1.0.8",
       "npm:@shikijs/colorized-brackets@3.0.0",
       "npm:@shikijs/themes@3.0.0",
       "npm:@shikijs/transformers@3.0.0",
