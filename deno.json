@@ -37,9 +37,7 @@
     "npm:@shikijs/themes": "npm:@shikijs/themes@3.0.0",
     "npm:@shikijs/transformers": "npm:@shikijs/transformers@3.0.0",
     "npm:@shikijs/colorized-brackets": "npm:@shikijs/colorized-brackets@3.0.0",
-    "npm:@types/hast": "npm:@types/hast@3.0.4",
-
-    "npm:uuid": "npm:uuid@11.0.5"
+    "npm:@types/hast": "npm:@types/hast@3.0.4"
   },
   "compilerOptions": {
     "lib": [

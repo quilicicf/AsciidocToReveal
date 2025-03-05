@@ -23,8 +23,7 @@
     "npm:puppeteer@24.2.1": "24.2.1_devtools-protocol@0.0.1402036",
     "npm:reveal.js@5.1.0": "5.1.0",
     "npm:sass@1.85.0": "1.85.0",
-    "npm:shiki@3.0.0": "3.0.0",
-    "npm:uuid@11.0.5": "11.0.5"
+    "npm:shiki@3.0.0": "3.0.0"
   },
   "jsr": {
     "@std/encoding@1.0.7": {
@@ -2491,7 +2490,7 @@
         "roughjs",
         "stylis",
         "ts-dedent",
-        "uuid@9.0.1"
+        "uuid"
       ]
     },
     "micromark-util-character@2.1.1": {
@@ -3135,9 +3134,6 @@
     "utility-types@3.11.0": {
       "integrity": "sha512-6Z7Ma2aVEWisaL6TvBCy7P8rm2LQoPv6dJ7ecIaIixHcwfbJ0x7mWdbcwlIM5IGQxPZSFYeqRCqlOOeKoJYMkw=="
     },
-    "uuid@11.0.5": {
-      "integrity": "sha512-508e6IcKLrhxKdBbcA2b4KQZlLVp2+J5UwQ6F7Drckkc5N9ZJwFa4TgWtsww9UG8fGHbm6gbV19TdM5pQ4GaIA=="
-    },
     "uuid@9.0.1": {
       "integrity": "sha512-b+1eJOlsR9K8HJpow9Ok3fiWOWSIcIzXodvv0rQjVoOVNpWMpxf1wZNpt4y9h10odCNrqnYp1OBzRktckBe3sA=="
     },
@@ -3445,8 +3441,7 @@
       "npm:puppeteer@24.2.1",
       "npm:reveal.js@5.1.0",
       "npm:sass@1.85.0",
-      "npm:shiki@3.0.0",
-      "npm:uuid@11.0.5"
+      "npm:shiki@3.0.0"
     ]
   }
 }
