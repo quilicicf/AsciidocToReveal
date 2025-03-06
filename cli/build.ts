@@ -1,43 +1,23 @@
 import { Arguments } from 'yargs/deno-types.ts';
-import { YargsInstance } from "yargs/build/lib/yargs-factory.js";
+import { YargsInstance } from 'yargs/build/lib/yargs-factory.js';
 
-import { existsSync, mkdirSync } from '../src/third-party/fs/api.ts';
-import { getParentFolderName } from '../src/third-party/path/api.ts';
+import { ArgumentName, CLI_ARGUMENTS } from './common.ts';
 
 export const command = 'build';
 
 function builder (yargs: YargsInstance) {
   return yargs
     .usage(`a2r ${command} [options]`)
-    .option('input-file', {
-      alias: 'i',
-      type: 'string',
-      describe: 'The path to the input file containing the asciidoc deck',
-      requiresArg: true,
-      demandOption: true,
-      coerce (filePath: string) {
-        if (!existsSync(filePath)) {
-          throw Error(`The input file was not found`);
-        }
-        return filePath;
-      },
-    })
-    .option('output-file', {
-      alias: 'o',
-      type: 'string',
-      describe: 'The path where the output HTML deck is written',
-      requiresArg: true,
-      demandOption: true,
-    })
+    .option(ArgumentName.INPUT_FILE, CLI_ARGUMENTS[ ArgumentName.INPUT_FILE ])
+    .option(ArgumentName.OUTPUT_FILE, CLI_ARGUMENTS[ ArgumentName.OUTPUT_FILE ])
     .help()
     .wrap(null);
 }
 
 async function handler (args: Arguments) {
-  const { inputFile, outputFile } = args;
+  const { inputFile, outputFile: outputFileArg } = args;
 
-  const outputFolder = getParentFolderName(outputFile);
-  mkdirSync(outputFolder, { recursive: true });
+  const outputFile = outputFileArg || inputFile.replace(/\.[^.]+$/, '.html');
 
   const { asciidocToReveal } = await import ('../src/asciidocToReveal.ts'); // Delay pulling all the dependencies because it's super heavy
   await asciidocToReveal(inputFile, outputFile);

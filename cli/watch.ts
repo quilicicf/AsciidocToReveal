@@ -2,45 +2,26 @@ import { stoyle } from 'stoyle';
 import { Arguments } from 'yargs/deno-types.ts';
 import { YargsInstance } from 'yargs/build/lib/yargs-factory.js';
 
-import { existsSync, mkdirSync, watch } from '../src/third-party/fs/api.ts';
+import { watch } from '../src/third-party/fs/api.ts';
 import { logInfo, theme } from '../src/third-party/logger/log.ts';
-import { getBaseName, resolve, join } from '../src/third-party/path/api.ts';
 import startLiveReloadServer from './liveReloadServer.ts';
+import { ArgumentName, CLI_ARGUMENTS } from './common.ts';
 
 export const command = 'watch';
 
 function builder (yargs: YargsInstance) {
   return yargs
     .usage(`a2r ${command} [options]`)
-    .option('input-file', {
-      alias: 'i',
-      type: 'string',
-      describe: 'The path to the input file containing the asciidoc deck',
-      requiresArg: true,
-      demandOption: true,
-      coerce (filePath: string) {
-        if (!existsSync(filePath)) {
-          throw Error(`The input file was not found`);
-        }
-        return resolve(filePath);
-      },
-    })
-    .option('output-file', {
-      alias: 'o',
-      type: 'string',
-      describe: 'The path where the output HTML deck is written',
-      requiresArg: true,
-      demandOption: true,
-    })
+    .option(ArgumentName.INPUT_FILE, CLI_ARGUMENTS[ ArgumentName.INPUT_FILE ])
+    .option(ArgumentName.OUTPUT_FILE, CLI_ARGUMENTS[ ArgumentName.OUTPUT_FILE ])
     .help()
     .wrap(null);
 }
 
 async function handler (args: Arguments) {
-  const { inputFile, outputFile } = args;
+  const { inputFile, outputFile: outputFileArg } = args;
 
-  const outputFolder = getBaseName(outputFile);
-  mkdirSync(outputFolder, { recursive: true });
+  const outputFile = outputFileArg || inputFile.replace(/\.[^.]+$/, '.html');
 
   const state = {
     queue: Promise.resolve(),
