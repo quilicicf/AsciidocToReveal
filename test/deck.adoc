@@ -10,7 +10,7 @@
 
 = image:asciidoc-logo.svg[Asciidoc logo,role=thumb] => image:reveal-logo.png[Reveal.js logo,role=thumb]
 
-A tale of how I converted Asciidoc files to single-page HTML presentations.
+A slide deck generator based on Asciidoc and Reveal.js.
 
 https://github.com/quilicicf/AsciidocToReveal[The code]
 

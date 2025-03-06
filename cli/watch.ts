@@ -1,9 +1,8 @@
 import { stoyle } from 'stoyle';
-import { Arguments } from "yargs/deno-types.ts";
-import { YargsInstance } from "yargs/build/lib/yargs-factory.js";
+import { Arguments } from 'yargs/deno-types.ts';
+import { YargsInstance } from 'yargs/build/lib/yargs-factory.js';
 
-import { hashString } from '../src/third-party/crypto/api.ts';
-import { existsSync, mkdirSync, readTextFileSyncAndConvert, watch } from '../src/third-party/fs/api.ts';
+import { existsSync, mkdirSync, watch } from '../src/third-party/fs/api.ts';
 import { logInfo, theme } from '../src/third-party/logger/log.ts';
 import { getBaseName, resolve } from '../src/third-party/path/api.ts';
 import startLiveReloadServer from './liveReloadServer.ts';
@@ -64,9 +63,6 @@ async function handler (args: Arguments) {
     queue: Promise.resolve(),
   };
 
-  const initialInputHash = await readTextFileSyncAndConvert(inputFile, (content: string) => hashString(content));
-  const liveReloadServer = startLiveReloadServer(initialInputHash);
-
   const additionalWatchedPaths = assetsFolder
     ? [ resolve(inputFile, '..', assetsFolder, '*') ]
     : [];
@@ -77,7 +73,8 @@ async function handler (args: Arguments) {
   }
 
   const { asciidocToReveal } = await import ('../src/asciidocToReveal.ts'); // Delay pulling all the dependencies because it's super heavy
-  await asciidocToReveal(inputFile, outputFile, { shouldAddLiveReload: true });
+  const initialDeck = await asciidocToReveal(inputFile, outputFile, { shouldAddLiveReload: true });
+  const liveReloadServer = startLiveReloadServer(initialDeck.inputHash);
   watch(
     [ inputFile, ...additionalWatchedPaths ],
     { cwd: Deno.cwd() },
