@@ -1,5 +1,3 @@
-// noinspection JSUnusedGlobalSymbols
-
 import {
   DEFAULT_DARK_HIGHLIGHT_THEME,
   DEFAULT_LIGHT_HIGHLIGHT_THEME,
@@ -8,14 +6,14 @@ import {
 import { DEFAULT_COLOR, DEFAULT_THEME, THEMES } from '../../themes/applyTheme.ts';
 import { sanitize } from '../../third-party/dom/api.ts';
 import { existsSync, statSync } from '../../third-party/fs/api.ts';
-import { _, logError, logWarn, theme } from '../../third-party/logger/log.ts';
+import { _, logError, logInfo, logWarn, theme } from '../../third-party/logger/log.ts';
 import { join } from '../../third-party/path/api.ts';
 import {
   AsciidoctorDocument,
   DeckConfiguration,
   ThemeFamily,
   ThemeName,
-  ThemeSwitchingMode,
+  ThemeSwitchingMode, UserSetDeckConfigurationKey,
 } from '../../domain/api.ts';
 
 type FsItem = 'FILE' | 'FOLDER';
@@ -39,41 +37,72 @@ const PATH_VALIDATORS: Record<FsItem, PathValidator> = {
   },
 };
 
-export const deckConfiguration = {
+interface OptionBuilder<T> {
+  id: string;
+  documentation: string;
+  defaultValue: T;
+  acceptedValues: string;
+  validate: (value: string, inputFolder: string, configuration: Partial<DeckConfiguration>) => T | undefined;
+}
+
+type DeckConfigurationBuilder = Record<UserSetDeckConfigurationKey, OptionBuilder<unknown>>;
+
+const themeNames = Object.values(THEMES);
+const HIGHLIGHT_THEMES_DARK = HIGHLIGHT_THEMES.dark.sort();
+const HIGHLIGHT_THEMES_LIGHT = HIGHLIGHT_THEMES.light.sort();
+export const deckConfigurationBuilder: DeckConfigurationBuilder = {
+  assetsPath: { // NOTE : must be declared first, other keys depend on it
+    id: 'a2r-assets',
+    documentation: `Specify the path to the folder containing all the external files your deck references`,
+    defaultValue: 'The folder `assets` next to the deck file',
+    acceptedValues: `Path relative to the deck's input file`,
+    validate (value: string, inputFolder: string) {
+      const customPath = validateCustomPath(value, 'assets', inputFolder, PATH_VALIDATORS.FILE);
+      const assetsPath = customPath || join(inputFolder, 'assets');
+
+      if (customPath) {
+        logInfo(_`Assets path ${customPath}`({ nodes: [ theme.strong ] }));
+      } else {
+        logInfo(_`No defined assets path, using ${assetsPath}`({ nodes: [ theme.strong ] }));
+      }
+
+      return assetsPath;
+    },
+  },
   customJs: {
     id: 'a2r-js',
     documentation: `Specify a path to a custom JS file that will be the last loaded script in the final deck`,
     defaultValue: '',
-    acceptedValues: `Path relative to the deck's input file`,
-    validate (value: string, inputFolder: string) {
-      return validateCustomPath(value, 'custom JS', inputFolder, PATH_VALIDATORS.FILE);
+    acceptedValues: `Path relative to the deck's assets folder`,
+    validate (value: string, _inputFolder: string, configuration: Partial<DeckConfiguration>) {
+      return validateCustomPath(value, 'custom JS', configuration.assetsPath as string, PATH_VALIDATORS.FILE);
     },
   },
   customCss: {
     id: 'a2r-css',
     documentation: `Specify a path to a custom CSS file that will be the last loaded style in the final deck`,
     defaultValue: '',
-    acceptedValues: `Path relative to the deck's input file`,
-    validate (value: string, inputFolder: string) {
-      return validateCustomPath(value, 'custom CSS', inputFolder, PATH_VALIDATORS.FILE);
+    acceptedValues: `Path relative to the deck's assets folder`,
+    validate (value: string, _inputFolder: string, configuration: Partial<DeckConfiguration>) {
+      return validateCustomPath(value, 'custom CSS', configuration.assetsPath as string, PATH_VALIDATORS.FILE);
     },
   },
   favicon: {
     id: 'a2r-favicon',
     documentation: `Specify a path to the file containing your favicon`,
     defaultValue: '',
-    acceptedValues: `Path relative to the deck's input file`,
-    validate (value: string, inputFolder: string) {
-      return validateCustomPath(value, 'favicon', inputFolder, PATH_VALIDATORS.FILE);
+    acceptedValues: `Path relative to the deck's assets folder`,
+    validate (value: string, _inputFolder: string, configuration: Partial<DeckConfiguration>) {
+      return validateCustomPath(value, 'favicon', configuration.assetsPath as string, PATH_VALIDATORS.FILE);
     },
   },
   svgIconsFolder: {
     id: 'a2r-svg-icons-dir',
     documentation: `Specify the location of the folder containing your SVG icons`,
     defaultValue: '',
-    acceptedValues: `Path relative to the deck's input file`,
-    validate (value: string, inputFolder: string) {
-      return validateCustomPath(value, 'SVG icons directory', inputFolder, PATH_VALIDATORS.FOLDER);
+    acceptedValues: `Path relative to the deck's assets folder`,
+    validate (value: string, _inputFolder: string, configuration: Partial<DeckConfiguration>) {
+      return validateCustomPath(value, 'SVG icons directory', configuration.assetsPath as string, PATH_VALIDATORS.FOLDER);
     },
   },
   pageTitle: {
@@ -93,7 +122,7 @@ export const deckConfiguration = {
     validate (value: string) {
       return validateBoolean(value, 'list fragmentation', this.defaultValue);
     },
-  },
+  } as OptionBuilder<boolean>,
   shouldFragmentTables: {
     id: 'a2r-fragment-tables',
     documentation: `Make all tables in the deck Reveal.js fragments`,
@@ -102,17 +131,17 @@ export const deckConfiguration = {
     validate (value: string) {
       return validateBoolean(value, 'table fragmentation', this.defaultValue);
     },
-  },
+  } as OptionBuilder<boolean>,
 
   themeName: {
     id: 'a2r-theme-name',
     documentation: `Select the theme to use`,
     defaultValue: DEFAULT_THEME,
-    acceptedValues: Object.values(THEMES),
+    acceptedValues: themeNames.map((name) => `\`${name}\``).join(','),
     validate (value: string) {
-      return validateEnumValue(value, 'theme name', this.acceptedValues, this.defaultValue);
+      return validateEnumValue(value, 'theme name', themeNames, this.defaultValue);
     },
-  },
+  } as OptionBuilder<ThemeName>,
   themeColor: {
     id: 'a2r-theme-color',
     documentation: `The theme\'s accent color`,
@@ -145,30 +174,29 @@ export const deckConfiguration = {
     id: 'a2r-highlight-theme-dark',
     documentation: 'The theme for syntax coloration in dark mode',
     defaultValue: DEFAULT_DARK_HIGHLIGHT_THEME,
-    acceptedValues: HIGHLIGHT_THEMES.dark.sort(),
+    acceptedValues: HIGHLIGHT_THEMES_DARK.map((name) => `\`${name}\``).join(','),
     validate (value: string) {
-      return validateEnumValue(value, 'dark highlight theme', this.acceptedValues, this.defaultValue);
+      return validateEnumValue(value, 'dark highlight theme', HIGHLIGHT_THEMES_DARK, this.defaultValue);
     },
-  },
+  } as OptionBuilder<string>,
   highlightThemeLight: {
     id: 'a2r-highlight-theme-light',
     documentation: 'The theme for syntax coloration in light mode',
     defaultValue: DEFAULT_LIGHT_HIGHLIGHT_THEME,
-    acceptedValues: HIGHLIGHT_THEMES.light.sort(),
+    acceptedValues: HIGHLIGHT_THEMES_LIGHT.map((name) => `\`${name}\``).join(','),
     validate (value: string) {
-      return validateEnumValue(value, 'light highlight theme', this.acceptedValues, this.defaultValue);
+      return validateEnumValue(value, 'light highlight theme', HIGHLIGHT_THEMES_LIGHT, this.defaultValue);
     },
-  },
+  } as OptionBuilder<string>,
 };
 
-
 export function parseConfiguration (ast: AsciidoctorDocument, inputFolder: string): DeckConfiguration {
-  const baseConfiguration = Object.entries(deckConfiguration)
+  const baseConfiguration = Object.entries(deckConfigurationBuilder)
     .reduce((seed, [ optionName, optionConfiguration ]) => {
         const value = ast.getAttribute(optionConfiguration.id);
         return {
           ...seed,
-          [ optionName ]: optionConfiguration.validate(value, inputFolder),
+          [ optionName ]: optionConfiguration.validate(value, inputFolder, seed),
         };
       },
       {} as DeckConfiguration,
@@ -193,16 +221,16 @@ function findThemeSwitchingMode (themeName: ThemeName): ThemeSwitchingMode {
   return 'none';
 }
 
-function validateCustomPath (value: string, name: string, inputFolder: string, pathValidator: PathValidator): string | undefined {
+function validateCustomPath (value: string, name: string, baseFolder: string, pathValidator: PathValidator): string | undefined {
   if (value === undefined) { return undefined; }
   if (value.includes('..')) {
-    logError(_`Cannot load ${name} ${value}, path must be relative to the deck's location without back-tracking`({
-      nodes: [ undefined, theme.strong ],
+    logError(_`Cannot load ${name} ${value}, the path must be relative to ${baseFolder}, without back-tracking`({
+      nodes: [ undefined, theme.strong, theme.emphasis ],
     }));
     return undefined;
   }
 
-  const absolutePath = join(inputFolder, value);
+  const absolutePath = join(baseFolder, value);
   if (!existsSync(absolutePath)) {
     logWarn(_`Cannot load ${name} ${value}, file not found`({ nodes: [ undefined, theme.strong ] }));
     return undefined;
