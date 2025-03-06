@@ -70,24 +70,46 @@ export interface Theme {
   primaryColorDarkest: string;
 }
 
-export interface DeckConfiguration {
-  customJs: string;
-  customCss: string;
-  favicon: string;
-  svgIconsFolder: string;
-  pageTitle: string;
-  shouldFragmentLists: boolean;
-  shouldFragmentTables: boolean;
+export enum UserSetDeckConfigurationKey {
+  ASSETS_PATHS = 'assetsPath',
+  CUSTOM_JS = 'customJs',
+  CUSTOM_CSS = 'customCss',
+  FAVICON = 'favicon',
+  SVG_ICONS_FOLDER = 'svgIconsFolder',
+  PAGE_TITLE = 'pageTitle',
+  SHOULD_FRAGMENT_LIST = 'shouldFragmentLists',
+  SHOULD_FRAGMENT_TABLES = 'shouldFragmentTables',
+  THEME_NAME = 'themeName',
+  THEME_COLOR = 'themeColor',
+  HIGHLIGHT_THEME_DARK = 'highlightThemeDark',
+  HIGHLIGHT_THEME_LIGHT = 'highlightThemeLight',
+}
 
-  themeName: ThemeName,
-  themeColor: ThemeColor;
-  highlightThemeDark: string;
-  highlightThemeLight: string;
+enum AutoSetDeckConfigurationKey {
+  STARTING_THEME_NAME = 'startingThemeName',
+  NON_STARTING_THEME_NAME = 'nonStartingThemeName',
+  THEME_SWITCHING_MODE = 'themeSwitchingMode',
+}
+
+export interface DeckConfiguration {
+  [ UserSetDeckConfigurationKey.ASSETS_PATHS ]: string;
+  [ UserSetDeckConfigurationKey.CUSTOM_JS ]: string;
+  [ UserSetDeckConfigurationKey.CUSTOM_CSS ]: string;
+  [ UserSetDeckConfigurationKey.FAVICON ]: string;
+  [ UserSetDeckConfigurationKey.SVG_ICONS_FOLDER ]: string;
+  [ UserSetDeckConfigurationKey.PAGE_TITLE ]: string;
+  [ UserSetDeckConfigurationKey.SHOULD_FRAGMENT_LIST ]: boolean;
+  [ UserSetDeckConfigurationKey.SHOULD_FRAGMENT_TABLES ]: boolean;
+
+  [ UserSetDeckConfigurationKey.THEME_NAME ]: ThemeName,
+  [ UserSetDeckConfigurationKey.THEME_COLOR ]: ThemeColor;
+  [ UserSetDeckConfigurationKey.HIGHLIGHT_THEME_DARK ]: string;
+  [ UserSetDeckConfigurationKey.HIGHLIGHT_THEME_LIGHT ]: string;
 
   // Auto-generated part
-  startingThemeName: ThemeFamily;
-  nonStartingThemeName: ThemeFamily;
-  themeSwitchingMode: ThemeSwitchingMode;
+  [ AutoSetDeckConfigurationKey.STARTING_THEME_NAME ]: ThemeFamily;
+  [ AutoSetDeckConfigurationKey.NON_STARTING_THEME_NAME ]: ThemeFamily;
+  [ AutoSetDeckConfigurationKey.THEME_SWITCHING_MODE ]: ThemeSwitchingMode;
 }
 
 export interface BuildOptions {

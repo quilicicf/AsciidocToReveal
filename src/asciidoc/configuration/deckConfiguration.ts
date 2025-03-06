@@ -50,6 +50,7 @@ type DeckConfigurationBuilder = Record<UserSetDeckConfigurationKey, OptionBuilde
 const themeNames = Object.values(THEMES);
 const HIGHLIGHT_THEMES_DARK = HIGHLIGHT_THEMES.dark.sort();
 const HIGHLIGHT_THEMES_LIGHT = HIGHLIGHT_THEMES.light.sort();
+
 export const deckConfigurationBuilder: DeckConfigurationBuilder = {
   assetsPath: { // NOTE : must be declared first, other keys depend on it
     id: 'a2r-assets',

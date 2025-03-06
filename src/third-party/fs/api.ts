@@ -1,5 +1,6 @@
 import { ChokidarOptions, watch as _watch } from 'npm:chokidar';
 import { existsSync as _existsSync } from '@std/fs/exists';
+import { walk } from '@std/fs/walk';
 import { ensureDirSync } from '@std/fs/ensure-dir';
 import { encodeBase64 } from '@std/encoding/base64';
 
@@ -23,6 +24,17 @@ export function mkdirIfNotExistsSync (path: string): void {
   return ensureDirSync(path);
 }
 
+
+export async function readDirRecursive (filePath: string): Promise<string[]> {
+  const contents: string[] = [];
+  for await (const entry of walk(filePath)) {
+    if (entry.isFile) {
+      contents.push(entry.path);
+    }
+  }
+  return contents;
+}
+
 export function readDirSync (filePath: string): string[] {
   return [ ...Deno.readDirSync(filePath) ]
     .map(({ name }) => name);
@@ -30,6 +42,10 @@ export function readDirSync (filePath: string): string[] {
 
 export function existsSync (filePath: string): boolean {
   return _existsSync(filePath);
+}
+
+export function readAsBufferSync (filePath: string): Uint8Array {
+  return Deno.readFileSync(filePath);
 }
 
 export function readAsBase64Sync (filePath: string): string {

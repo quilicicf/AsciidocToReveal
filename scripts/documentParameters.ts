@@ -1,6 +1,6 @@
 #!/usr/bin/env deno
 
-import { deckConfiguration } from '../src/asciidoc/configuration/deckConfiguration.ts';
+import { deckConfigurationBuilder } from '../src/asciidoc/configuration/deckConfiguration.ts';
 import { TEST_FOLDER } from '../src/paths.ts';
 import { readTextFileSync, writeTextFileSync } from '../src/third-party/fs/api.ts';
 import { resolve } from '../src/third-party/path/api.ts';
@@ -9,7 +9,7 @@ const START_TAG = '// START PARAMETERS DOCUMENTATION';
 const END_TAG = '// END PARAMETERS DOCUMENTATION';
 
 function main () {
-  const tableContent = Object.entries(deckConfiguration)
+  const tableContent = Object.entries(deckConfigurationBuilder)
     .map(([ , { id, documentation, defaultValue, acceptedValues } ]) => ([
       `| \`${id}\``,
       `| ${Array.isArray(defaultValue) ? JSON.stringify(defaultValue, null, 2) : defaultValue}`,

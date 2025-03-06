@@ -1,8 +1,8 @@
 :imagesdir: assets
-:a2r-js: assets/deck.mjs
-:a2r-css: assets/deck.css
+:a2r-js: deck.mjs
+:a2r-css: deck.css
 :a2r-page-title: Asciidoc 2 Reveal.js
-:a2r-favicon: assets/favicon.svg
+:a2r-favicon: favicon.svg
 :a2r-fragment-lists: true
 :a2r-fragment-tables: true
 :a2r-theme-name: dark-and-light-manual
@@ -558,24 +558,29 @@ emoji:muscle[]emoji:muscle[1.4,em]emoji:muscle[]
 |===
 | Option | Default value | Accepted values | Description
 
+| `a2r-assets`
+| The folder `assets` next to the deck file
+| Path relative to the deck's input file
+| Specify the path to the folder containing all the external files your deck references
+
 | `a2r-js`
 | 
-| Path relative to the deck's input file
+| Path relative to the deck's assets folder
 | Specify a path to a custom JS file that will be the last loaded script in the final deck
 
 | `a2r-css`
 | 
-| Path relative to the deck's input file
+| Path relative to the deck's assets folder
 | Specify a path to a custom CSS file that will be the last loaded style in the final deck
 
 | `a2r-favicon`
 | 
-| Path relative to the deck's input file
+| Path relative to the deck's assets folder
 | Specify a path to the file containing your favicon
 
 | `a2r-svg-icons-dir`
 | 
-| Path relative to the deck's input file
+| Path relative to the deck's assets folder
 | Specify the location of the folder containing your SVG icons
 
 | `a2r-page-title`
@@ -595,7 +600,7 @@ emoji:muscle[]emoji:muscle[1.4,em]emoji:muscle[]
 
 | `a2r-theme-name`
 | dark
-| dark, light, light-and-dark-manual, dark-and-light-manual, light-and-dark-auto
+| `dark`,`light`,`light-and-dark-manual`,`dark-and-light-manual`,`light-and-dark-auto`
 | Select the theme to use
 
 | `a2r-theme-color`
@@ -609,12 +614,12 @@ emoji:muscle[]emoji:muscle[1.4,em]emoji:muscle[]
 
 | `a2r-highlight-theme-dark`
 | github-dark-dimmed
-| andromeeda, aurora-x, ayu-dark, catppuccin-frappe, catppuccin-macchiato, catppuccin-mocha, dark-plus, dracula, dracula-soft, everforest-dark, github-dark, github-dark-default, github-dark-dimmed, github-dark-high-contrast, houston, kanagawa-dragon, kanagawa-wave, laserwave, material-theme, material-theme-darker, material-theme-ocean, material-theme-palenight, min-dark, monokai, night-owl, nord, one-dark-pro, plastic, poimandres, red, rose-pine, rose-pine-moon, slack-dark, solarized-dark, synthwave-84, tokyo-night, vesper, vitesse-black, vitesse-dark
+| `andromeeda`,`aurora-x`,`ayu-dark`,`catppuccin-frappe`,`catppuccin-macchiato`,`catppuccin-mocha`,`dark-plus`,`dracula`,`dracula-soft`,`everforest-dark`,`github-dark`,`github-dark-default`,`github-dark-dimmed`,`github-dark-high-contrast`,`houston`,`kanagawa-dragon`,`kanagawa-wave`,`laserwave`,`material-theme`,`material-theme-darker`,`material-theme-ocean`,`material-theme-palenight`,`min-dark`,`monokai`,`night-owl`,`nord`,`one-dark-pro`,`plastic`,`poimandres`,`red`,`rose-pine`,`rose-pine-moon`,`slack-dark`,`solarized-dark`,`synthwave-84`,`tokyo-night`,`vesper`,`vitesse-black`,`vitesse-dark`
 | The theme for syntax coloration in dark mode
 
 | `a2r-highlight-theme-light`
 | github-light
-| catppuccin-latte, everforest-light, github-light, github-light-default, github-light-high-contrast, kanagawa-lotus, light-plus, material-theme-lighter, min-light, one-light, rose-pine-dawn, slack-ochin, snazzy-light, solarized-light, vitesse-light
+| `catppuccin-latte`,`everforest-light`,`github-light`,`github-light-default`,`github-light-high-contrast`,`kanagawa-lotus`,`light-plus`,`material-theme-lighter`,`min-light`,`one-light`,`rose-pine-dawn`,`slack-ochin`,`snazzy-light`,`solarized-light`,`vitesse-light`
 | The theme for syntax coloration in light mode
 
 |===

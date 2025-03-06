@@ -18,7 +18,7 @@ export default function startLiveReloadServer (initialHash: string): ReloadServe
     clients: {},
   };
 
-  Deno.serve({ port: 1234 }, (request) => {
+  Deno.serve({ port: 1234, onListen: () => {} }, (request) => {
     if (request.headers.get('upgrade') != 'websocket') {
       return new Response(null, { status: 501 });
     }

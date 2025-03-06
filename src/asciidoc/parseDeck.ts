@@ -1,7 +1,7 @@
 import asciidoctor, { Asciidoctor } from 'npm:@asciidoctor/core';
 
-import { hashString } from '../third-party/crypto/api.ts';
-import { readTextFileSync } from '../third-party/fs/api.ts';
+import { hashBuffer, hashString } from '../third-party/crypto/api.ts';
+import { readAsBufferSync, readDirRecursive } from '../third-party/fs/api.ts';
 import { getParentFolderName, resolve } from '../third-party/path/api.ts';
 import { parseConfiguration } from './configuration/deckConfiguration.ts';
 import registerEmojisExtension from './emojis/asciidoctor-emojis.ts';
@@ -42,14 +42,16 @@ export default async function parseDeck (inputPath: string, buildOptions: BuildO
   };
 }
 
-// FIXME: this will need a revamp, as ideally all the assets should be inputs for the hashing
-export async function computeDeckHash (inputPath: string, { customCss, customJs }: DeckConfiguration): Promise<string> {
-  const input = [ inputPath, customCss, customJs ]
-    .filter(Boolean)
-    .map((filePath) => readTextFileSync(filePath))
-    .join('');
+export async function computeDeckHash (inputPath: string, { assetsPath }: DeckConfiguration): Promise<string> {
+  const assets = await readDirRecursive(assetsPath);
+  const hashes = await Promise.all(
+    [ inputPath, ...assets ]
+      .filter(Boolean)
+      .map((filePath) => ({ filePath, content: readAsBufferSync(filePath) }))
+      .map(async ({ filePath, content }) => `${filePath}:${await hashBuffer(content)}`),
+  );
 
-  return await hashString(input);
+  return await hashString(hashes.join('\n'));
 }
 
 function findInputFolder (inputPath: string): string {

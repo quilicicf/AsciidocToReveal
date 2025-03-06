@@ -4,7 +4,7 @@ import { YargsInstance } from 'yargs/build/lib/yargs-factory.js';
 
 import { existsSync, mkdirSync, watch } from '../src/third-party/fs/api.ts';
 import { logInfo, theme } from '../src/third-party/logger/log.ts';
-import { getBaseName, resolve } from '../src/third-party/path/api.ts';
+import { getBaseName, resolve, join } from '../src/third-party/path/api.ts';
 import startLiveReloadServer from './liveReloadServer.ts';
 
 export const command = 'watch';
@@ -32,29 +32,12 @@ function builder (yargs: YargsInstance) {
       requiresArg: true,
       demandOption: true,
     })
-    .option('assets-folder', {
-      alias: 'a',
-      type: 'string',
-      describe: 'The relative path from the asciidoc deck to the assets folder. Will trigger a re-build for changes inside the assets folder too',
-      requiresArg: true,
-      demandOption: false,
-    })
-    .check(function checker (_argv: Arguments, currentArgs: Arguments) {
-      const assetsFolder = currentArgs?.assetsFolder;
-      if (assetsFolder) {
-        const assetsFolderAbsolutePath = resolve(currentArgs.inputFile, '..', assetsFolder);
-        if (!existsSync(assetsFolderAbsolutePath)) {
-          throw Error(`Cannot find assets folder, does it exist?`);
-        }
-      }
-      return true;
-    })
     .help()
     .wrap(null);
 }
 
 async function handler (args: Arguments) {
-  const { inputFile, outputFile, assetsFolder } = args;
+  const { inputFile, outputFile } = args;
 
   const outputFolder = getBaseName(outputFile);
   mkdirSync(outputFolder, { recursive: true });
@@ -63,20 +46,20 @@ async function handler (args: Arguments) {
     queue: Promise.resolve(),
   };
 
-  const additionalWatchedPaths = assetsFolder
-    ? [ resolve(inputFile, '..', assetsFolder, '*') ]
-    : [];
+  const { asciidocToReveal } = await import ('../src/asciidocToReveal.ts'); // Delay pulling all the dependencies because it's super heavy
+  const {
+    inputHash: initialInputHash,
+    configuration: {
+      assetsPath,
+    },
+  } = await asciidocToReveal(inputFile, outputFile, { shouldAddLiveReload: true });
 
   logInfo(stoyle`Watcher started on ${inputFile}`({ nodes: [ theme.strong ] }));
-  if (additionalWatchedPaths.length) {
-    logInfo(stoyle`Also watching [ ${additionalWatchedPaths} ]`({ nodes: [ theme.strong ] }));
-  }
+  logInfo(stoyle`Also watching ${assetsPath}`({ nodes: [ theme.strong ] }));
 
-  const { asciidocToReveal } = await import ('../src/asciidocToReveal.ts'); // Delay pulling all the dependencies because it's super heavy
-  const initialDeck = await asciidocToReveal(inputFile, outputFile, { shouldAddLiveReload: true });
-  const liveReloadServer = startLiveReloadServer(initialDeck.inputHash);
+  const liveReloadServer = startLiveReloadServer(initialInputHash);
   watch(
-    [ inputFile, ...additionalWatchedPaths ],
+    [ inputFile, assetsPath ],
     { cwd: Deno.cwd() },
     {
       all: (event: string, path: string): void => {
