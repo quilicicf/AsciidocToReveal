@@ -1,7 +1,7 @@
 import 'npm:reveal.js';
 
 import { DIAGRAM_STYLES_FOLDER, LIB_FOLDER, NODE_MODULES_PATH } from '../paths.ts';
-import { oklch } from '../third-party/colors/api.ts';
+import { LchColor, oklchToHex } from '../third-party/colors/api.ts';
 import { existsSync, readTextFileSync, writeTextFileSync } from '../third-party/fs/api.ts';
 import { _, logInfo, logWarn, theme } from '../third-party/logger/log.ts';
 import { resolve } from '../third-party/path/api.ts';
@@ -19,13 +19,13 @@ export const THEMES = {
   DARK_AND_LIGHT_MANUAL: 'dark-and-light-manual',
   LIGHT_AND_DARK_AUTO: 'light-and-dark-auto',
 };
-export const DEFAULT_COLOR = [ .6, .1, 170 ];
+export const DEFAULT_COLOR: LchColor = { light: .6, chroma: .1, hue: 170 };
 export const DEFAULT_THEME = THEMES.DARK;
 
 export default function applyTheme (dom: Dom, { cachePath, graphTypes, configuration }: Deck) {
   const { themeName, themeColor, startingThemeName, nonStartingThemeName, themeSwitchingMode } = configuration;
 
-  const [ light, chroma, hue ] = themeColor;
+  const { light, chroma, hue } = themeColor;
   const stringColor = `oklch-${light}-${chroma}-${hue}`;
   const builtThemeFilePath = resolve(cachePath, `${themeName}-${stringColor}.css`);
   if (!existsSync(builtThemeFilePath)) {
@@ -192,15 +192,15 @@ function minOf (a: number, b: number) {
   return a < b ? a : b;
 }
 
-function createTheme ([ light, chroma, hue ]: ThemeColor): Theme {
+function createTheme ({ light, chroma, hue }: ThemeColor): Theme {
   return {
-    primaryColor: oklch(light, chroma, hue),
-    primaryColorLight: oklch(maxOf(light + .2, 1), chroma, hue),
-    primaryColorLighter: oklch(.94, .005, hue),
-    primaryColorLightest: oklch(.99, .005, hue),
-    primaryColorDark: oklch(minOf(light - .2, 0), chroma, hue),
-    primaryColorDarker: oklch(.06, .005, hue),
-    primaryColorDarkest: oklch(.01, .005, hue),
+    primaryColor: oklchToHex(light, chroma, hue),
+    primaryColorLight: oklchToHex(maxOf(light + .2, 1), chroma, hue),
+    primaryColorLighter: oklchToHex(.94, .005, hue),
+    primaryColorLightest: oklchToHex(.99, .005, hue),
+    primaryColorDark: oklchToHex(minOf(light - .2, 0), chroma, hue),
+    primaryColorDarker: oklchToHex(.06, .005, hue),
+    primaryColorDarkest: oklchToHex(.01, .005, hue),
   };
 }
 

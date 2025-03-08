@@ -15,6 +15,7 @@ import {
   ThemeName,
   ThemeSwitchingMode, UserSetDeckConfigurationKey,
 } from '../../domain/api.ts';
+import { getColorAsLch, isValidColor, LchColor } from '../../third-party/colors/api.ts';
 
 type FsItem = 'FILE' | 'FOLDER';
 
@@ -39,8 +40,10 @@ const PATH_VALIDATORS: Record<FsItem, PathValidator> = {
 
 interface OptionBuilder<T> {
   id: string;
+  pageNumber: 1 | 2;
   documentation: string;
   defaultValue: T;
+  displayDefaultValue: string;
   acceptedValues: string;
   validate: (value: string, inputFolder: string, configuration: Partial<DeckConfiguration>) => T | undefined;
 }
@@ -54,8 +57,10 @@ const HIGHLIGHT_THEMES_LIGHT = HIGHLIGHT_THEMES.light.sort();
 export const deckConfigurationBuilder: DeckConfigurationBuilder = {
   assetsPath: { // NOTE : must be declared first, other keys depend on it
     id: 'a2r-assets',
-    documentation: `Specify the path to the folder containing all the external files your deck references`,
-    defaultValue: 'The folder `assets` next to the deck file',
+    pageNumber: 1,
+    documentation: `Path to the folder containing all the external files your deck references`,
+    defaultValue: '',
+    displayDefaultValue: 'The folder `assets` next to the deck file',
     acceptedValues: `Path relative to the deck's input file`,
     validate (value: string, inputFolder: string) {
       const customPath = validateCustomPath(value, 'assets', inputFolder, PATH_VALIDATORS.FILE);
@@ -72,8 +77,10 @@ export const deckConfigurationBuilder: DeckConfigurationBuilder = {
   },
   customJs: {
     id: 'a2r-js',
-    documentation: `Specify a path to a custom JS file that will be the last loaded script in the final deck`,
+    pageNumber: 1,
+    documentation: `Path to a custom JS file, loaded last in the generated deck`,
     defaultValue: '',
+    displayDefaultValue: '',
     acceptedValues: `Path relative to the deck's assets folder`,
     validate (value: string, _inputFolder: string, configuration: Partial<DeckConfiguration>) {
       return validateCustomPath(value, 'custom JS', configuration.assetsPath as string, PATH_VALIDATORS.FILE);
@@ -81,8 +88,10 @@ export const deckConfigurationBuilder: DeckConfigurationBuilder = {
   },
   customCss: {
     id: 'a2r-css',
-    documentation: `Specify a path to a custom CSS file that will be the last loaded style in the final deck`,
+    pageNumber: 1,
+    documentation: `Path to a custom CSS file, loaded last in the final deck`,
     defaultValue: '',
+    displayDefaultValue: '',
     acceptedValues: `Path relative to the deck's assets folder`,
     validate (value: string, _inputFolder: string, configuration: Partial<DeckConfiguration>) {
       return validateCustomPath(value, 'custom CSS', configuration.assetsPath as string, PATH_VALIDATORS.FILE);
@@ -90,8 +99,10 @@ export const deckConfigurationBuilder: DeckConfigurationBuilder = {
   },
   favicon: {
     id: 'a2r-favicon',
-    documentation: `Specify a path to the file containing your favicon`,
+    pageNumber: 1,
+    documentation: `Path to the favicon file`,
     defaultValue: '',
+    displayDefaultValue: '',
     acceptedValues: `Path relative to the deck's assets folder`,
     validate (value: string, _inputFolder: string, configuration: Partial<DeckConfiguration>) {
       return validateCustomPath(value, 'favicon', configuration.assetsPath as string, PATH_VALIDATORS.FILE);
@@ -99,8 +110,10 @@ export const deckConfigurationBuilder: DeckConfigurationBuilder = {
   },
   svgIconsFolder: {
     id: 'a2r-svg-icons-dir',
-    documentation: `Specify the location of the folder containing your SVG icons`,
+    pageNumber: 1,
+    documentation: `Location of the folder containing your SVG icons`,
     defaultValue: '',
+    displayDefaultValue: '',
     acceptedValues: `Path relative to the deck's assets folder`,
     validate (value: string, _inputFolder: string, configuration: Partial<DeckConfiguration>) {
       return validateCustomPath(value, 'SVG icons directory', configuration.assetsPath as string, PATH_VALIDATORS.FOLDER);
@@ -108,8 +121,10 @@ export const deckConfigurationBuilder: DeckConfigurationBuilder = {
   },
   pageTitle: {
     id: 'a2r-page-title',
-    documentation: `Specify the HTML title for the deck`,
-    defaultValue: `First slide's title`,
+    pageNumber: 1,
+    documentation: `The HTML title for the deck`,
+    defaultValue: '',
+    displayDefaultValue: `First slide's title`,
     acceptedValues: 'Any string',
     validate (value: string) {
       return value === undefined ? undefined : sanitize(value);
@@ -117,8 +132,10 @@ export const deckConfigurationBuilder: DeckConfigurationBuilder = {
   },
   shouldFragmentLists: {
     id: 'a2r-fragment-lists',
-    documentation: `Make all lists in the deck Reveal.js fragments`,
+    pageNumber: 1,
+    documentation: `Makes all lists display line by line`,
     defaultValue: false,
+    displayDefaultValue: `\`false\``,
     acceptedValues: 'booleans',
     validate (value: string) {
       return validateBoolean(value, 'list fragmentation', this.defaultValue);
@@ -126,8 +143,10 @@ export const deckConfigurationBuilder: DeckConfigurationBuilder = {
   } as OptionBuilder<boolean>,
   shouldFragmentTables: {
     id: 'a2r-fragment-tables',
-    documentation: `Make all tables in the deck Reveal.js fragments`,
+    pageNumber: 1,
+    documentation: `Makes all tables display row by row`,
     defaultValue: false,
+    displayDefaultValue: `\`false\``,
     acceptedValues: 'booleans',
     validate (value: string) {
       return validateBoolean(value, 'table fragmentation', this.defaultValue);
@@ -136,18 +155,22 @@ export const deckConfigurationBuilder: DeckConfigurationBuilder = {
 
   themeName: {
     id: 'a2r-theme-name',
+    pageNumber: 2,
     documentation: `Select the theme to use`,
     defaultValue: DEFAULT_THEME,
-    acceptedValues: themeNames.map((name) => `\`${name}\``).join(','),
+    displayDefaultValue: `\`${DEFAULT_THEME}\``,
+    acceptedValues: `\`${themeNames.join(',')}\``,
     validate (value: string) {
       return validateEnumValue(value, 'theme name', themeNames, this.defaultValue);
     },
   } as OptionBuilder<ThemeName>,
   themeColor: {
     id: 'a2r-theme-color',
+    pageNumber: 2,
     documentation: `The theme\'s accent color`,
     defaultValue: DEFAULT_COLOR,
-    acceptedValues: 'oklch as JSON, ex: [ .6, .1, 170 ]',
+    displayDefaultValue: `\`${JSON.stringify([ DEFAULT_COLOR.light, DEFAULT_COLOR.chroma, DEFAULT_COLOR.hue, 'oklch' ])}\``,
+    acceptedValues: 'Valid link:https://gka.github.io/chroma.js/#chroma[chroma-js] constructor args as JSON\n\nex: `[ .6, .1, 170, "oklch" ]` or `[ "#F2E142" ]`',
     validate (value: string) {
       if (value === undefined) { return this.defaultValue; }
 
@@ -158,33 +181,34 @@ export const deckConfigurationBuilder: DeckConfigurationBuilder = {
         return this.defaultValue;
       }
 
-      const [ lightString = undefined, chromaString = undefined, hueString = undefined ] = JSON.parse(value);
+      const args = JSON.parse(value);
 
-      try {
-        const light = validateNumber(lightString, 'theme color light', 0, 1);
-        const chroma = validateNumber(chromaString, 'theme color chroma', 0, .37);
-        const hue = validateNumber(hueString, 'theme color hue', 0, 360);
-        return [ light, chroma, hue ];
-      } catch (error) {
-        logWarn((error as Error).message);
+      if (!isValidColor(args)) {
+        logWarn(_`The theme color ${value} is not a valid color`({ nodes: [ theme.error ] }));
         return this.defaultValue;
       }
+
+      return getColorAsLch(args);
     },
-  },
+  } as OptionBuilder<LchColor>,
   highlightThemeDark: {
     id: 'a2r-highlight-theme-dark',
+    pageNumber: 2,
     documentation: 'The theme for syntax coloration in dark mode',
     defaultValue: DEFAULT_DARK_HIGHLIGHT_THEME,
-    acceptedValues: HIGHLIGHT_THEMES_DARK.map((name) => `\`${name}\``).join(','),
+    displayDefaultValue: `\`${DEFAULT_DARK_HIGHLIGHT_THEME}\``,
+    acceptedValues: `\`${HIGHLIGHT_THEMES_DARK.join(', ')}\``,
     validate (value: string) {
       return validateEnumValue(value, 'dark highlight theme', HIGHLIGHT_THEMES_DARK, this.defaultValue);
     },
   } as OptionBuilder<string>,
   highlightThemeLight: {
     id: 'a2r-highlight-theme-light',
+    pageNumber: 2,
     documentation: 'The theme for syntax coloration in light mode',
     defaultValue: DEFAULT_LIGHT_HIGHLIGHT_THEME,
-    acceptedValues: HIGHLIGHT_THEMES_LIGHT.map((name) => `\`${name}\``).join(','),
+    displayDefaultValue: `\`${DEFAULT_LIGHT_HIGHLIGHT_THEME}\``,
+    acceptedValues: `\`${HIGHLIGHT_THEMES_LIGHT.join(', ')}\``,
     validate (value: string) {
       return validateEnumValue(value, 'light highlight theme', HIGHLIGHT_THEMES_LIGHT, this.defaultValue);
     },

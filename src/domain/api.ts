@@ -1,4 +1,5 @@
 import { Block, Document as AsciiDoc, Extensions, Reader, Registry } from 'npm:@asciidoctor/core';
+import { LchColor } from '../third-party/colors/api.ts';
 
 export type AsciidoctorDocument = AsciiDoc;
 export type AsciidoctorImageReference = AsciiDoc.ImageReference;
@@ -57,7 +58,7 @@ export type GraphMap = Record<string, string>;
 export type GraphAnimationsMap = Record<string, GraphAnimation[]>;
 export type ThemeFamily = 'dark' | 'light';
 export type ThemeName = ThemeFamily | 'light-and-dark-manual' | 'dark-and-light-manual' | 'light-and-dark-auto';
-export type ThemeColor = [ number, number, number ];
+export type ThemeColor = LchColor;
 export type ThemeSwitchingMode = 'manual' | 'auto' | 'none';
 
 export interface Theme {

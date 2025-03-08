@@ -6,7 +6,7 @@
 :a2r-fragment-lists: true
 :a2r-fragment-tables: true
 :a2r-theme-name: dark-and-light-manual
-:a2r-theme-color: [ 0.65, 0.23, 17 ]
+:a2r-theme-color: [ "#E40046" ]
 
 = image:asciidoc-logo.svg[Asciidoc logo,role=thumb] => image:reveal-logo.png[Reveal.js logo,role=thumb]
 
@@ -551,9 +551,9 @@ emoji:muscle[]emoji:muscle[1.4,em]emoji:muscle[]
 * Validation done at the very beginning, no broken configuration past that gate
 ====
 
-=== Parameters documentation
+=== Parameters documentation - part I
 
-// START PARAMETERS DOCUMENTATION
+// START PARAMETERS DOCUMENTATION 1
 [cols="2,1,3,2",role=extra-small]
 |===
 | Option | Default value | Accepted values | Description
@@ -561,69 +561,77 @@ emoji:muscle[]emoji:muscle[1.4,em]emoji:muscle[]
 | `a2r-assets`
 | The folder `assets` next to the deck file
 | Path relative to the deck's input file
-| Specify the path to the folder containing all the external files your deck references
+| Path to the folder containing all the external files your deck references
 
 | `a2r-js`
 | 
 | Path relative to the deck's assets folder
-| Specify a path to a custom JS file that will be the last loaded script in the final deck
+| Path to a custom JS file, loaded last in the generated deck
 
 | `a2r-css`
 | 
 | Path relative to the deck's assets folder
-| Specify a path to a custom CSS file that will be the last loaded style in the final deck
+| Path to a custom CSS file, loaded last in the final deck
 
 | `a2r-favicon`
 | 
 | Path relative to the deck's assets folder
-| Specify a path to the file containing your favicon
+| Path to the favicon file
 
 | `a2r-svg-icons-dir`
 | 
 | Path relative to the deck's assets folder
-| Specify the location of the folder containing your SVG icons
+| Location of the folder containing your SVG icons
 
 | `a2r-page-title`
 | First slide's title
 | Any string
-| Specify the HTML title for the deck
+| The HTML title for the deck
 
 | `a2r-fragment-lists`
-| false
+| `false`
 | booleans
-| Make all lists in the deck Reveal.js fragments
+| Makes all lists display line by line
 
 | `a2r-fragment-tables`
-| false
+| `false`
 | booleans
-| Make all tables in the deck Reveal.js fragments
+| Makes all tables display row by row
+
+|===
+// END PARAMETERS DOCUMENTATION 1
+
+=== Parameters documentation - part II
+
+// START PARAMETERS DOCUMENTATION 2
+[cols="2,1,3,2",role=extra-small]
+|===
+| Option | Default value | Accepted values | Description
 
 | `a2r-theme-name`
-| dark
-| `dark`,`light`,`light-and-dark-manual`,`dark-and-light-manual`,`light-and-dark-auto`
+| `dark`
+| `dark,light,light-and-dark-manual,dark-and-light-manual,light-and-dark-auto`
 | Select the theme to use
 
 | `a2r-theme-color`
-| [
-  0.6,
-  0.1,
-  170
-]
-| oklch as JSON, ex: [ .6, .1, 170 ]
+| `[0.6,0.1,170,"oklch"]`
+| Valid link:https://gka.github.io/chroma.js/#chroma[chroma-js] constructor args as JSON
+
+ex: `[ .6, .1, 170, "oklch" ]` or `[ "#F2E142" ]`
 | The theme's accent color
 
 | `a2r-highlight-theme-dark`
-| github-dark-dimmed
-| `andromeeda`,`aurora-x`,`ayu-dark`,`catppuccin-frappe`,`catppuccin-macchiato`,`catppuccin-mocha`,`dark-plus`,`dracula`,`dracula-soft`,`everforest-dark`,`github-dark`,`github-dark-default`,`github-dark-dimmed`,`github-dark-high-contrast`,`houston`,`kanagawa-dragon`,`kanagawa-wave`,`laserwave`,`material-theme`,`material-theme-darker`,`material-theme-ocean`,`material-theme-palenight`,`min-dark`,`monokai`,`night-owl`,`nord`,`one-dark-pro`,`plastic`,`poimandres`,`red`,`rose-pine`,`rose-pine-moon`,`slack-dark`,`solarized-dark`,`synthwave-84`,`tokyo-night`,`vesper`,`vitesse-black`,`vitesse-dark`
+| `github-dark-dimmed`
+| `andromeeda, aurora-x, ayu-dark, catppuccin-frappe, catppuccin-macchiato, catppuccin-mocha, dark-plus, dracula, dracula-soft, everforest-dark, github-dark, github-dark-default, github-dark-dimmed, github-dark-high-contrast, houston, kanagawa-dragon, kanagawa-wave, laserwave, material-theme, material-theme-darker, material-theme-ocean, material-theme-palenight, min-dark, monokai, night-owl, nord, one-dark-pro, plastic, poimandres, red, rose-pine, rose-pine-moon, slack-dark, solarized-dark, synthwave-84, tokyo-night, vesper, vitesse-black, vitesse-dark`
 | The theme for syntax coloration in dark mode
 
 | `a2r-highlight-theme-light`
-| github-light
-| `catppuccin-latte`,`everforest-light`,`github-light`,`github-light-default`,`github-light-high-contrast`,`kanagawa-lotus`,`light-plus`,`material-theme-lighter`,`min-light`,`one-light`,`rose-pine-dawn`,`slack-ochin`,`snazzy-light`,`solarized-light`,`vitesse-light`
+| `github-light`
+| `catppuccin-latte, everforest-light, github-light, github-light-default, github-light-high-contrast, kanagawa-lotus, light-plus, material-theme-lighter, min-light, one-light, rose-pine-dawn, slack-ochin, snazzy-light, solarized-light, vitesse-light`
 | The theme for syntax coloration in light mode
 
 |===
-// END PARAMETERS DOCUMENTATION
+// END PARAMETERS DOCUMENTATION 2
 
 == Custom JS/CSS
 
