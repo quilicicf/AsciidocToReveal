@@ -5,21 +5,21 @@ import {
 } from '../../third-party/code-highlight/api.ts';
 import { DEFAULT_COLOR, DEFAULT_THEME, THEMES } from '../../themes/applyTheme.ts';
 import { sanitize } from '../../third-party/dom/api.ts';
-import { existsSync, statSync } from '../../third-party/fs/api.ts';
+import { existsSync, FileSystemPath, join, statSync } from '../../third-party/file-system/api.ts';
 import { _, logError, logInfo, logWarn, theme } from '../../third-party/logger/log.ts';
-import { join } from '../../third-party/path/api.ts';
 import {
   AsciidoctorDocument,
   DeckConfiguration,
   ThemeFamily,
   ThemeName,
-  ThemeSwitchingMode, UserSetDeckConfigurationKey,
+  ThemeSwitchingMode,
+  UserSetDeckConfigurationKey,
 } from '../../domain/api.ts';
 import { getColorAsLch, isValidColor, LchColor } from '../../third-party/colors/api.ts';
 
 type FsItem = 'FILE' | 'FOLDER';
 
-type PathValidator = (absolutePath: string, name: string) => string | undefined;
+type PathValidator = (absolutePath: FileSystemPath, name: string) => string | undefined;
 
 const PATH_VALIDATORS: Record<FsItem, PathValidator> = {
   FILE (absolutePath, name) {
@@ -63,8 +63,9 @@ export const deckConfigurationBuilder: DeckConfigurationBuilder = {
     displayDefaultValue: 'The folder `assets` next to the deck file',
     acceptedValues: `Path relative to the deck's input file`,
     validate (value: string, inputFolder: string) {
-      const customPath = validateCustomPath(value, 'assets', inputFolder, PATH_VALIDATORS.FILE);
-      const assetsPath = customPath || join(inputFolder, 'assets');
+      const safeInputFolder = inputFolder as FileSystemPath;
+      const customPath = validateCustomPath(value, 'assets', safeInputFolder, PATH_VALIDATORS.FILE);
+      const assetsPath = customPath || join(safeInputFolder, 'assets');
 
       if (customPath) {
         logInfo(_`Assets path ${customPath}`({ nodes: [ theme.strong ] }));
@@ -83,7 +84,7 @@ export const deckConfigurationBuilder: DeckConfigurationBuilder = {
     displayDefaultValue: '',
     acceptedValues: `Path relative to the deck's assets folder`,
     validate (value: string, _inputFolder: string, configuration: Partial<DeckConfiguration>) {
-      return validateCustomPath(value, 'custom JS', configuration.assetsPath as string, PATH_VALIDATORS.FILE);
+      return validateCustomPath(value, 'custom JS', configuration.assetsPath as FileSystemPath, PATH_VALIDATORS.FILE);
     },
   },
   customCss: {
@@ -94,7 +95,7 @@ export const deckConfigurationBuilder: DeckConfigurationBuilder = {
     displayDefaultValue: '',
     acceptedValues: `Path relative to the deck's assets folder`,
     validate (value: string, _inputFolder: string, configuration: Partial<DeckConfiguration>) {
-      return validateCustomPath(value, 'custom CSS', configuration.assetsPath as string, PATH_VALIDATORS.FILE);
+      return validateCustomPath(value, 'custom CSS', configuration.assetsPath as FileSystemPath, PATH_VALIDATORS.FILE);
     },
   },
   favicon: {
@@ -105,7 +106,7 @@ export const deckConfigurationBuilder: DeckConfigurationBuilder = {
     displayDefaultValue: '',
     acceptedValues: `Path relative to the deck's assets folder`,
     validate (value: string, _inputFolder: string, configuration: Partial<DeckConfiguration>) {
-      return validateCustomPath(value, 'favicon', configuration.assetsPath as string, PATH_VALIDATORS.FILE);
+      return validateCustomPath(value, 'favicon', configuration.assetsPath as FileSystemPath, PATH_VALIDATORS.FILE);
     },
   },
   svgIconsFolder: {
@@ -116,7 +117,7 @@ export const deckConfigurationBuilder: DeckConfigurationBuilder = {
     displayDefaultValue: '',
     acceptedValues: `Path relative to the deck's assets folder`,
     validate (value: string, _inputFolder: string, configuration: Partial<DeckConfiguration>) {
-      return validateCustomPath(value, 'SVG icons directory', configuration.assetsPath as string, PATH_VALIDATORS.FOLDER);
+      return validateCustomPath(value, 'SVG icons directory', configuration.assetsPath as FileSystemPath, PATH_VALIDATORS.FOLDER);
     },
   },
   pageTitle: {
@@ -246,7 +247,7 @@ function findThemeSwitchingMode (themeName: ThemeName): ThemeSwitchingMode {
   return 'none';
 }
 
-function validateCustomPath (value: string, name: string, baseFolder: string, pathValidator: PathValidator): string | undefined {
+function validateCustomPath (value: string, name: string, baseFolder: FileSystemPath, pathValidator: PathValidator): string | undefined {
   if (value === undefined) { return undefined; }
   if (value.includes('..')) {
     logError(_`Cannot load ${name} ${value}, the path must be relative to ${baseFolder}, without back-tracking`({
@@ -288,19 +289,4 @@ function validateBoolean (value: string, name: string, defaultValue: boolean): b
       logWarn(_`Invalid value ${value} for ${name}, not fragmenting`({ nodes: [ theme.strong, undefined ] }));
       return defaultValue;
   }
-}
-
-function validateNumber (numberAsString: string, name: string, min: number, max: number): number {
-  if (isNaN(numberAsString as unknown as number)) {
-    throw Error(_`The provided ${name}, must be a number, got ${numberAsString}`({ nodes: [ theme.strong, theme.error ] }));
-  }
-
-  const number = parseFloat(numberAsString);
-  if (number < min || number > max) {
-    throw Error(_`The provided ${name} should be in range [ ${min}, ${max} ], got ${number}`({
-      nodes: [ theme.strong, theme.success, theme.success, theme.error ],
-    }));
-  }
-
-  return number;
 }

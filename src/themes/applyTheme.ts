@@ -2,11 +2,10 @@ import 'npm:reveal.js';
 
 import { DIAGRAM_STYLES_FOLDER, LIB_FOLDER, NODE_MODULES_PATH } from '../paths.ts';
 import { LchColor, oklchToHex } from '../third-party/colors/api.ts';
-import { existsSync, readTextFileSync, writeTextFileSync } from '../third-party/fs/api.ts';
+import { existsSync, readTextFileSync, resolve, writeTextFileSync } from '../third-party/file-system/api.ts';
 import { _, logInfo, logWarn, theme } from '../third-party/logger/log.ts';
-import { resolve } from '../third-party/path/api.ts';
 import { compileStyle } from '../third-party/sass/api.ts';
-import { Deck, Dom, ThemeName, ThemeColor, Theme, ThemeClass } from '../domain/api.ts';
+import { Deck, Dom, Theme, ThemeClass, ThemeColor, ThemeName } from '../domain/api.ts';
 import { MANUAL_THEME_SWITCHER } from './manualThemeSwitcher.ts';
 
 const BASE_SCSS_PATH = resolve(LIB_FOLDER, 'theme', 'base.scss');
@@ -23,7 +22,7 @@ export const DEFAULT_COLOR: LchColor = { light: .6, chroma: .1, hue: 170 };
 export const DEFAULT_THEME = THEMES.DARK;
 
 export default function applyTheme (dom: Dom, { cachePath, graphTypes, configuration }: Deck) {
-  const { themeName, themeColor, startingThemeName, nonStartingThemeName, themeSwitchingMode } = configuration;
+  const { themeName, themeColor, startingThemeName, themeSwitchingMode } = configuration;
 
   const { light, chroma, hue } = themeColor;
   const stringColor = `oklch-${light}-${chroma}-${hue}`;

@@ -1,8 +1,13 @@
 import asciidoctor, { Asciidoctor } from 'npm:@asciidoctor/core';
 
 import { hashBuffer, hashString } from '../third-party/crypto/api.ts';
-import { readAsBufferSync, readDirRecursive } from '../third-party/fs/api.ts';
-import { getParentFolderName, resolve } from '../third-party/path/api.ts';
+import {
+  FileSystemPath, getCwd,
+  getParentFolderName,
+  readAsBufferSync,
+  readDirRecursive,
+  resolve,
+} from '../third-party/file-system/api.ts';
 import { parseConfiguration } from './configuration/deckConfiguration.ts';
 import registerEmojisExtension from './emojis/asciidoctor-emojis.ts';
 import registerGraphAnimationExtension from './graph-animations/asciidoctor-graph-animations.ts';
@@ -13,7 +18,7 @@ import { BuildOptions, Deck, DeckConfiguration } from '../domain/api.ts';
 /**
  * Parses the Asciidoc file into a Deck ready for transformation to HTML
  */
-export default async function parseDeck (inputPath: string, buildOptions: BuildOptions): Promise<Deck> {
+export default async function parseDeck (inputPath: FileSystemPath, buildOptions: BuildOptions): Promise<Deck> {
   const inputFolder = findInputFolder(inputPath);
   const cachePath = resolve(inputFolder, '.a2r-cache');
 
@@ -42,7 +47,7 @@ export default async function parseDeck (inputPath: string, buildOptions: BuildO
   };
 }
 
-export async function computeDeckHash (inputPath: string, { assetsPath }: DeckConfiguration): Promise<string> {
+export async function computeDeckHash (inputPath: FileSystemPath, { assetsPath }: DeckConfiguration): Promise<string> {
   const assets = await readDirRecursive(assetsPath);
   const hashes = await Promise.all(
     [ inputPath, ...assets ]
@@ -54,9 +59,9 @@ export async function computeDeckHash (inputPath: string, { assetsPath }: DeckCo
   return await hashString(hashes.join('\n'));
 }
 
-function findInputFolder (inputPath: string): string {
+function findInputFolder (inputPath: FileSystemPath): FileSystemPath {
   const folderPath = getParentFolderName(inputPath);
   return folderPath.startsWith('/') // TODO: not Windows-friendly
     ? folderPath
-    : resolve(Deno.cwd(), folderPath); // TODO: not Deno-friendly
+    : resolve(getCwd(), folderPath);
 }

@@ -1,5 +1,6 @@
 import { Block, Document as AsciiDoc, Extensions, Reader, Registry } from 'npm:@asciidoctor/core';
 import { LchColor } from '../third-party/colors/api.ts';
+import { FileSystemPath } from '../third-party/file-system/api.ts';
 
 export type AsciidoctorDocument = AsciiDoc;
 export type AsciidoctorImageReference = AsciiDoc.ImageReference;
@@ -93,11 +94,11 @@ enum AutoSetDeckConfigurationKey {
 }
 
 export interface DeckConfiguration {
-  [ UserSetDeckConfigurationKey.ASSETS_PATHS ]: string;
-  [ UserSetDeckConfigurationKey.CUSTOM_JS ]: string;
-  [ UserSetDeckConfigurationKey.CUSTOM_CSS ]: string;
-  [ UserSetDeckConfigurationKey.FAVICON ]: string;
-  [ UserSetDeckConfigurationKey.SVG_ICONS_FOLDER ]: string;
+  [ UserSetDeckConfigurationKey.ASSETS_PATHS ]: FileSystemPath;
+  [ UserSetDeckConfigurationKey.CUSTOM_JS ]: FileSystemPath;
+  [ UserSetDeckConfigurationKey.CUSTOM_CSS ]: FileSystemPath;
+  [ UserSetDeckConfigurationKey.FAVICON ]: FileSystemPath;
+  [ UserSetDeckConfigurationKey.SVG_ICONS_FOLDER ]: FileSystemPath;
   [ UserSetDeckConfigurationKey.PAGE_TITLE ]: string;
   [ UserSetDeckConfigurationKey.SHOULD_FRAGMENT_LIST ]: boolean;
   [ UserSetDeckConfigurationKey.SHOULD_FRAGMENT_TABLES ]: boolean;
@@ -128,8 +129,8 @@ export interface Deck {
   graphsRegister: GraphMap,
   graphAnimationsRegister: GraphAnimationsMap,
   inputHash: string,
-  inputFolder: string,
-  cachePath: string,
+  inputFolder: FileSystemPath,
+  cachePath: FileSystemPath,
   configuration: DeckConfiguration,
   graphTypes: string[],
   svgIcons: string[],

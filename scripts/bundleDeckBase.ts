@@ -5,7 +5,7 @@ import 'npm:@parcel/reporter-cli';
 import 'npm:@parcel/config-default';
 import { Parcel } from 'npm:@parcel/core';
 
-import { resolve } from '../src/third-party/path/api.ts';
+import { resolve } from '../src/third-party/file-system/api.ts';
 import { DECK_BASE_FOLDER_PATH, LIB_FOLDER, REPOSITORY_ROOT_PATH } from '../src/paths.ts';
 
 async function main () {

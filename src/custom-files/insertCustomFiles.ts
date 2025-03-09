@@ -1,6 +1,5 @@
-import { existsSync, readTextFileSync } from '../third-party/fs/api.ts';
+import { existsSync, readTextFileSync, resolve } from '../third-party/file-system/api.ts';
 import { _, logInfo, logWarn, theme } from '../third-party/logger/log.ts';
-import { resolve } from '../third-party/path/api.ts';
 import { Deck, Dom } from '../domain/api.ts';
 
 export default function insertCustomFiles (dom: Dom, { inputFolder, configuration }: Deck): Dom {

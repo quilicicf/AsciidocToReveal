@@ -1,8 +1,13 @@
 import { hashString } from '../third-party/crypto/api.ts';
 import { removeFromParent, toDom } from '../third-party/dom/api.ts';
-import { existsSync, readTextFileSync, readTextFileSyncAndConvert, writeTextFileSync } from '../third-party/fs/api.ts';
+import {
+  existsSync, FileSystemPath,
+  readTextFileSync,
+  readTextFileSyncAndConvert,
+  resolve,
+  writeTextFileSync,
+} from '../third-party/file-system/api.ts';
 import { _, logError, logWarn, theme } from '../third-party/logger/log.ts';
-import { resolve } from '../third-party/path/api.ts';
 import { createMermaidProcessor, MermaidProcessor } from '../third-party/mermaid/api.ts';
 import { Deck, Dom, GraphAnimation } from '../domain/api.ts';
 
@@ -79,7 +84,7 @@ async function mermaidToSvg (graphId: string, graphCode: string, { cachePath }: 
   return readTextFileSync(outputFilePath);
 }
 
-async function writeErrorGraph (cachePath: string): Promise<string> {
+async function writeErrorGraph (cachePath: FileSystemPath): Promise<string> {
   const outputFilePath = resolve(cachePath, 'error.svg');
 
   if (existsSync(outputFilePath)) {

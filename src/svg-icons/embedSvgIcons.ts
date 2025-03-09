@@ -1,7 +1,13 @@
 import { toDom } from '../third-party/dom/api.ts';
-import { readDirSync, readTextFileSync } from '../third-party/fs/api.ts';
+import {
+  FileSystemPath,
+  getBaseName,
+  getExtension,
+  readDirSync,
+  readTextFileSync,
+  resolve,
+} from '../third-party/file-system/api.ts';
 import { _, logError, logInfo, theme } from '../third-party/logger/log.ts';
-import { getBaseName, getExtension, resolve } from '../third-party/path/api.ts';
 import { Deck, Dom, SvgIcon } from '../domain/api.ts';
 
 const ICONS_STYLE: string = `
@@ -49,14 +55,14 @@ export default function embedSvgIcons (dom: Dom, deck: Deck): Dom {
   return dom;
 }
 
-function prepareIcon (svgIconsFolder: string, fileName: string): SvgIcon | undefined {
+function prepareIcon (svgIconsFolder: FileSystemPath, fileName: FileSystemPath): SvgIcon | undefined {
   const filePath = resolve(svgIconsFolder, fileName);
   const svg = readTextFileSync(filePath);
   const extension = getExtension(fileName);
   const svgId = getBaseName(fileName, extension);
   try {
     const svgDom = toDom(svg);
-    const svgNode = svgDom.select('svg');
+    const svgNode = svgDom.select('svg') as Element;
 
     if (svgNode.hasAttribute('viewBox')) {
       // Nothing to do, using the viewBox as intended

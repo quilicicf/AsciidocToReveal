@@ -1,4 +1,4 @@
-import { readTextFileSync } from '../third-party/fs/api.ts';
+import { readTextFileSync } from '../third-party/file-system/api.ts';
 import { DECK_BASE_CSS_FILE_PATH, DECK_BASE_JS_FILE_PATH } from '../paths.ts';
 import { Dom } from '../domain/api.ts';
 

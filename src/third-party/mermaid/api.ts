@@ -1,7 +1,7 @@
 import puppeteer, { Browser, LaunchOptions } from 'npm:puppeteer';
 import { Mermaid, MermaidConfig } from 'npm:mermaid';
 
-import { join, pathToFileUrl, resolve } from '../path/api.ts';
+import { FileSystemPath, join, pathToFileUrl, resolve } from '../file-system/api.ts';
 
 export interface MermaidCliConfig {
   backgroundColor: string;
@@ -36,7 +36,10 @@ const MERMAID_CLI_CONFIGURATION: MermaidCliConfig = {
   mermaidConfig: MERMAID_CONFIG,
 };
 
-const MERMAID_IIFE_PATH = resolve(import.meta.dirname || '', '..', '..', '..', 'node_modules', 'mermaid', 'dist', 'mermaid.min.js');
+const MERMAID_IIFE_PATH = resolve(
+  (import.meta.dirname || '') as FileSystemPath,
+  '..', '..', '..', 'node_modules', 'mermaid', 'dist', 'mermaid.min.js',
+);
 
 let BROWSER: Browser;
 
@@ -66,7 +69,7 @@ export async function createMermaidProcessor () {
       });
 
       try {
-        const mermaidHTMLPath = join(import.meta.dirname || '', 'index.html');
+        const mermaidHTMLPath = join((import.meta.dirname || '') as FileSystemPath, 'index.html');
         await page.goto(pathToFileUrl(mermaidHTMLPath).href);
         await page.$eval('body', (body, backgroundColor) => {
           body.style.background = backgroundColor;

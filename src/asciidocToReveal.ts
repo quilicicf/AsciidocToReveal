@@ -8,19 +8,24 @@ import buildGraphs from './graphs/buildGraphs.ts';
 import applyLayouts from './layouts/applyLayouts.ts';
 import embedSvgIcons from './svg-icons/embedSvgIcons.ts';
 import applyTheme from './themes/applyTheme.ts';
-import { mkdirIfNotExistsSync, writeTextFileSync } from './third-party/fs/api.ts';
+import {
+  FileSystemPath,
+  getParentFolderName,
+  mkdirIfNotExistsSync,
+  resolve,
+  writeTextFileSync,
+} from './third-party/file-system/api.ts';
 import { minify } from './third-party/minifier/api.ts';
-import { getParentFolderName, resolve } from './third-party/path/api.ts';
 import insertLiveReload from './live-reload/insertLiveReload.ts';
 import addRevealJs from './reveal/addReveal.ts';
 import { BuildOptions, DomTransformer } from './domain/api.ts';
 
-const OUTPUT_FILE_PATH: string = resolve(DIST_FOLDER_PATH, 'deck.html');
+const OUTPUT_FILE_PATH: FileSystemPath = resolve(DIST_FOLDER_PATH, 'deck.html');
 
 /**
  * Transforms an asciidoc file to a Deck on which A2R features can be implemented.
  */
-export async function asciidocToReveal (inputPath: string, outputPath: string = OUTPUT_FILE_PATH, buildOptions: BuildOptions = {}) {
+export async function asciidocToReveal (inputPath: FileSystemPath, outputPath: FileSystemPath = OUTPUT_FILE_PATH, buildOptions: BuildOptions = {}) {
   const deck = await parseDeck(inputPath, buildOptions);
   mkdirIfNotExistsSync(deck.cachePath);
   mkdirIfNotExistsSync(getParentFolderName(outputPath));

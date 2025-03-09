@@ -2,8 +2,7 @@
 
 import { deckConfigurationBuilder } from '../src/asciidoc/configuration/deckConfiguration.ts';
 import { TEST_FOLDER } from '../src/paths.ts';
-import { readTextFileSync, writeTextFileSync } from '../src/third-party/fs/api.ts';
-import { resolve } from '../src/third-party/path/api.ts';
+import { readTextFileSync, resolve, writeTextFileSync } from '../src/third-party/file-system/api.ts';
 
 interface Tags {
   start: string;

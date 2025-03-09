@@ -4,9 +4,9 @@ import { stoyle } from 'stoyle';
 
 import { LIB_FOLDER } from '../src/paths.ts';
 import { toDom } from '../src/third-party/dom/api.ts';
-import { writeTextFileSync } from '../src/third-party/fs/api.ts';
+import { FileSystemPath, writeTextFileSync } from '../src/third-party/file-system/api.ts';
 import { logInfo, theme } from '../src/third-party/logger/log.ts';
-import { resolve } from '../src/third-party/path/api.ts';
+import { resolve } from '../src/third-party/file-system/api.ts';
 import { createMermaidProcessor, MermaidProcessor, MermaidCliConfig } from '../src/third-party/mermaid/api.ts';
 
 const MERMAID_DARK_CONFIGURATION: MermaidCliConfig = {
@@ -121,7 +121,7 @@ async function main () {
   await MERMAID_PROCESSOR.close();
 }
 
-async function processDiagram (id: string, diagram: string, outputFilePath: string, config: MermaidCliConfig): Promise<void> {
+async function processDiagram (id: string, diagram: string, outputFilePath: FileSystemPath, config: MermaidCliConfig): Promise<void> {
   const svg = await MERMAID_PROCESSOR.render(diagram, id, config);
   const dom = toDom(svg);
   const style = dom.select('style')?.innerHTML;

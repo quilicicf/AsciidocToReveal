@@ -2,7 +2,7 @@ import { stoyle } from 'stoyle';
 import { Arguments } from 'yargs/deno-types.ts';
 import { YargsInstance } from 'yargs/build/lib/yargs-factory.js';
 
-import { watch } from '../src/third-party/fs/api.ts';
+import { watch } from '../src/third-party/file-system/api.ts';
 import { logInfo, theme } from '../src/third-party/logger/log.ts';
 import startLiveReloadServer from './liveReloadServer.ts';
 import { ArgumentName, CLI_ARGUMENTS } from './common.ts';

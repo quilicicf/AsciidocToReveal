@@ -1,8 +1,15 @@
 import { removeFromParent, replaceInParent, toDom } from '../third-party/dom/api.ts';
-import { existsSync, readAsBase64Sync, readTextFileSyncAndConvert, statSync } from '../third-party/fs/api.ts';
-
+import {
+  existsSync,
+  getBaseName,
+  getExtension,
+  join,
+  readAsBase64Sync,
+  readTextFileSyncAndConvert,
+  resolve,
+  statSync,
+} from '../third-party/file-system/api.ts';
 import { _, logError, logWarn, theme } from '../third-party/logger/log.ts';
-import { getBaseName, getExtension, join, resolve } from '../third-party/path/api.ts';
 import processBlocksRecursively from './processBlocksRecursively.ts';
 import {
   AsciidoctorBlock,

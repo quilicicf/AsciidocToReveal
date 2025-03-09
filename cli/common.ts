@@ -1,4 +1,4 @@
-import { existsSync } from '../src/third-party/fs/api.ts';
+import { existsSync } from '../src/third-party/file-system/api.ts';
 
 export enum ArgumentName {
   INPUT_FILE = 'input-file',

@@ -1,7 +1,6 @@
-import { existsSync, writeTextFileSync } from '../../third-party/fs/api.ts';
+import { existsSync, FileSystemPath, resolve, writeTextFileSync } from '../../third-party/file-system/api.ts';
 import { httpGet } from '../../third-party/http/api.ts';
 import { _, logError, theme } from '../../third-party/logger/log.ts';
-import { resolve } from '../../third-party/path/api.ts';
 import { emojisMap } from './twemojis.ts';
 import {
   AsciidoctorDocument,
@@ -25,7 +24,7 @@ interface SizeAndUnit {
 
 const TWEMOJI_URL = 'https://twemoji-cheatsheet.vercel.app';
 
-export default function registerEmojisExtension (registry: AsciidoctorExtensions, cachePath: string): EmojiMap {
+export default function registerEmojisExtension (registry: AsciidoctorExtensions, cachePath: FileSystemPath): EmojiMap {
   const emojisRecord: EmojiMap = {};
   registry.register(function setInlineMacro () {
     (this as AsciidoctorRegistry).inlineMacro(function emojiInlineMacro () {
@@ -36,7 +35,7 @@ export default function registerEmojisExtension (registry: AsciidoctorExtensions
 
       const defaultSize = { size: 1, unit: Unit.EMS };
 
-      function getEmojiFetcher (emojiFilePath: string, emojiName: string, emojiUnicode: string): Promise<void> {
+      function getEmojiFetcher (emojiFilePath: FileSystemPath, emojiName: string, emojiUnicode: string): Promise<void> {
         if (existsSync(emojiFilePath)) {
           return Promise.resolve(); // Already fetched!
         } else if (emojisRecord[ emojiName ]) {
@@ -78,7 +77,7 @@ export default function registerEmojisExtension (registry: AsciidoctorExtensions
   return emojisRecord;
 }
 
-async function fetchAndWriteEmoji (emojiName: string, emojiUnicode: string, emojiFilePath: string): Promise<void> {
+async function fetchAndWriteEmoji (emojiName: string, emojiUnicode: string, emojiFilePath: FileSystemPath): Promise<void> {
   try {
     const emojiContent: string = await httpGet(`https://cdn.jsdelivr.net/npm/twemoji@latest/2/svg/${emojiUnicode}.svg`);
     writeTextFileSync(emojiFilePath, emojiContent.toString());
