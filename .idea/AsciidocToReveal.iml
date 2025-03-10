@@ -6,6 +6,7 @@
       <excludeFolder url="file://$MODULE_DIR$/.parcel-cache" />
       <excludeFolder url="file://$MODULE_DIR$/test/.a2r-cache" />
       <excludeFolder url="file://$MODULE_DIR$/dist" />
+      <excludeFolder url="file://$MODULE_DIR$/ignored" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

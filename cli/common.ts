@@ -1,4 +1,4 @@
-import { existsSync } from '../src/third-party/file-system/api.ts';
+import { existsSync, FileSystemPath } from '../src/third-party/file-system/api.ts';
 
 export enum ArgumentName {
   INPUT_FILE = 'input-file',
@@ -22,7 +22,7 @@ export const CLI_ARGUMENTS: Record<ArgumentName, Option<unknown>> = {
     requiresArg: true,
     demandOption: true,
     coerce (filePath: string): string {
-      if (!existsSync(filePath)) {
+      if (!existsSync(filePath as FileSystemPath)) {
         throw Error(`The input file was not found`);
       }
       return filePath;

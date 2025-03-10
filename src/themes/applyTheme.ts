@@ -7,6 +7,7 @@ import { _, logInfo, logWarn, theme } from '../third-party/logger/log.ts';
 import { compileStyle } from '../third-party/sass/api.ts';
 import { Deck, Dom, Theme, ThemeClass, ThemeColor, ThemeName } from '../domain/api.ts';
 import { MANUAL_THEME_SWITCHER } from './manualThemeSwitcher.ts';
+import { processCss } from '../third-party/css/api.ts';
 
 const BASE_SCSS_PATH = resolve(LIB_FOLDER, 'theme', 'base.scss');
 
@@ -57,31 +58,37 @@ function buildThemeStyle (themeName: ThemeName, themeColor: ThemeColor) {
   return compileStyle(baseScss.replace(REPLACEMENT_TAG, colorExports), NODE_MODULES_PATH);
 }
 
-function insertGraphStyle (dom: Dom, graphType: string, themeName: ThemeName) {
+async function insertGraphStyle (dom: Dom, graphType: string, themeName: ThemeName) {
   const darkStyleFilePath = resolve(DIAGRAM_STYLES_FOLDER, `${graphType}_dark.css`);
   const darkStyle = readTextFileSync(darkStyleFilePath);
   const lightStyleFilePath = resolve(DIAGRAM_STYLES_FOLDER, `${graphType}_light.css`);
   const lightStyle = readTextFileSync(lightStyleFilePath);
-  const styleIdPrefix = graphType.toUpperCase().replaceAll('-', '_');
+  const styleId = graphType.toUpperCase().replaceAll('-', '_');
   switch (themeName) {
     case THEMES.DARK:
-      dom.insertInlineStyle(`${styleIdPrefix}_DARK`, darkStyle);
+      dom.insertInlineStyle(styleId, darkStyle);
       return;
     case THEMES.LIGHT:
-      dom.insertInlineStyle(`${styleIdPrefix}_LIGHT`, lightStyle);
+      dom.insertInlineStyle(styleId, lightStyle);
       return;
     case THEMES.DARK_AND_LIGHT_MANUAL:
-    case THEMES.LIGHT_AND_DARK_MANUAL:
-      dom.insertInlineStyle(`${styleIdPrefix}_DARK`, darkStyle);
-      dom.insertInlineStyle(`${styleIdPrefix}_LIGHT`, lightStyle);
+    case THEMES.LIGHT_AND_DARK_MANUAL: {
+      const fullStyle = await processCss(
+        [
+          `body.${ThemeClass.DARK} { ${darkStyle} }`,
+          `body.${ThemeClass.LIGHT} { ${lightStyle} }`,
+        ].join(''),
+      );
+      dom.insertInlineStyle(styleId, `${fullStyle}`);
       return;
+    }
 
     case THEMES.LIGHT_AND_DARK_AUTO: {
       const autoSwitchingStyle = `
         @media (prefers-color-scheme: dark) { ${darkStyle} }
         @media (prefers-color-scheme: light) { ${lightStyle} }
       `;
-      dom.insertInlineStyle(`${styleIdPrefix}`, autoSwitchingStyle);
+      dom.insertInlineStyle(styleId, autoSwitchingStyle);
       return;
     }
 

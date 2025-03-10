@@ -1,6 +1,6 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="WATCH" type="DenoConfigurationType" inputPath="$PROJECT_DIR$/cli/a2r.ts" programParameters="run --allow-all">
-    <option name="applicationArguments" value="watch -i test/deck.adoc -o dist/deck.html" />
+  <configuration default="false" name="WATCH" type="DenoConfigurationType" inputPath="$PROJECT_DIR$/cli/a2r.ts" programParameters="run --check --allow-all">
+    <option name="applicationArguments" value="watch -i test/deck.adoc -o ignored/deck.html" />
     <method v="2">
       <option name="Make" enabled="true" />
     </method>

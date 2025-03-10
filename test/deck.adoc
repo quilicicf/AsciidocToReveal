@@ -554,7 +554,7 @@ emoji:muscle[]emoji:muscle[1.4,em]emoji:muscle[]
 === Parameters documentation - part I
 
 // START PARAMETERS DOCUMENTATION 1
-[cols="2,1,3,2",role=extra-small]
+[cols="<.^2,<.^1,<.^3,<.^2",valign="middle",role=extra-small]
 |===
 | Option | Default value | Accepted values | Description
 
@@ -604,7 +604,7 @@ emoji:muscle[]emoji:muscle[1.4,em]emoji:muscle[]
 === Parameters documentation - part II
 
 // START PARAMETERS DOCUMENTATION 2
-[cols="2,1,3,2",role=extra-small]
+[cols="<.^2,<.^1,<.^3,<.^2",valign="middle",role=extra-small]
 |===
 | Option | Default value | Accepted values | Description
 

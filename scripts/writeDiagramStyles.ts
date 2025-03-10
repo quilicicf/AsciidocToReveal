@@ -25,8 +25,8 @@ const MERMAID_DARK_CONFIGURATION: MermaidCliConfig = {
 const MERMAID_LIGHT_CONFIGURATION: MermaidCliConfig = {
   backgroundColor: 'transparent',
   mermaidConfig: {
-    theme: 'default', // TODO: support light themes
-    darkMode: false, // TODO: support light themes
+    theme: 'default',
+    darkMode: false,
     logLevel: 'error',
     securityLevel: 'loose',
     startOnLoad: false,

@@ -1,5 +1,3 @@
-import postcss from 'npm:postcss';
-import postcssNesting from 'npm:postcss-nesting';
 import { BundledTheme, bundledThemes, codeToHtml } from 'npm:shiki';
 import { transformerColorizedBrackets } from 'npm:@shikijs/colorized-brackets';
 import { CodeOptionsThemes, ShikiTransformer, ThemeRegistration } from 'npm:@shikijs/types';
@@ -17,6 +15,7 @@ import {
   ExtractedPreAttributes,
 } from './transformers/pre-extractor-transformer.ts';
 import { StyleGeneratingTransformer } from './transformers/common.ts';
+import { processCss } from '../css/api.ts';
 
 export interface HighlightThemes {
   light: string[];
@@ -131,10 +130,7 @@ export function createCodeHighlighter (): CodeHighlighter {
         .map((transformer) => (transformer as StyleGeneratingTransformer)?.getStyle() || '')
         .join('');
 
-      const flatCss = await postcss([ postcssNesting() ])
-        .process(nestedCss, { from: undefined });
-
-      return flatCss.css;
+      return await processCss(nestedCss);
     },
     createThemeSwitcherStyle (themeSwitchingMode: ThemeSwitchingMode): string {
       return THEME_SWITCHERS[ themeSwitchingMode ];

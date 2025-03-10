@@ -1,6 +1,7 @@
 import { removeFromParent, replaceInParent, toDom } from '../third-party/dom/api.ts';
 import {
   existsSync,
+  FileSystemPath,
   getBaseName,
   getExtension,
   join,
@@ -146,8 +147,8 @@ function embedImages (dom: Dom, { ast, inputFolder }: Deck): Dom {
   const images: Record<string, Image> = ast.getImages()
     .reduce(
       (seed, image: AsciidoctorImageReference) => {
-        const name = image.getTarget();
-        const imageRelativePath = join(image.getImagesDirectory() || '', name); // FIXME : from where by default ?
+        const name = image.getTarget() as FileSystemPath;
+        const imageRelativePath = join((image.getImagesDirectory() || '') as FileSystemPath, name); // FIXME : from where by default ?
         const imageAbsolutePath = resolve(inputFolder, imageRelativePath);
 
         try {
@@ -183,7 +184,7 @@ function embedImages (dom: Dom, { ast, inputFolder }: Deck): Dom {
   dom.selectAll('.image,.imageblock')
     .forEach((parentNode) => {
       const imgNode = parentNode.querySelector('img') as HTMLImageElement;
-      const imageName = getBaseName(imgNode.src);
+      const imageName = getBaseName(imgNode.src as FileSystemPath);
       const image = images[ imageName ];
 
       if (!image) { return parentNode.innerHTML = `<span>Image "${imageName}" not found</span>`; }
@@ -229,11 +230,11 @@ async function embedEmojis (dom: Dom, { emojisRegister }: Deck): Promise<Dom> {
   );
 
   const emojis: Record<string, EmbeddableImage> = Object.entries(emojisRegister)
-    .filter(([ , metadata ]) => existsSync(metadata.filePath)) // Sometimes, HTTP GET failed, let's avoid breaking watcher in that case
+    .filter(([ , metadata ]) => existsSync(metadata.filePath as FileSystemPath)) // Sometimes, HTTP GET failed, let's avoid breaking watcher in that case
     .map(([ name, metadata ]) => ({
       name,
       cssClass: metadata.cssClass,
-      dataUri: readFileToDataUri('svg', metadata.filePath),
+      dataUri: readFileToDataUri('svg', metadata.filePath as FileSystemPath),
     }))
     .reduce((seed, emoji) => ({ ...seed, [ emoji.name ]: emoji }), {});
 
@@ -299,7 +300,7 @@ function toSvgDataUri (content: string): string {
   return `data:image/svg+xml,${imageText}`;
 }
 
-export function readFileToDataUri (type: string, filePath: string): string {
+export function readFileToDataUri (type: string, filePath: FileSystemPath): string {
   if (!existsSync(filePath)) {
     throw Error(`File not found`);
   }

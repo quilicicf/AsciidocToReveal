@@ -41,7 +41,7 @@ function toTable (pageToBuild: number) {
     .join('\n');
 
   return [
-    '[cols="2,1,3,2",role=extra-small]',
+    '[cols="<.^2,<.^1,<.^3,<.^2",valign="middle",role=extra-small]',
     '|===',
     '| Option | Default value | Accepted values | Description',
     '',
