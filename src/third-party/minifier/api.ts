@@ -1,9 +1,8 @@
-import { minifyHTML } from 'https://deno.land/x/minify/mod.ts';
+import init, { minify } from 'minify-html';
 
-export function minify (code: string): string {
-  return code;
-  // return minifyHTML(code, { // FIXME : minifies pre tags (facepalm)
-  //   minifyCSS: true,
-  //   minifyJS: true,
-  // });
+export async function minifyHtml (code: string): Promise<string> {
+  const encoder = new TextEncoder();
+  const decoder = new TextDecoder();
+  await init();
+  return decoder.decode(minify(encoder.encode(code), {}));
 }

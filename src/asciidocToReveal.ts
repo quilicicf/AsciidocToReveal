@@ -15,7 +15,7 @@ import {
   resolve,
   writeTextFileSync,
 } from './third-party/file-system/api.ts';
-import { minify } from './third-party/minifier/api.ts';
+import { minifyHtml } from './third-party/minifier/api.ts';
 import insertLiveReload from './live-reload/insertLiveReload.ts';
 import addRevealJs from './reveal/addReveal.ts';
 import { BuildOptions, DomTransformer } from './domain/api.ts';
@@ -48,7 +48,7 @@ export async function asciidocToReveal (inputPath: FileSystemPath, outputPath: F
   );
 
   const unMinified = finalDom.toHtml();
-  const minified = minify(unMinified);
+  const minified = await minifyHtml(unMinified);
   writeTextFileSync(outputPath, minified);
 
   return deck;
