@@ -1,7 +1,7 @@
 import { stoyle } from 'stoyle';
 
 import { logInfo, theme } from '../src/third-party/logger/log.ts';
-import { uuid } from '../src/third-party/uuid/api.ts';
+import { uuid } from '../src/third-party/crypto/api.ts';
 
 interface ReloadServer {
   reload: (hash: string) => void;

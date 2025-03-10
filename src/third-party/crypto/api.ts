@@ -8,3 +8,7 @@ export async function hashBuffer (content: Uint8Array): Promise<string> {
 export async function hashString (content: string): Promise<string> {
   return await hashBuffer(new TextEncoder().encode(content));
 }
+
+export function uuid () {
+  return crypto.randomUUID();
+}
