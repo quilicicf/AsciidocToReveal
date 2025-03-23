@@ -1,11 +1,11 @@
 import 'npm:reveal.js';
 
-import { DIAGRAM_STYLES_FOLDER, LIB_FOLDER, NODE_MODULES_PATH } from '../paths.ts';
+import { LIB_FOLDER, NODE_MODULES_PATH } from '../paths.ts';
 import { LchColor, oklchToHex } from '../third-party/colors/api.ts';
 import { existsSync, readTextFileSync, resolve, writeTextFileSync } from '../third-party/file-system/api.ts';
 import { _, logInfo, logWarn, theme } from '../third-party/logger/log.ts';
 import { compileStyle } from '../third-party/sass/api.ts';
-import { Deck, Dom, Theme, ThemeClass, ThemeColor, ThemeName } from '../domain/api.ts';
+import { DarkStyle, Deck, Dom, LightStyle, Theme, ThemeClass, ThemeColor, ThemeName } from '../domain/api.ts';
 import { MANUAL_THEME_SWITCHER } from './manualThemeSwitcher.ts';
 import { processCss } from '../third-party/css/api.ts';
 
@@ -22,7 +22,7 @@ export const THEMES = {
 export const DEFAULT_COLOR: LchColor = { light: .6, chroma: .1, hue: 170 };
 export const DEFAULT_THEME = THEMES.DARK;
 
-export default function applyTheme (dom: Dom, { cachePath, graphTypes, configuration }: Deck) {
+export default function applyTheme (dom: Dom, { cachePath, configuration }: Deck) {
   const { themeName, themeColor, startingThemeName, themeSwitchingMode } = configuration;
 
   const { light, chroma, hue } = themeColor;
@@ -31,11 +31,6 @@ export default function applyTheme (dom: Dom, { cachePath, graphTypes, configura
   if (!existsSync(builtThemeFilePath)) {
     const css = buildThemeStyle(themeName, themeColor);
     writeTextFileSync(builtThemeFilePath, css);
-  }
-
-  if (graphTypes.length) {
-    logInfo(_`Applying themes for graph types: [ ${graphTypes.join(', ')} ]`({ nodes: [ theme.strong ] }));
-    graphTypes.forEach((graphType) => insertGraphStyle(dom, graphType, themeName));
   }
 
   const builtCss = readTextFileSync(builtThemeFilePath);
@@ -58,19 +53,18 @@ function buildThemeStyle (themeName: ThemeName, themeColor: ThemeColor) {
   return compileStyle(baseScss.replace(REPLACEMENT_TAG, colorExports), NODE_MODULES_PATH);
 }
 
-async function insertGraphStyle (dom: Dom, graphType: string, themeName: ThemeName) {
-  const darkStyleFilePath = resolve(DIAGRAM_STYLES_FOLDER, `${graphType}_dark.css`);
-  const darkStyle = readTextFileSync(darkStyleFilePath);
-  const lightStyleFilePath = resolve(DIAGRAM_STYLES_FOLDER, `${graphType}_light.css`);
-  const lightStyle = readTextFileSync(lightStyleFilePath);
-  const styleId = graphType.toUpperCase().replaceAll('-', '_');
+export async function insertThemedStyles (dom: Dom, styleIdPrefix: string, lightStyle: LightStyle, darkStyle: DarkStyle, deck: Deck) {
+  const { themeName } = deck.configuration;
+
   switch (themeName) {
     case THEMES.DARK:
-      dom.insertInlineStyle(styleId, darkStyle);
+      dom.insertInlineStyle(`${styleIdPrefix}_DARK`, darkStyle);
       return;
+
     case THEMES.LIGHT:
-      dom.insertInlineStyle(styleId, lightStyle);
+      dom.insertInlineStyle(`${styleIdPrefix}_LIGHT`, lightStyle);
       return;
+
     case THEMES.DARK_AND_LIGHT_MANUAL:
     case THEMES.LIGHT_AND_DARK_MANUAL: {
       const fullStyle = await processCss(
@@ -79,7 +73,7 @@ async function insertGraphStyle (dom: Dom, graphType: string, themeName: ThemeNa
           `body.${ThemeClass.LIGHT} { ${lightStyle} }`,
         ].join(''),
       );
-      dom.insertInlineStyle(styleId, `${fullStyle}`);
+      dom.insertInlineStyle(styleIdPrefix, `${fullStyle}`);
       return;
     }
 
@@ -88,7 +82,7 @@ async function insertGraphStyle (dom: Dom, graphType: string, themeName: ThemeNa
         @media (prefers-color-scheme: dark) { ${darkStyle} }
         @media (prefers-color-scheme: light) { ${lightStyle} }
       `;
-      dom.insertInlineStyle(styleId, autoSwitchingStyle);
+      dom.insertInlineStyle(styleIdPrefix, autoSwitchingStyle);
       return;
     }
 

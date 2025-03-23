@@ -54,8 +54,33 @@ export interface Image extends EmbeddableImage {
   type: string;
 }
 
+export type DomId = string & { __brand: 'CssId' };
+export type GraphType = string & { __brand: 'GraphType' };
+export type DarkStyle = string & { __brand: 'DarkStyle' };
+export type LightStyle = string & { __brand: 'LightStyle' };
+export type GraphInputText = string & { __brand: 'GraphInputText' };
+export type GraphOutputText = string & { __brand: 'GraphOutputText' };
+
+export interface GraphStyles {
+  styleIdPrefix: DomId;
+  darkStyle: DarkStyle;
+  lightStyle: LightStyle;
+}
+
+export interface GraphProcessor {
+  close: () => Promise<void>;
+  render: (graphText: GraphInputText, graphId: DomId) => Promise<ProcessedGraph>;
+  getStyles: (graphTypes: GraphType[]) => GraphStyles[];
+}
+
+export interface ProcessedGraph {
+  id: DomId;
+  type: GraphType;
+  content: GraphOutputText;
+}
+
 export type EmojiMap = Record<string, Emoji>;
-export type GraphMap = Record<string, string>;
+export type GraphMap = Record<DomId, GraphInputText>;
 export type GraphAnimationsMap = Record<string, GraphAnimation[]>;
 export type ThemeFamily = 'dark' | 'light';
 export type ThemeName = ThemeFamily | 'light-and-dark-manual' | 'dark-and-light-manual' | 'light-and-dark-auto';

@@ -1,6 +1,9 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="BUILD" type="DenoConfigurationType" inputPath="$PROJECT_DIR$/cli/a2r.ts" programParameters="run --allow-all">
+  <configuration default="false" name="BUILD" type="DenoConfigurationType" inputPath="$PROJECT_DIR$/cli/a2r.ts" programParameters="run --allow-all --check">
     <option name="applicationArguments" value="build -i test/deck.adoc -o ignored/deck.html" />
+    <option name="envs">
+      <entry key="DENO_DIR" value="./ignored" />
+    </option>
     <method v="2">
       <option name="Make" enabled="true" />
     </method>
