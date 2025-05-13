@@ -7,7 +7,8 @@ import { toDom } from '../src/third-party/dom/api.ts';
 import { FileSystemPath, writeTextFileSync } from '../src/third-party/file-system/api.ts';
 import { logInfo, theme } from '../src/third-party/logger/log.ts';
 import { resolve } from '../src/third-party/file-system/api.ts';
-import { createMermaidProcessor, MermaidProcessor, MermaidCliConfig } from '../src/third-party/mermaid/api.ts';
+import { createMermaidProcessor, MermaidCliConfig } from '../src/third-party/mermaid/api.ts';
+import { GraphProcessor } from '../src/domain/api.ts';
 
 const MERMAID_DARK_CONFIGURATION: MermaidCliConfig = {
   backgroundColor: 'transparent',
@@ -36,6 +37,19 @@ const MERMAID_LIGHT_CONFIGURATION: MermaidCliConfig = {
 };
 
 const DIAGRAMS_TO_BUILD: Record<string, string> = {
+  architecture: stripIndent`
+    architecture-beta
+      group api(cloud)[API]
+  
+      service db(database)[Database] in api
+      service disk1(disk)[Storage] in api
+      service disk2(disk)[Storage] in api
+      service server(server)[Server] in api
+  
+      db:L -- R:server
+      disk1:T -- B:server
+      disk2:T -- B:db
+    `,
   c4: stripIndent`
       C4Context
         title System Context diagram for Internet Banking System
@@ -104,7 +118,7 @@ const DIAGRAMS_TO_BUILD: Record<string, string> = {
   `,
 };
 
-const MERMAID_PROCESSOR: MermaidProcessor = await createMermaidProcessor();
+const MERMAID_PROCESSOR: GraphProcessor = await createMermaidProcessor({});
 
 async function main () {
   const DIAGRAMS_PATH = resolve(LIB_FOLDER, 'diagrams');
@@ -122,17 +136,18 @@ async function main () {
 }
 
 async function processDiagram (id: string, diagram: string, outputFilePath: FileSystemPath, config: MermaidCliConfig): Promise<void> {
-  const svg = await MERMAID_PROCESSOR.render(diagram, id, config);
-  const dom = toDom(svg);
+  // @ts-expect-error The config is a hidden parameter.
+  const { content } = await MERMAID_PROCESSOR.render(diagram, id, config);
+  const dom = toDom(content);
   const style = dom.select('style')?.innerHTML;
   const diagramType = dom.select('svg')?.getAttribute('aria-roledescription');
   const updatedStyle = style?.replaceAll(`#${id}`, `svg.${diagramType}`);
 
   if (updatedStyle === undefined) {
     throw Error(`No style for ${id}`);
+  } else {
+    writeTextFileSync(outputFilePath, updatedStyle);
   }
-
-  writeTextFileSync(outputFilePath, updatedStyle);
 }
 
 function stripIndent (edges: TemplateStringsArray, ...nodes: string[]): string {

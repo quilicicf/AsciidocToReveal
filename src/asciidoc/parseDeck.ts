@@ -43,7 +43,7 @@ export default async function parseDeck (inputPath: FileSystemPath, buildOptions
     configuration,
     graphTypes: [], // Added when graphs are converted because mermaid detects the type, we rely on it
     buildOptions,
-    svgIcons: [], // Added later FIXME : add there instead of later, duh
+    svgIcons: {}, // Added later FIXME : add there instead of later, duh
   };
 }
 

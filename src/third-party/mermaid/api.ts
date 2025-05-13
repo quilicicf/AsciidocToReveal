@@ -3,25 +3,23 @@ import { Mermaid, MermaidConfig } from 'npm:mermaid';
 
 import { FileSystemPath, join, pathToFileUrl, readDirSync, readTextFileSync, resolve } from '../file-system/api.ts';
 import {
-  DomId,
   DarkStyle,
-  GraphInputText, GraphOutputText,
+  DomId,
+  GraphInputText,
+  GraphOutputText,
   GraphProcessor,
-  GraphStyles, GraphType,
+  GraphStyles,
+  GraphType,
   LightStyle,
-  ProcessedGraph,
+  ProcessedGraph, SvgIcon,
 } from '../../domain/api.ts';
 import { _, logError, theme } from '../logger/log.ts';
 import { DIAGRAM_STYLES_FOLDER } from '../../paths.ts';
+import { IconifyJSON, IconifyIcons } from 'npm:iconify-types';
 
 export interface MermaidCliConfig {
   backgroundColor: string;
   mermaidConfig: MermaidConfig;
-}
-
-export interface MermaidProcessor {
-  close: () => Promise<void>;
-  render: (mermaidText: string, inputSvgId: string, config?: MermaidCliConfig) => Promise<string>;
 }
 
 const GRAPH_TYPES: GraphType[] = readDirSync(DIAGRAM_STYLES_FOLDER)
@@ -57,10 +55,30 @@ const MERMAID_IIFE_PATH = resolve(
 );
 
 let BROWSER: Browser;
+let INTERNAL_ICON_PACK: IconifyJSON;
 
-export async function createMermaidProcessor (): Promise<GraphProcessor> {
+export async function createMermaidProcessor (svgIcons: Record<string, SvgIcon>): Promise<GraphProcessor> {
   if (!BROWSER) {
     BROWSER = await puppeteer.launch(PUPPETEER_CONFIGURATION);
+  }
+  if (!INTERNAL_ICON_PACK) {
+    INTERNAL_ICON_PACK = {
+      prefix: 'deck',
+      icons: Object.values(svgIcons)
+        .reduce(
+          (seed, svgIcon) => {
+            seed[ svgIcon.id ] = {
+              top: svgIcon.top,
+              left: svgIcon.left,
+              width: svgIcon.width,
+              height: svgIcon.height,
+              body: svgIcon.body,
+            };
+            return seed;
+          },
+          {} as IconifyIcons,
+        ),
+    };
   }
 
   return {
@@ -75,12 +93,12 @@ export async function createMermaidProcessor (): Promise<GraphProcessor> {
 /**
  * Re-implementation of mermaid-cli to support a2r features.
  */
-async function render (mermaidText: GraphInputText, svgId: DomId, config: MermaidCliConfig = MERMAID_CLI_CONFIGURATION): Promise<ProcessedGraph> {
+async function render (mermaidText: GraphInputText, svgId: DomId, config?: MermaidCliConfig): Promise<ProcessedGraph> {
 
   const {
     backgroundColor = 'white',
     mermaidConfig = {},
-  } = config;
+  } = config || MERMAID_CLI_CONFIGURATION;
 
   const page = await BROWSER.newPage();
 
@@ -89,25 +107,27 @@ async function render (mermaidText: GraphInputText, svgId: DomId, config: Mermai
   });
 
   try {
+    const shouldRemoveStyle = !config; // The style is removed when rendering the normal way (deck) but not when writing diagram styles
     const mermaidHTMLPath = join((import.meta.dirname || '') as FileSystemPath, 'index.html');
     await page.goto(pathToFileUrl(mermaidHTMLPath).href);
     await page.$eval('body', (body, backgroundColor) => {
       body.style.background = backgroundColor;
     }, backgroundColor);
     await page.addScriptTag({ path: MERMAID_IIFE_PATH }); // Import by path because mermaid is multi-file
-    await page.$eval('#container', async (container, mermaidText, mermaidConfig, svgId) => {
+    await page.$eval('#container', async (container, mermaidText, mermaidConfig, svgId, iconPack) => {
       const { mermaid } = globalThis as unknown as { mermaid: Mermaid };
       mermaid.initialize({ startOnLoad: false, ...mermaidConfig });
+      mermaid.registerIconPacks([ { name: 'deck', icons: iconPack } ]);
       // should throw an error if mmd diagram is invalid
       const { svg: svgText } = await mermaid.render(svgId, mermaidText, container);
       container.innerHTML = svgText;
-    }, mermaidText, mermaidConfig, svgId);
+    }, mermaidText, mermaidConfig, svgId, INTERNAL_ICON_PACK);
 
     const graphType = await page.$eval('svg', (svg) => {
       return svg.getAttribute('aria-roledescription') || 'graph-type-not-found';
     });
 
-    const graphContent = await page.$eval('svg', (svg, svgId) => {
+    const graphContent = await page.$eval('svg', (svg, svgId, shouldRemoveStyle) => {
       function addDiagramTweaks (graphNode: Element): void {
         const graphType = graphNode.getAttribute('aria-roledescription');
         if (graphType) {
@@ -117,7 +137,9 @@ async function render (mermaidText: GraphInputText, svgId: DomId, config: Mermai
         }
 
         const styleNode = graphNode.querySelector('style') as Element;
-        styleNode.parentNode?.removeChild(styleNode); // Style added globally to avoid duplication
+        if (shouldRemoveStyle) {
+          styleNode.parentNode?.removeChild(styleNode); // Style added globally to avoid duplication
+        }
 
         graphNode.querySelectorAll('marker > path') // Colors arrow heads like their tails
           .forEach((markerPath) => markerPath.setAttribute('fill', 'context-stroke'));
@@ -140,7 +162,7 @@ async function render (mermaidText: GraphInputText, svgId: DomId, config: Mermai
       // eslint-disable-next-line no-undef
       const xmlSerializer = new XMLSerializer();
       return xmlSerializer.serializeToString(svg);
-    }, svgId);
+    }, svgId, shouldRemoveStyle);
 
     return {
       id: svgId,

@@ -145,7 +145,12 @@ export interface BuildOptions {
 
 export interface SvgIcon {
   id: string;
-  svg: string;
+  left: number; // First element of ViewBox
+  top: number; // Second element of ViewBox
+  width: number; // Third element of ViewBox
+  height: number; // Fourth element of ViewBox
+  body: string; // Used in graphs
+  svg: string; // Used in HTML
 }
 
 export interface Deck {
@@ -158,7 +163,7 @@ export interface Deck {
   cachePath: FileSystemPath,
   configuration: DeckConfiguration,
   graphTypes: string[],
-  svgIcons: string[],
+  svgIcons: Record<string, SvgIcon>,
   buildOptions: BuildOptions,
 }
 

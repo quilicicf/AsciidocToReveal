@@ -31,16 +31,22 @@ export default function embedSvgIcons (dom: Dom, deck: Deck): Dom {
 
   if (!svgIconsFolder) { return dom; }
 
-  const foundSvgIcons: SvgIcon[] = readDirSync(svgIconsFolder)
+  readDirSync(svgIconsFolder)
     .map((filePath) => prepareIcon(svgIconsFolder, filePath))
-    .filter(Boolean) as SvgIcon[]; // Remove undefined values for icons that failed to load
+    .filter(Boolean) // Remove undefined values for icons that failed to load
+    .reduce(
+      (seed, svgIcon) => {
+        seed[ (svgIcon as SvgIcon).id ] = svgIcon as SvgIcon;
+        return seed;
+      },
+      svgIcons as Record<string, SvgIcon>,
+    );
 
-  const foundIconIds = foundSvgIcons.map(({ id }) => id);
+  const foundIconIds = Object.keys(svgIcons);
   logInfo(`Found and loaded SVG icons : [${foundIconIds.join(',')}]`);
-  svgIcons.push(...foundIconIds);
 
-  const symbols = foundSvgIcons
-    .map(({ svg }) => svg)
+  const symbols = Object.values(svgIcons)
+    .map((svgIcon) => svgIcon.svg)
     .join('\n');
 
   const iconsLib = `
@@ -76,8 +82,15 @@ function prepareIcon (svgIconsFolder: FileSystemPath, fileName: FileSystemPath):
     svgNode.removeAttribute('height');
     svgNode.setAttribute('id', `${svgId}-icon`);
 
+    const [ left, top, width, height ] = (svgNode.getAttribute('viewBox') as string).split(' ');
+
     return {
       id: svgId,
+      left: parseInt(left, 10),
+      top: parseInt(top, 10),
+      width: parseInt(width, 10),
+      height: parseInt(height, 10),
+      body: `<use href="#${svgId}-icon"></use>`,
       svg: svgNode.outerHTML
         .replaceAll('<svg', '<symbol')
         .replaceAll('</svg>', '</symbol>'),

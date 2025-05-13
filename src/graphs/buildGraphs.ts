@@ -14,13 +14,16 @@ import {
 import { insertThemedStyles } from '../themes/applyTheme.ts';
 import { entries } from '../utils.ts';
 
-const GRAPH_PROCESSOR_PROMISE: Promise<GraphProcessor> = createMermaidProcessor();
+let GRAPH_PROCESSOR_PROMISE: Promise<GraphProcessor>;
 
 export default async function buildGraphs (dom: Dom, deck: Deck): Promise<Dom> {
   const { graphsRegister, graphAnimationsRegister } = deck;
   const graphEntries = entries(graphsRegister);
   if (!graphEntries.length) { return dom; }
 
+  if (!GRAPH_PROCESSOR_PROMISE) {
+    GRAPH_PROCESSOR_PROMISE = createMermaidProcessor(deck.svgIcons);
+  }
   const graphProcessor = await GRAPH_PROCESSOR_PROMISE;
   const processedGraphs: ProcessedGraph[] = await Promise.all(
     graphEntries

@@ -1,6 +1,7 @@
 :imagesdir: assets
 :a2r-js: deck.mjs
 :a2r-css: deck.css
+:a2r-svg-icons-dir: svg-icons
 :a2r-page-title: Asciidoc 2 Reveal.js
 :a2r-favicon: favicon.svg
 :a2r-fragment-lists: true
@@ -33,7 +34,8 @@ https://github.com/quilicicf/AsciidocToReveal[The code]
 ====
 * Bundling was mostly OK but no single-file, & still rather heavy
 * Parcel transformer was not possible, no help from community
-* The official plugin was opinionated in ways I don't like, mostly irrelevant Asciidoc document-based view. Like h1 doesn't create a proper slide.
+* The official plugin was opinionated in ways I don't like, mostly irrelevant Asciidoc document-based view.
+Like h1 doesn't create a proper slide.
 ====
 
 == Features I wanted
@@ -229,7 +231,8 @@ There are some notes on this slide!
 * They
 * Are
 * Here emoji:muscle[]
-* Basically just include the Notes plugin by default. It's the only one I've kept, the rest doesn't need to be interactive.
+* Basically just include the Notes plugin by default.
+It's the only one I've kept, the rest doesn't need to be interactive.
 ====
 
 == Layouts
@@ -374,6 +377,7 @@ function main () {
 main(); // [\!code highlight]
 ----
 =====
+
 [.column-6x]
 =====
 [source,js,role="line-numbers fit-content"]
@@ -407,12 +411,15 @@ main(); // [!code highlight]
 
 [.notes]
 ====
-* GitHub-like integration of Mermaid in the deck allows for integrating the graph as an SVG inside the presentation. SVG is *light*! Even more so after gzip!
-* Displaying bit-by-bit is easy-ish. Could be better, but a simple format allows to fragment the graph
+* GitHub-like integration of Mermaid in the deck allows for integrating the graph as an SVG inside the presentation.
+SVG is *light*!
+Even more so after gzip!
+* Displaying bit-by-bit is easy-ish.
+Could be better, but a simple format allows to fragment the graph
 * Switching the global theme switches the highlighting theme too!
 ====
 
-=== Mermaid graphs — example
+=== Mermaid graphs — animations
 
 [.layout-columns]
 ====
@@ -492,6 +499,35 @@ flowchart LR
 =====
 ====
 
+=== Mermaid graphs — icons
+
+[.layout-columns]
+====
+[.column-5x]
+=====
+[source,mermaid]
+----
+architecture-beta
+    group pets(deck:pets)[Pets]
+
+    service dog(deck:dog)[Dog] in pets
+    service dragon(deck:dragon)[Dragon] in pets
+----
+=====
+
+[.column-7x.vertically-centered-panel]
+=====
+[graph,icons]
+----
+architecture-beta
+    group pets(deck:pets)[Pets]
+
+    service dog(deck:dog)[Dog] in pets
+    service dragon(deck:dragon)[Dragon] in pets
+----
+=====
+====
+
 == My favorite boilerplate
 
 * Default styles & colors
@@ -526,6 +562,22 @@ emoji:muscle[]emoji:muscle[1.4,em]emoji:muscle[]
 * SVGs are fetched on the same API as the public extension and stored in the build-area
 * They are embedded once in the CSS and referenced once per usage
 ====
+
+== SVG icons
+
+* Put SVG files in assets folder
+* Link with document-level parameter `a2r-svg-icons-dir`
+* Embed with the `icon` block
+
+=== Example
+
+[source,asciidoc,role="fit-content fragment"]
+--
+icon:dragon[]icon:dragon[1.4,em]icon:dragon[]
+--
+
+[.fragment]
+icon:dragon[]icon:dragon[1.4,em]icon:dragon[]
 
 == CLI tool
 
@@ -564,22 +616,22 @@ emoji:muscle[]emoji:muscle[1.4,em]emoji:muscle[]
 | Path to the folder containing all the external files your deck references
 
 | `a2r-js`
-| 
+|
 | Path relative to the deck's assets folder
 | Path to a custom JS file, loaded last in the generated deck
 
 | `a2r-css`
-| 
+|
 | Path relative to the deck's assets folder
 | Path to a custom CSS file, loaded last in the final deck
 
 | `a2r-favicon`
-| 
+|
 | Path relative to the deck's assets folder
 | Path to the favicon file
 
 | `a2r-svg-icons-dir`
-| 
+|
 | Path relative to the deck's assets folder
 | Location of the folder containing your SVG icons
 
@@ -674,7 +726,8 @@ Allows to add specific styles & behaviors for each deck using CSS/JS(Reveal) dir
 ====
 * Wrote own themes to have slim ones without dependencies
 * Uses Reveal.js framework for themes, of course
-* Possible to have both light & dark in the same presentation! With manual switching or auto switching (based on browser preference)
+* Possible to have both light & dark in the same presentation!
+With manual switching or auto switching (based on browser preference)
 * The accent color can be configured for each presentation by selecting the hue and the chroma level
 * Fonts must be embedded, will be done specifically
 ====
@@ -692,7 +745,8 @@ Allows to add specific styles & behaviors for each deck using CSS/JS(Reveal) dir
 
 [.notes]
 ====
-* Maybe by contributing to Mermaid so that ids are found everywhere in the generated SVG? Or at least add classes where they help (like adding `.no-cluster` on the first `root` of a flowchart)
+* Maybe by contributing to Mermaid so that ids are found everywhere in the generated SVG?
+Or at least add classes where they help (like adding `.no-cluster` on the first `root` of a flowchart)
 * Currently, watch stops whenever an error is encountered
 * For example, it should be possible to provide another path to watch for changes in watch to include assets, or to specify other browser targets for the JS, image compression target maybe later? etc...
 * For example, re-write graph SVGs when graph animation changes, and maybe cleanup the build area a bit?

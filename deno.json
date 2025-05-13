@@ -18,6 +18,9 @@
 
     "npm:jsdom": "npm:jsdom@26.0.0",
 
+    "npm:iconify-logos": "npm:@iconify-json/logos@1.2.4",
+    "npm:iconify-types": "npm:@iconify/types@2.0.0",
+
     "npm:puppeteer": "npm:puppeteer@24.2.1",
     "npm:mermaid": "npm:mermaid@11.4.1",
 
