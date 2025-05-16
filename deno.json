@@ -4,9 +4,9 @@
     "@std/fs": "jsr:@std/fs@1.0.14",
     "@std/path": "jsr:@std/path@1.0.8",
     "@std/encoding": "jsr:@std/encoding@1.0.7",
+    "minify-html": "jsr:@minify-html/deno@0.16.4",
 
     "json5": "https://deno.land/x/json5@v1.0.0/mod.ts",
-    "minify-html": "https://wilsonl.in/minify-html/deno/0.15.0/index.js",
     "stoyle": "https://raw.githubusercontent.com/quilicicf/Stoyle/refs/tags/0.2.0/mod.ts",
     "yargs/": "https://deno.land/x/yargs@v17.7.2-deno/",
 

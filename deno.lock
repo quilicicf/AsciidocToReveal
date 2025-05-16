@@ -1,6 +1,7 @@
 {
   "version": "4",
   "specifiers": {
+    "jsr:@minify-html/deno@0.16.4": "0.16.4",
     "jsr:@std/encoding@1.0.7": "1.0.7",
     "jsr:@std/fs@1.0.14": "1.0.14",
     "jsr:@std/path@1.0.8": "1.0.8",
@@ -31,6 +32,9 @@
     "npm:shiki@3.0.0": "3.0.0"
   },
   "jsr": {
+    "@minify-html/deno@0.16.4": {
+      "integrity": "8d4bb62fef045a3959f62b82dd41e26ee1b2cf45be47b90e1d18d21b8277e695"
+    },
     "@std/encoding@1.0.7": {
       "integrity": "f631247c1698fef289f2de9e2a33d571e46133b38d042905e3eac3715030a82d"
     },
@@ -3428,6 +3432,7 @@
   },
   "workspace": {
     "dependencies": [
+      "jsr:@minify-html/deno@0.16.4",
       "jsr:@std/encoding@1.0.7",
       "jsr:@std/fs@1.0.14",
       "jsr:@std/path@1.0.8",
