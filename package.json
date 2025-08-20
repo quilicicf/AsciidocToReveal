@@ -28,7 +28,7 @@
     "chroma-js": "3.1.2",
     "jsdom": "26.0.0",
     "json5": "2.2.3",
-    "mermaid": "11.4.1",
+    "mermaid": "11.10.0",
     "prism-themes": "1.9.0",
     "prismjs": "1.29.0",
     "puppeteer": "24.2.1",
