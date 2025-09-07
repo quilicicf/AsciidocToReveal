@@ -2,6 +2,10 @@
 
 > A highly opinionated transformer for .adoc files to turn them into self-contained Reveal.js presentations
 
+## 🚨 Migrated to codeberg
+
+De-GAFAMization in process, [new repository available here](https://codeberg.org/quilicicf/asciideck).
+
 ## Why?
 
 Because the asciidoc-reveal plugin is opinionated, and the opinions behind it clash with mine.
