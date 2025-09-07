@@ -512,6 +512,8 @@ architecture-beta
 
     service dog(deck:dog)[Dog] in pets
     service dragon(deck:dragon)[Dragon] in pets
+
+    dog:R -- L:dragon
 ----
 =====
 
@@ -524,6 +526,8 @@ architecture-beta
 
     service dog(deck:dog)[Dog] in pets
     service dragon(deck:dragon)[Dragon] in pets
+
+    dog:R -- L:dragon
 ----
 =====
 ====
